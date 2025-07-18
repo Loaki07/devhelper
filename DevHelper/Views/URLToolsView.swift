@@ -1,0 +1,385 @@
+import SwiftUI
+
+struct URLToolsView: View {
+    @State private var selectedTab: URLTab = .encoder
+    @State private var textInput: String = ""
+    @State private var encodedOutput: String = ""
+    @State private var encodedInput: String = ""
+    @State private var decodedOutput: String = ""
+    @State private var urlInput: String = ""
+    @State private var parsedComponents: URLComponents = URLComponents()
+    @State private var queryParameters: [QueryParameter] = []
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("URL Tools")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            
+            // Tab Selection
+            Picker("Tool", selection: $selectedTab) {
+                ForEach(URLTab.allCases, id: \.self) { tab in
+                    Text(tab.title)
+                        .tag(tab)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            
+            switch selectedTab {
+            case .encoder:
+                urlEncoderView()
+            case .decoder:
+                urlDecoderView()
+            case .parser:
+                urlParserView()
+            }
+            
+            Spacer()
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    private func urlEncoderView() -> some View {
+        HStack(spacing: 20) {
+            // Input Section
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Text Input")
+                        .font(.headline)
+                    Spacer()
+                    Button("Clear") {
+                        textInput = ""
+                        encodedOutput = ""
+                    }
+                    .buttonStyle(.borderless)
+                }
+                
+                TextEditor(text: $textInput)
+                    .font(.system(.body, design: .monospaced))
+                    .border(Color.gray, width: 1)
+                    .frame(height: 200)
+                    .onChange(of: textInput) { _, _ in
+                        encodeURL()
+                    }
+                
+                Button("Sample Text") {
+                    textInput = "Hello World! @#$%^&*()+=[]{}|;:,.<>?"
+                }
+                .buttonStyle(.bordered)
+                
+                Text("\(textInput.count) characters")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Image(systemName: "arrow.right")
+                .font(.title)
+                .foregroundColor(.blue)
+            
+            // Output Section
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("URL Encoded Output")
+                        .font(.headline)
+                    Spacer()
+                    Button("Copy") {
+                        copyToClipboard(encodedOutput)
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(encodedOutput.isEmpty)
+                }
+                
+                ScrollView {
+                    Text(encodedOutput.isEmpty ? "URL encoded text will appear here" : encodedOutput)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+                }
+                .frame(height: 200)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                
+                Text("\(encodedOutput.count) characters")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    private func urlDecoderView() -> some View {
+        HStack(spacing: 20) {
+            // Input Section
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("URL Encoded Input")
+                        .font(.headline)
+                    Spacer()
+                    Button("Clear") {
+                        encodedInput = ""
+                        decodedOutput = ""
+                    }
+                    .buttonStyle(.borderless)
+                }
+                
+                TextEditor(text: $encodedInput)
+                    .font(.system(.body, design: .monospaced))
+                    .border(Color.gray, width: 1)
+                    .frame(height: 200)
+                    .onChange(of: encodedInput) { _, _ in
+                        decodeURL()
+                    }
+                
+                Button("Sample Encoded") {
+                    encodedInput = "Hello%20World%21%20%40%23%24%25%5E%26%2A%28%29%2B%3D%5B%5D%7B%7D%7C%3B%3A%2C.%3C%3E%3F"
+                }
+                .buttonStyle(.bordered)
+                
+                Text("\(encodedInput.count) characters")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Image(systemName: "arrow.right")
+                .font(.title)
+                .foregroundColor(.blue)
+            
+            // Output Section
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Decoded Output")
+                        .font(.headline)
+                    Spacer()
+                    Button("Copy") {
+                        copyToClipboard(decodedOutput)
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(decodedOutput.isEmpty)
+                }
+                
+                ScrollView {
+                    Text(decodedOutput.isEmpty ? "Decoded text will appear here" : decodedOutput)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+                }
+                .frame(height: 200)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                
+                Text("\(decodedOutput.count) characters")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    private func urlParserView() -> some View {
+        VStack(spacing: 20) {
+            // URL Input
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("URL Input")
+                        .font(.headline)
+                    Spacer()
+                    Button("Sample URL") {
+                        urlInput = "https://api.example.com:8080/users?id=123&name=John%20Doe&active=true#section1"
+                        parseURL()
+                    }
+                    .buttonStyle(.borderless)
+                }
+                
+                TextField("Enter URL to parse", text: $urlInput)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.system(.body, design: .monospaced))
+                    .onChange(of: urlInput) { _, _ in
+                        parseURL()
+                    }
+            }
+            
+            // Parsed Components
+            HStack(spacing: 20) {
+                // URL Components
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("URL Components")
+                        .font(.headline)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        componentRow("Scheme", parsedComponents.scheme ?? "")
+                        componentRow("Host", parsedComponents.host ?? "")
+                        componentRow("Port", parsedComponents.port?.description ?? "")
+                        componentRow("Path", parsedComponents.path)
+                        componentRow("Fragment", parsedComponents.fragment ?? "")
+                    }
+                    .font(.system(.body, design: .monospaced))
+                }
+                
+                // Query Parameters
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("Query Parameters")
+                        .font(.headline)
+                    
+                    if queryParameters.isEmpty {
+                        Text("No query parameters")
+                            .foregroundColor(.secondary)
+                            .italic()
+                    } else {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 5) {
+                                ForEach(queryParameters.indices, id: \.self) { index in
+                                    HStack {
+                                        Text(queryParameters[index].key)
+                                            .fontWeight(.medium)
+                                        Text("=")
+                                        Text(queryParameters[index].value)
+                                        Spacer()
+                                        Button("Copy") {
+                                            copyToClipboard("\(queryParameters[index].key)=\(queryParameters[index].value)")
+                                        }
+                                        .buttonStyle(.borderless)
+                                    }
+                                    .font(.system(.body, design: .monospaced))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.gray.opacity(0.1))
+                                    .cornerRadius(4)
+                                }
+                            }
+                        }
+                        .frame(height: 150)
+                    }
+                }
+            }
+            .padding()
+            
+            // Reconstruct URL
+            if !urlInput.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Reconstructed URL")
+                        .font(.headline)
+                    
+                    HStack {
+                        Text(reconstructURL())
+                            .font(.system(.body, design: .monospaced))
+                            .textSelection(.enabled)
+                            .padding()
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                        
+                        Button("Copy") {
+                            copyToClipboard(reconstructURL())
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    private func componentRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text("\(label):")
+                .fontWeight(.medium)
+                .frame(width: 80, alignment: .leading)
+            Text(value.isEmpty ? "—" : value)
+                .foregroundColor(value.isEmpty ? .secondary : .primary)
+            Spacer()
+            if !value.isEmpty {
+                Button("Copy") {
+                    copyToClipboard(value)
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(4)
+    }
+    
+    private func encodeURL() {
+        guard !textInput.isEmpty else {
+            encodedOutput = ""
+            return
+        }
+        
+        encodedOutput = textInput.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Error: Unable to encode"
+    }
+    
+    private func decodeURL() {
+        guard !encodedInput.isEmpty else {
+            decodedOutput = ""
+            return
+        }
+        
+        decodedOutput = encodedInput.removingPercentEncoding ?? "Error: Unable to decode"
+    }
+    
+    private func parseURL() {
+        guard !urlInput.isEmpty else {
+            parsedComponents = URLComponents()
+            queryParameters = []
+            return
+        }
+        
+        if let components = URLComponents(string: urlInput) {
+            parsedComponents = components
+            
+            // Parse query parameters
+            if let queryItems = components.queryItems {
+                queryParameters = queryItems.map { QueryParameter(key: $0.name, value: $0.value ?? "") }
+            } else {
+                queryParameters = []
+            }
+        } else {
+            parsedComponents = URLComponents()
+            queryParameters = []
+        }
+    }
+    
+    private func reconstructURL() -> String {
+        var components = parsedComponents
+        
+        // Reconstruct query items if we have parameters
+        if !queryParameters.isEmpty {
+            components.queryItems = queryParameters.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+        
+        return components.url?.absoluteString ?? "Invalid URL"
+    }
+    
+    private func copyToClipboard(_ text: String) {
+        let pasteboard = NSPasteboard.general
+        pasteboard.declareTypes([.string], owner: nil)
+        pasteboard.setString(text, forType: .string)
+    }
+}
+
+enum URLTab: CaseIterable {
+    case encoder, decoder, parser
+    
+    var title: String {
+        switch self {
+        case .encoder: return "Encoder"
+        case .decoder: return "Decoder"
+        case .parser: return "Parser"
+        }
+    }
+}
+
+struct QueryParameter {
+    let key: String
+    let value: String
+}
+
+#Preview {
+    URLToolsView()
+}

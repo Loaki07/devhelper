@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.epochconverter.com)",
+      "Bash(mkdir:*)",
+      "Bash(xcodebuild:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(sips:*)"
+    ],
+    "deny": []
+  }
+}
