@@ -5,10 +5,9 @@ enum ToolType: String, CaseIterable, Identifiable {
     case unitConverter = "unit"
     case jsonFormatter = "json"
     case base64 = "base64"
-    case httpRequest = "http"
+    case urlTools = "url"
     case regexTester = "regex"
     case uuidGenerator = "uuid"
-    case urlTools = "url"
     
     var id: String { rawValue }
     
@@ -21,9 +20,7 @@ enum ToolType: String, CaseIterable, Identifiable {
         case .jsonFormatter:
             return "JSON Formatter"
         case .base64:
-            return "Base64 Encoder/Decoder"
-        case .httpRequest:
-            return "HTTP Request"
+            return "Base64 Encode/Decode"
         case .regexTester:
             return "Regex Tester"
         case .uuidGenerator:
@@ -42,9 +39,7 @@ enum ToolType: String, CaseIterable, Identifiable {
         case .jsonFormatter:
             return "doc.text"
         case .base64:
-            return "textformat.abc"
-        case .httpRequest:
-            return "network"
+            return "6.circle"
         case .regexTester:
             return "magnifyingglass"
         case .uuidGenerator:

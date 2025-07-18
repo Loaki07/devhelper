@@ -21,8 +21,7 @@ DevHelper/
 │   │   ├── Base64View.swift
 │   │   ├── UUIDGeneratorView.swift
 │   │   ├── URLToolsView.swift
-│   │   ├── HTTPRequestView.swift      # To be implemented
-│   │   └── RegexTesterView.swift      # To be implemented
+│   │   └── RegexTesterView.swift
 │   ├── Assets.xcassets/          # App icons and assets
 │   └── Preview Content/          # SwiftUI preview assets
 └── README.md                     # Project documentation
@@ -39,9 +38,10 @@ DevHelper/
 
 ### Main Navigation
 - **NavigationSplitView**: Primary navigation structure
-- **Sidebar**: Tool selection with icons and titles
+- **Sidebar**: Tool selection with icons and titles, **search functionality**
 - **Detail View**: Selected tool interface
 - **Window Configuration**: Resizable with minimum size constraints
+- **Search Bar**: Integrated search to filter tools by name
 
 ### Tool Integration Pattern
 Each tool follows a consistent pattern:

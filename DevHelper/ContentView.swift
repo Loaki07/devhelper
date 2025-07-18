@@ -2,6 +2,17 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedTool: ToolType = .timestampConverter
+    @State private var searchText: String = ""
+    
+    var filteredTools: [ToolType] {
+        if searchText.isEmpty {
+            return ToolType.allCases
+        } else {
+            return ToolType.allCases.filter { 
+                $0.title.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
     
     var body: some View {
         NavigationSplitView {
@@ -10,19 +21,33 @@ struct ContentView: View {
                     Text("DevHelper")
                         .font(.title2)
                         .fontWeight(.bold)
-                    Text("Developer Tools")
+                    Text("Developer Tools v1.0")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
                 
-                List(ToolType.allCases, selection: $selectedTool) { tool in
+                // Search Bar
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
+                    TextField("Search tools...", text: $searchText)
+                        .textFieldStyle(PlainTextFieldStyle())
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(NSColor.controlBackgroundColor))
+                .cornerRadius(10)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 10)
+                
+                List(filteredTools, selection: $selectedTool) { tool in
                     Label(tool.title, systemImage: tool.iconName)
                         .tag(tool)
                 }
             }
-            .frame(minWidth: 250)
+            .frame(minWidth: 210)
         } detail: {
             Group {
                 switch selectedTool {
@@ -34,8 +59,6 @@ struct ContentView: View {
                     JSONFormatterView()
                 case .base64:
                     Base64View()
-                case .httpRequest:
-                    HTTPRequestView()
                 case .regexTester:
                     RegexTesterView()
                 case .uuidGenerator:

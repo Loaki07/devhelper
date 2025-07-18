@@ -14,7 +14,7 @@ struct UUIDGeneratorView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            HStack(spacing: 40) {
+            HStack(alignment: .top, spacing: 40) {
                 // Generator Section
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Generate UUIDs")

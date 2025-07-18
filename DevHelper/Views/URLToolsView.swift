@@ -41,7 +41,7 @@ struct URLToolsView: View {
     
     @ViewBuilder
     private func urlEncoderView() -> some View {
-        HStack(spacing: 20) {
+        HStack(alignment: .top, spacing: 20) {
             // Input Section
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
@@ -58,7 +58,8 @@ struct URLToolsView: View {
                 TextEditor(text: $textInput)
                     .font(.system(.body, design: .monospaced))
                     .border(Color.gray, width: 1)
-                    .frame(height: 200)
+                    .padding(5)
+                    .frame(height: 320)
                     .onChange(of: textInput) { _, _ in
                         encodeURL()
                     }
@@ -76,6 +77,7 @@ struct URLToolsView: View {
             Image(systemName: "arrow.right")
                 .font(.title)
                 .foregroundColor(.blue)
+                .frame(height: 320, alignment: .center)
             
             // Output Section
             VStack(alignment: .leading, spacing: 10) {
@@ -96,8 +98,8 @@ struct URLToolsView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
                 }
-                .frame(height: 200)
-                .padding()
+                .padding(5)
+                .frame(height: 320)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
                 
@@ -111,7 +113,7 @@ struct URLToolsView: View {
     
     @ViewBuilder
     private func urlDecoderView() -> some View {
-        HStack(spacing: 20) {
+        HStack(alignment: .top, spacing: 20) {
             // Input Section
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
@@ -128,7 +130,8 @@ struct URLToolsView: View {
                 TextEditor(text: $encodedInput)
                     .font(.system(.body, design: .monospaced))
                     .border(Color.gray, width: 1)
-                    .frame(height: 200)
+                    .padding(5)
+                    .frame(height: 320)
                     .onChange(of: encodedInput) { _, _ in
                         decodeURL()
                     }
@@ -146,6 +149,7 @@ struct URLToolsView: View {
             Image(systemName: "arrow.right")
                 .font(.title)
                 .foregroundColor(.blue)
+                .frame(height: 320, alignment: .center)
             
             // Output Section
             VStack(alignment: .leading, spacing: 10) {
@@ -166,8 +170,8 @@ struct URLToolsView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
                 }
-                .frame(height: 200)
-                .padding()
+                .padding(5)
+                .frame(height: 320)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
                 

@@ -23,17 +23,8 @@ struct Base64View: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             
-            // URL-Safe Option
-            Toggle("URL-Safe Base64", isOn: $isURLSafe)
-                .onChange(of: isURLSafe) { _, _ in
-                    if selectedTab == .encode {
-                        encodeText()
-                    } else {
-                        decodeBase64()
-                    }
-                }
             
-            HStack(spacing: 20) {
+            HStack(alignment: .top, spacing: 20) {
                 if selectedTab == .encode {
                     // Encode Section
                     VStack(alignment: .leading, spacing: 10) {
@@ -51,7 +42,8 @@ struct Base64View: View {
                         TextEditor(text: $textInput)
                             .font(.system(.body, design: .monospaced))
                             .border(Color.gray, width: 1)
-                            .frame(height: 200)
+                            .padding(5)
+                            .frame(height: 320)
                             .onChange(of: textInput) { _, _ in
                                 encodeText()
                             }
@@ -64,6 +56,7 @@ struct Base64View: View {
                     Image(systemName: "arrow.right")
                         .font(.title)
                         .foregroundColor(.blue)
+                        .frame(height: 320, alignment: .center)
                     
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
@@ -83,8 +76,8 @@ struct Base64View: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .textSelection(.enabled)
                         }
-                        .frame(height: 200)
-                        .padding()
+                        .padding(5)
+                        .frame(height: 320)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                         
@@ -109,7 +102,8 @@ struct Base64View: View {
                         TextEditor(text: $base64Input)
                             .font(.system(.body, design: .monospaced))
                             .border(Color.gray, width: 1)
-                            .frame(height: 200)
+                            .padding(5)
+                            .frame(height: 320)
                             .onChange(of: base64Input) { _, _ in
                                 decodeBase64()
                             }
@@ -122,6 +116,7 @@ struct Base64View: View {
                     Image(systemName: "arrow.right")
                         .font(.title)
                         .foregroundColor(.blue)
+                        .frame(height: 320, alignment: .center)
                     
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
@@ -141,8 +136,8 @@ struct Base64View: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .textSelection(.enabled)
                         }
-                        .frame(height: 200)
-                        .padding()
+                        .padding(5)
+                        .frame(height: 320)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                         
@@ -177,6 +172,17 @@ struct Base64View: View {
                 .buttonStyle(.bordered)
                 .disabled((selectedTab == .encode && base64Output.isEmpty) || 
                          (selectedTab == .decode && decodedOutput.isEmpty))
+                
+                Spacer()
+                
+                Toggle("URL-Safe Base64", isOn: $isURLSafe)
+                    .onChange(of: isURLSafe) { _, _ in
+                        if selectedTab == .encode {
+                            encodeText()
+                        } else {
+                            decodeBase64()
+                        }
+                    }
             }
             
             Spacer()

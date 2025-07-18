@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UnitConverterView: View {
-    @State private var selectedCategory: UnitCategory = .length
+    @State private var selectedCategory: UnitCategory = .data
     @State private var fromUnit: String = ""
     @State private var toUnit: String = ""
     @State private var inputValue: String = ""
@@ -116,7 +116,12 @@ struct UnitConverterView: View {
             result = baseValue / toUnitData.toBaseMultiplier
         }
         
-        outputValue = String(format: "%.6f", result).trimmingCharacters(in: CharacterSet(charactersIn: "0")).trimmingCharacters(in: CharacterSet(charactersIn: "."))
+        // Format the result properly, removing only trailing zeros
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 10
+        formatter.minimumFractionDigits = 0
+        outputValue = formatter.string(from: NSNumber(value: result)) ?? "0"
     }
     
     private func convertTemperature(_ value: Double, from fromUnit: String, to toUnit: String) -> Double {
@@ -148,7 +153,7 @@ struct UnitConverterView: View {
 }
 
 enum UnitCategory: String, CaseIterable {
-    case length, weight, temperature, data, time, area, volume
+    case data, length, weight, temperature, area, volume
     
     var title: String {
         switch self {
@@ -156,7 +161,6 @@ enum UnitCategory: String, CaseIterable {
         case .weight: return "Weight"
         case .temperature: return "Temperature"
         case .data: return "Data"
-        case .time: return "Time"
         case .area: return "Area"
         case .volume: return "Volume"
         }
@@ -198,16 +202,6 @@ enum UnitCategory: String, CaseIterable {
                 UnitData(name: "gigabyte", symbol: "GB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0),
                 UnitData(name: "terabyte", symbol: "TB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0),
                 UnitData(name: "petabyte", symbol: "PB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0)
-            ]
-        case .time:
-            return [
-                UnitData(name: "second", symbol: "s", toBaseMultiplier: 1.0),
-                UnitData(name: "minute", symbol: "min", toBaseMultiplier: 60.0),
-                UnitData(name: "hour", symbol: "h", toBaseMultiplier: 3600.0),
-                UnitData(name: "day", symbol: "d", toBaseMultiplier: 86400.0),
-                UnitData(name: "week", symbol: "w", toBaseMultiplier: 604800.0),
-                UnitData(name: "month", symbol: "mo", toBaseMultiplier: 2629746.0),
-                UnitData(name: "year", symbol: "y", toBaseMultiplier: 31556952.0)
             ]
         case .area:
             return [

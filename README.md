@@ -1,13 +1,42 @@
 # DevHelper
 
-This is a native macOS tools for developer, it contains many common tools that most used. 
+A native macOS application for developers, containing essential tools commonly used in software development.
 
-- Timestamp convert
-- Unit convert
-- Json format
-- Base64 encode/decode
-- CURL simple http request
-- Regexp Test
-- UUID generate
-- URL encode/decode
-- Url Parser
+## Features
+
+- **Timestamp Converter** - Convert between timestamps and human-readable dates with multiple format support
+- **Unit Converter** - Convert between different units (Data, Length, Weight, Temperature, Area, Volume)
+- **JSON Formatter** - Format and validate JSON data
+- **Base64 Encode/Decode** - Encode and decode Base64 strings
+- **Regex Tester** - Test regular expressions with pattern matching
+- **UUID Generator** - Generate UUIDs in various formats
+- **URL Tools** - URL encoding/decoding and parsing
+
+## Key Features
+
+- **Search Functionality** - Quickly find tools using the search bar in the sidebar
+- **Selectable Results** - Copy results directly from the output areas
+- **Modern UI** - Clean, intuitive interface designed for macOS
+- **Real-time Conversion** - Instant results as you type
+
+## Requirements
+
+- macOS 14.0 or later
+- Xcode 15.4 or later (for development)
+
+## Installation
+
+1. Clone this repository
+2. Open `DevHelper.xcodeproj` in Xcode
+3. Build and run the project
+
+## Version
+
+Current version: 1.1 (Build 2)
+
+## TODO
+
+[ ] base64, url, regexp, all the text input need update to the same editor with json to avoid input auto changed after loss focus
+[ ] url page, move the sample text out of the input box, like base64 page
+[ ] uuid page, remove the input copy button, because it let the line break into two lines, or we can try change the copy to a small icon 
+[ ] regexp page, there are three options, i am not sure what is the design, it is a static text

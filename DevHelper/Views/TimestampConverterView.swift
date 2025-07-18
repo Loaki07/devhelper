@@ -13,7 +13,7 @@ struct TimestampConverterView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            HStack(spacing: 40) {
+            HStack(spacing: 20) {
                 // Timestamp to Date
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Timestamp to Date")
@@ -36,8 +36,9 @@ struct TimestampConverterView: View {
                             .padding()
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
+                            .textSelection(.enabled)
                     }
-                    .frame(height: 100)
+                    .frame(height: 150)
                 }
                 
                 // Date to Timestamp
@@ -64,8 +65,9 @@ struct TimestampConverterView: View {
                             .padding()
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
+                            .textSelection(.enabled)
                     }
-                    .frame(height: 100)
+                    .frame(height: 150)
                 }
             }
             .padding()
@@ -114,17 +116,24 @@ struct TimestampConverterView: View {
         }
         
         let date = Date(timeIntervalSince1970: timeInterval)
-        let formatter = DateFormatter()
         
-        if isLocalTime {
-            formatter.timeZone = TimeZone.current
-            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss zzz"
-        } else {
-            formatter.timeZone = TimeZone(abbreviation: "UTC")
-            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss 'UTC'"
-        }
+        // Format for local time
+        let localFormatter = DateFormatter()
+        localFormatter.timeZone = TimeZone.current
+        localFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss zzz"
+        let localTime = localFormatter.string(from: date)
         
-        convertedDate = formatter.string(from: date)
+        // Format for UTC
+        let utcFormatter = DateFormatter()
+        utcFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        utcFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss 'UTC'"
+        let utcTime = utcFormatter.string(from: date)
+        
+        convertedDate = """
+        UTC Time: \(utcTime)
+
+        Local Time: \(localTime)
+        """
     }
     
     private func convertDateToTimestamp(_ dateString: String) {
@@ -146,8 +155,11 @@ struct TimestampConverterView: View {
             let timestamp = Int64(date.timeIntervalSince1970)
             convertedTimestamp = """
             Seconds: \(timestamp)
+            
             Milliseconds: \(timestamp * 1000)
+            
             Microseconds: \(timestamp * 1_000_000)
+            
             Nanoseconds: \(timestamp * 1_000_000_000)
             """
         } else {

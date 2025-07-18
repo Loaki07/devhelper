@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct JSONFormatterView: View {
     @State private var jsonInput: String = ""
@@ -25,7 +26,7 @@ struct JSONFormatterView: View {
                 processJSON()
             }
             
-            HStack(spacing: 20) {
+            HStack(alignment: .top, spacing: 20) {
                 // Input Section
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
@@ -46,10 +47,11 @@ struct JSONFormatterView: View {
                         .buttonStyle(.borderless)
                     }
                     
-                    TextEditor(text: $jsonInput)
+                    CodeTextEditor(text: $jsonInput)
                         .font(.system(.body, design: .monospaced))
                         .border(isValid ? Color.gray : Color.red, width: 1)
-                        .frame(height: 300)
+                        .padding(5)
+                        .frame(height: 320)
                         .onChange(of: jsonInput) { _, _ in
                             processJSON()
                         }
@@ -72,6 +74,7 @@ struct JSONFormatterView: View {
                 Image(systemName: "arrow.right")
                     .font(.title)
                     .foregroundColor(.blue)
+                    .frame(height: 320, alignment: .center)
                 
                 // Output Section
                 VStack(alignment: .leading, spacing: 10) {
@@ -92,8 +95,8 @@ struct JSONFormatterView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .textSelection(.enabled)
                     }
-                    .frame(height: 300)
-                    .padding()
+                    .padding(5)
+                    .frame(height: 320)
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(8)
                     
@@ -279,6 +282,51 @@ private let sampleJSON = """
   }
 }
 """
+
+struct CodeTextEditor: NSViewRepresentable {
+    @Binding var text: String
+    
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSTextView.scrollableTextView()
+        let textView = scrollView.documentView as! NSTextView
+        
+        // Disable smart quotes and other text substitutions
+        textView.isAutomaticQuoteSubstitutionEnabled = false
+        textView.isAutomaticDashSubstitutionEnabled = false
+        textView.isAutomaticTextReplacementEnabled = false
+        textView.isAutomaticSpellingCorrectionEnabled = false
+        textView.isAutomaticDataDetectionEnabled = false
+        textView.isRichText = false
+        textView.usesFindPanel = true
+        textView.delegate = context.coordinator
+        
+        return scrollView
+    }
+    
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        let textView = nsView.documentView as! NSTextView
+        if textView.string != text {
+            textView.string = text
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, NSTextViewDelegate {
+        let parent: CodeTextEditor
+        
+        init(_ parent: CodeTextEditor) {
+            self.parent = parent
+        }
+        
+        func textDidChange(_ notification: Notification) {
+            guard let textView = notification.object as? NSTextView else { return }
+            parent.text = textView.string
+        }
+    }
+}
 
 #Preview {
     JSONFormatterView()

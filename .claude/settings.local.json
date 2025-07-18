@@ -5,7 +5,8 @@
       "Bash(mkdir:*)",
       "Bash(xcodebuild:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(sips:*)"
+      "Bash(sips:*)",
+      "WebFetch(domain:devutils.com)"
     ],
     "deny": []
   }

@@ -1,52 +1,50 @@
 # DevHelper - Claude Context
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 8 fully-functional tools commonly used by developers.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 7 fully-functional tools commonly used by developers, with search functionality and modern UI design.
 
 ## Current Status
-**✅ COMPLETE** - All 8 tools are fully implemented and working.
+**✅ COMPLETE** - All 7 tools are fully implemented and working. Version 1.1 released.
 
 ## Tools Implemented
 
 ### 1. Timestamp Converter (`TimestampConverterView.swift`)
 - **Status**: ✅ Complete
 - **Features**: Auto-detection of timestamp formats (seconds/milliseconds/microseconds/nanoseconds), bidirectional conversion, timezone support (Local/UTC), current timestamp generation
-- **UI**: Two-column layout with real-time conversion
+- **UI**: Two-column layout with real-time conversion, **selectable text results**
+- **Recent Updates**: Fixed result selectability issue - users can now select and copy results
 
 ### 2. Unit Converter (`UnitConverterView.swift`)
 - **Status**: ✅ Complete
-- **Features**: 7 categories (Length, Weight, Temperature, Data, Time, Area, Volume), real-time conversion, special temperature handling
-- **UI**: Category picker with from/to unit selection
+- **Features**: 6 categories (Data, Length, Weight, Temperature, Area, Volume), real-time conversion, special temperature handling
+- **UI**: Category picker with from/to unit selection, **Data category moved to first position**
+- **Recent Updates**: Removed Time category, Data now default selection
 
 ### 3. JSON Formatter (`JSONFormatterView.swift`)
 - **Status**: ✅ Complete
 - **Features**: Format (pretty print), minify, validate, escape for strings, syntax error highlighting
 - **UI**: Two-panel layout with mode selection
 
-### 4. Base64 Encoder/Decoder (`Base64View.swift`)
+### 4. Base64 Encode/Decode (`Base64View.swift`)
 - **Status**: ✅ Complete
 - **Features**: Text encoding/decoding, URL-safe Base64 variant, swap functionality
 - **UI**: Tabbed interface with encode/decode modes
+- **Recent Updates**: Renamed from "Base64 Encoder/Decoder" to "Base64 Encode/Decode"
 
-### 5. UUID Generator (`UUIDGeneratorView.swift`)
-- **Status**: ✅ Complete
-- **Features**: Multiple formats, bulk generation (1-100), UUID validation, common pattern examples
-- **UI**: Generation controls with scrollable results list
-
-### 6. URL Tools (`URLToolsView.swift`)
-- **Status**: ✅ Complete
-- **Features**: URL encoding/decoding, comprehensive URL parsing, query parameter breakdown
-- **UI**: Three-tab interface (Encoder/Decoder/Parser)
-
-### 7. Regex Tester (`RegexTesterView.swift`)
+### 5. Regex Tester (`RegexTesterView.swift`)
 - **Status**: ✅ Complete
 - **Features**: Pattern matching, capture groups, replacement, common patterns library, regex flags
 - **UI**: Pattern input with results display and common pattern buttons
 
-### 8. HTTP Request Tool (`HTTPRequestView.swift`)
+### 6. UUID Generator (`UUIDGeneratorView.swift`)
 - **Status**: ✅ Complete
-- **Features**: All HTTP methods, header management, authentication (Basic/Bearer), multiple body types, response viewer, cURL export
-- **UI**: Request builder with response viewer
+- **Features**: Multiple formats, bulk generation (1-100), UUID validation, common pattern examples
+- **UI**: Generation controls with scrollable results list
+
+### 7. URL Tools (`URLToolsView.swift`)
+- **Status**: ✅ Complete
+- **Features**: URL encoding/decoding, comprehensive URL parsing, query parameter breakdown
+- **UI**: Three-tab interface (Encoder/Decoder/Parser)
 
 ## Architecture
 
@@ -66,8 +64,7 @@ DevHelper/
 │       ├── Base64View.swift
 │       ├── UUIDGeneratorView.swift
 │       ├── URLToolsView.swift
-│       ├── RegexTesterView.swift
-│       └── HTTPRequestView.swift
+│       └── RegexTesterView.swift
 └── DESIGN.md                       # Comprehensive design document
 ```
 
@@ -82,8 +79,9 @@ DevHelper/
 
 ### Navigation Pattern
 - All tools are defined in `ToolType` enum with titles and SF Symbols icons
-- `ContentView` uses NavigationSplitView with sidebar selection
+- `ContentView` uses NavigationSplitView with sidebar selection and **search functionality**
 - Each tool is a separate SwiftUI view with consistent styling
+- **Search bar** in sidebar allows filtering tools by title
 
 ### Common UI Patterns
 - **Two-column layouts**: Input/output sections with arrow indicators
@@ -103,13 +101,29 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Entitlements**: App Sandbox enabled, Network access for HTTP tool
+- **Version**: 1.1 (Build 2)
+- **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
 - SwiftUI for UI framework
 - Combine for reactive programming
 - Foundation for core utilities
 - AppKit for clipboard access (NSPasteboard)
+
+## Recent Updates (Version 1.1)
+
+### Removed Features
+- **HTTP Request Tool**: Completely removed to simplify the app focus
+- **Time Unit Category**: Removed from Unit Converter to streamline categories
+
+### Added Features
+- **Search functionality**: Search bar in sidebar to quickly find tools
+- **Improved text selection**: Timestamp converter results are now selectable and copyable
+
+### UI Improvements
+- **Better tool organization**: Data units moved to first position in Unit Converter
+- **Color compatibility**: Fixed all macOS color references for better compatibility
+- **Cleaner interface**: Removed less commonly used features for better focus
 
 ## Common Development Tasks
 
@@ -134,6 +148,8 @@ DevHelper/
 ### Fixed Issues
 - ✅ **Unit Converter keyboardType error**: Removed iOS-specific `.keyboardType(.decimalPad)` modifier
 - ✅ **HTTP Response headers type conversion**: Fixed `AnyHashable` to `String` conversion for response headers
+- ✅ **macOS Color References**: Fixed all `systemGray5`, `systemGray6`, `systemBackground` references to use proper NSColor equivalents
+- ✅ **Timestamp Converter Selectability**: Added `.textSelection(.enabled)` to result text areas
 
 ### Common Gotchas
 - **macOS vs iOS modifiers**: Some SwiftUI modifiers are iOS-only
@@ -171,14 +187,17 @@ open DevHelper.xcodeproj
 - **README**: `README.md` contains user-facing project information
 
 ## Success Metrics
-- ✅ All 8 tools fully implemented
+- ✅ All 7 essential tools fully implemented
 - ✅ Consistent UI/UX across all tools
 - ✅ Real-time processing and feedback
 - ✅ Professional macOS native experience
 - ✅ Comprehensive error handling
 - ✅ Copy-to-clipboard functionality throughout
+- ✅ Search functionality for quick tool access
+- ✅ Selectable text in results areas
+- ✅ Streamlined feature set focused on core developer needs
 
 ---
 
-**Last Updated**: Initial implementation complete with all 8 tools working.
-**Next Steps**: App icon, branding, and distribution configuration (optional enhancements).
+**Last Updated**: Version 1.1 released with search functionality, improved text selection, and streamlined tool set.
+**Next Steps**: Optional enhancements like preferences, keyboard shortcuts, or additional export formats.
