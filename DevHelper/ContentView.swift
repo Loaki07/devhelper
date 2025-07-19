@@ -4,6 +4,13 @@ struct ContentView: View {
     @State private var selectedTool: ToolType = .timestampConverter
     @State private var searchText: String = ""
     
+    private var appVersion: String {
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return "v\(version)"
+        }
+        return "v1.2"
+    }
+    
     var filteredTools: [ToolType] {
         if searchText.isEmpty {
             return ToolType.allCases
@@ -21,7 +28,7 @@ struct ContentView: View {
                     Text("DevHelper")
                         .font(.title2)
                         .fontWeight(.bold)
-                    Text("Developer Tools v1.0")
+                    Text("Developer Tools \(appVersion)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

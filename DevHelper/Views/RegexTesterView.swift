@@ -59,29 +59,29 @@ struct RegexTesterView: View {
             }
             
             // Flags Selection
-            VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center, spacing: 20) {
                 Text("Regex Options")
                     .font(.headline)
                 
-                HStack(spacing: 20) {
-                    ForEach(RegexFlag.allCases, id: \.self) { flag in
-                        Toggle(flag.title, isOn: Binding(
-                            get: { selectedFlags.contains(flag) },
-                            set: { isOn in
-                                if isOn {
-                                    selectedFlags.insert(flag)
-                                } else {
-                                    selectedFlags.remove(flag)
-                                }
-                                testRegex()
+                ForEach(RegexFlag.allCases, id: \.self) { flag in
+                    Toggle(flag.title, isOn: Binding(
+                        get: { selectedFlags.contains(flag) },
+                        set: { isOn in
+                            if isOn {
+                                selectedFlags.insert(flag)
+                            } else {
+                                selectedFlags.remove(flag)
                             }
-                        ))
-                        .toggleStyle(CheckboxToggleStyle())
-                    }
+                            testRegex()
+                        }
+                    ))
+                    .toggleStyle(CheckboxToggleStyle())
                 }
+                
+                Spacer()
             }
             
-            HStack(spacing: 20) {
+            HStack(alignment: .top, spacing: 20) {
                 // Test String Input
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
@@ -96,7 +96,8 @@ struct RegexTesterView: View {
                     }
                     
                     CodeTextEditor(text: $testString)
-                        .frame(height: 150)
+                        .padding(5)
+                        .frame(height: 200)
                         .onChange(of: testString) { _, _ in
                             testRegex()
                         }
@@ -132,9 +133,11 @@ struct RegexTesterView: View {
                                     }
                                 }
                             }
+                            .font(.system(.body, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .frame(height: 150)
-                        .padding()
+                        .padding(5)
+                        .frame(height: 200)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                     } else {
@@ -154,21 +157,21 @@ struct RegexTesterView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .textSelection(.enabled)
                         }
-                        .frame(height: 100)
-                        .padding()
+                        .padding(5)
+                        .frame(height: 168)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                     }
                 }
             }
-            .padding()
+            .padding(0)
             
             // Quick Patterns
             VStack(alignment: .leading, spacing: 10) {
                 Text("Common Patterns")
                     .font(.headline)
                 
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 10) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 10) {
                     ForEach(commonPatterns, id: \.name) { pattern in
                         Button(pattern.name) {
                             regexPattern = pattern.regex
@@ -369,25 +372,27 @@ struct RegexPattern {
 
 struct CheckboxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            Image(systemName: configuration.isOn ? "checkbox.fill" : "checkbox")
-                .foregroundColor(configuration.isOn ? .blue : .gray)
+        HStack(spacing: 6) {
+            Image(systemName: configuration.isOn ? "checkmark.square.fill" : "square")
+                .foregroundColor(configuration.isOn ? .blue : .secondary)
+                .font(.system(size: 16))
                 .onTapGesture {
                     configuration.isOn.toggle()
                 }
             configuration.label
+                .font(.system(size: 12))
         }
     }
 }
 
 private let commonPatterns = [
     RegexPattern(name: "Email", regex: "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"),
-    RegexPattern(name: "Phone", regex: "\\(?\\d{3}\\)?[-.]?\\d{3}[-.]?\\d{4}"),
-    RegexPattern(name: "URL", regex: "https?://[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&'()*+,;=]*"),
+    RegexPattern(name: "Phone", regex: "\\([0-9]{3}\\) [0-9]{3}-[0-9]{4}"),
+    RegexPattern(name: "URL", regex: "https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"),
     RegexPattern(name: "IPv4", regex: "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b"),
+    RegexPattern(name: "Hex Color", regex: "#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3}"),
     RegexPattern(name: "Date", regex: "\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}"),
     RegexPattern(name: "Time", regex: "\\d{1,2}:\\d{2}(?::\\d{2})?\\s?(?:AM|PM)?"),
-    RegexPattern(name: "Hex Color", regex: "#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3}"),
     RegexPattern(name: "Numbers", regex: "\\d+"),
     RegexPattern(name: "Words", regex: "\\w+")
 ]

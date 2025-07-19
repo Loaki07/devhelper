@@ -7,6 +7,7 @@ struct UUIDGeneratorView: View {
     @State private var bulkCount: Int = 1
     @State private var validationInput: String = ""
     @State private var validationResult: String = ""
+    @State private var copiedButtonId: String? = nil
     
     var body: some View {
         VStack(spacing: 20) {
@@ -66,9 +67,18 @@ struct UUIDGeneratorView: View {
                                     
                                     Button(action: {
                                         copyToClipboard(uuid)
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            copiedButtonId = uuid
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                copiedButtonId = nil
+                                            }
+                                        }
                                     }) {
-                                        Image(systemName: "doc.on.doc")
-                                            .foregroundColor(.blue)
+                                        Image(systemName: copiedButtonId == uuid ? "checkmark" : "doc.on.doc")
+                                            .foregroundColor(copiedButtonId == uuid ? .green : .blue)
+                                            .frame(width: 14, height: 14)
                                     }
                                     .buttonStyle(.borderless)
                                     .help("Copy to clipboard")

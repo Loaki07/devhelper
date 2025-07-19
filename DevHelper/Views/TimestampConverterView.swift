@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct TimestampConverterView: View {
     @State private var timestampInput: String = ""
@@ -6,6 +7,7 @@ struct TimestampConverterView: View {
     @State private var convertedDate: String = ""
     @State private var convertedTimestamp: String = ""
     @State private var isLocalTime: Bool = true
+    @State private var copiedButtonId: String? = nil
     
     var body: some View {
         VStack(spacing: 20) {
@@ -31,14 +33,23 @@ struct TimestampConverterView: View {
                     .buttonStyle(.bordered)
                     
                     ScrollView {
-                        Text(convertedDate.isEmpty ? "Converted date will appear here" : convertedDate)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        if convertedDate.isEmpty {
+                            Text("Converted date will appear here")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
+                        } else {
+                            VStack(alignment: .leading, spacing: 4) {
+                                dateRow("UTC Time", getUTCFromResult())
+                                dateRow("Local Time", getLocalFromResult())
+                            }
                             .padding()
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
-                            .textSelection(.enabled)
+                        }
                     }
-                    .frame(height: 150)
+                    .frame(height: 120)
                 }
                 
                 // Date to Timestamp
@@ -60,14 +71,25 @@ struct TimestampConverterView: View {
                     .buttonStyle(.bordered)
                     
                     ScrollView {
-                        Text(convertedTimestamp.isEmpty ? "Converted timestamp will appear here" : convertedTimestamp)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        if convertedTimestamp.isEmpty {
+                            Text("Converted timestamp will appear here")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
+                        } else {
+                            VStack(alignment: .leading, spacing: 4) {
+                                timestampRow("Seconds", getSecondsFromResult())
+                                timestampRow("Milliseconds", getMillisecondsFromResult())
+                                timestampRow("Microseconds", getMicrosecondsFromResult())
+                                timestampRow("Nanoseconds", getNanosecondsFromResult())
+                            }
                             .padding()
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
-                            .textSelection(.enabled)
+                        }
                     }
-                    .frame(height: 150)
+                    .frame(height: 120)
                 }
             }
             .padding()
@@ -153,18 +175,145 @@ struct TimestampConverterView: View {
         
         if let date = formatter.date(from: dateString) {
             let timestamp = Int64(date.timeIntervalSince1970)
-            convertedTimestamp = """
-            Seconds: \(timestamp)
-            
-            Milliseconds: \(timestamp * 1000)
-            
-            Microseconds: \(timestamp * 1_000_000)
-            
-            Nanoseconds: \(timestamp * 1_000_000_000)
-            """
+            convertedTimestamp = generateTimestampResult(timestamp)
         } else {
             convertedTimestamp = "Invalid date format. Use: YYYY-MM-DD HH:MM:SS"
         }
+    }
+    
+    @ViewBuilder
+    private func timestampRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text("\(label):")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(value)
+                .font(.system(.body, design: .monospaced))
+                .frame(minWidth: 160, alignment: .leading)
+                .textSelection(.enabled)
+            Button(action: {
+                copyToClipboard(value)
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    copiedButtonId = "\(label)-\(value)"
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        copiedButtonId = nil
+                    }
+                }
+            }) {
+                Image(systemName: copiedButtonId == "\(label)-\(value)" ? "checkmark" : "doc.on.doc")
+                    .foregroundColor(copiedButtonId == "\(label)-\(value)" ? .green : .blue)
+                    .frame(width: 14, height: 14)
+            }
+            .buttonStyle(.borderless)
+            .help("Copy to clipboard")
+        }
+    }
+    
+    private func generateTimestampResult(_ timestamp: Int64) -> String {
+        return """
+        Seconds: \(timestamp)
+        
+        Milliseconds: \(timestamp * 1000)
+        
+        Microseconds: \(timestamp * 1_000_000)
+        
+        Nanoseconds: \(timestamp * 1_000_000_000)
+        """
+    }
+    
+    private func getSecondsFromResult() -> String {
+        let lines = convertedTimestamp.components(separatedBy: "\n")
+        for line in lines {
+            if line.hasPrefix("Seconds:") {
+                return String(line.dropFirst(9))
+            }
+        }
+        return ""
+    }
+    
+    private func getMillisecondsFromResult() -> String {
+        let lines = convertedTimestamp.components(separatedBy: "\n")
+        for line in lines {
+            if line.hasPrefix("Milliseconds:") {
+                return String(line.dropFirst(14))
+            }
+        }
+        return ""
+    }
+    
+    private func getMicrosecondsFromResult() -> String {
+        let lines = convertedTimestamp.components(separatedBy: "\n")
+        for line in lines {
+            if line.hasPrefix("Microseconds:") {
+                return String(line.dropFirst(14))
+            }
+        }
+        return ""
+    }
+    
+    private func getNanosecondsFromResult() -> String {
+        let lines = convertedTimestamp.components(separatedBy: "\n")
+        for line in lines {
+            if line.hasPrefix("Nanoseconds:") {
+                return String(line.dropFirst(13))
+            }
+        }
+        return ""
+    }
+    
+    @ViewBuilder
+    private func dateRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text("\(label):")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(value)
+                .frame(minWidth: 200, alignment: .leading)
+                .textSelection(.enabled)
+            Button(action: {
+                copyToClipboard(value)
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    copiedButtonId = "\(label)-\(value)"
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        copiedButtonId = nil
+                    }
+                }
+            }) {
+                Image(systemName: copiedButtonId == "\(label)-\(value)" ? "checkmark" : "doc.on.doc")
+                    .foregroundColor(copiedButtonId == "\(label)-\(value)" ? .green : .blue)
+                    .frame(width: 14, height: 14)
+            }
+            .buttonStyle(.borderless)
+            .help("Copy to clipboard")
+        }
+    }
+    
+    private func getUTCFromResult() -> String {
+        let lines = convertedDate.components(separatedBy: "\n")
+        for line in lines {
+            if line.hasPrefix("UTC Time:") {
+                return String(line.dropFirst(10))
+            }
+        }
+        return ""
+    }
+    
+    private func getLocalFromResult() -> String {
+        let lines = convertedDate.components(separatedBy: "\n")
+        for line in lines {
+            if line.hasPrefix("Local Time:") {
+                return String(line.dropFirst(12))
+            }
+        }
+        return ""
+    }
+    
+    private func copyToClipboard(_ text: String) {
+        let pasteboard = NSPasteboard.general
+        pasteboard.declareTypes([.string], owner: nil)
+        pasteboard.setString(text, forType: .string)
     }
 }
 
