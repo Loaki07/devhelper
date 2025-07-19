@@ -48,7 +48,7 @@ struct IPQueryView: View {
                                 if !myIPAddress.isEmpty {
                                     VStack(alignment: .leading, spacing: 8) {
                                         HStack {
-                                            Text(showDualIP ? "IP:" : "IP Address:")
+                                            Text("IP:")
                                                 .fontWeight(.medium)
                                             Text(myIPAddress)
                                                 .font(.system(.body, design: .monospaced))
@@ -61,7 +61,7 @@ struct IPQueryView: View {
                                                 .foregroundColor(.blue)
                                                 .font(.caption)
                                             }
-                                            .buttonStyle(.borderless)
+                                            .buttonStyle(.bordered)
                                             .help("Copy IP Address")
                                         }
                                         
@@ -90,7 +90,7 @@ struct IPQueryView: View {
                                                 .foregroundColor(.blue)
                                                 .font(.caption)
                                             }
-                                            .buttonStyle(.borderless)
+                                            .buttonStyle(.bordered)
                                             .help("Copy IP Address")
                                         }
                                         
@@ -101,6 +101,7 @@ struct IPQueryView: View {
                                 }
                             }
                             .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color(NSColor.controlBackgroundColor))
                             .cornerRadius(10)
                         }
@@ -175,7 +176,7 @@ struct IPQueryView: View {
                         if let details = queryIPDetails {
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack {
-                                    Text("IP Address:")
+                                    Text("IP:")
                                         .fontWeight(.medium)
                                     Text(details.query)
                                         .font(.system(.body, design: .monospaced))
@@ -188,7 +189,7 @@ struct IPQueryView: View {
                                         .foregroundColor(.blue)
                                         .font(.caption)
                                     }
-                                    .buttonStyle(.borderless)
+                                    .buttonStyle(.bordered)
                                     .help("Copy IP Address")
                                 }
                                 
