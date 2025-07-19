@@ -38,6 +38,12 @@ struct URLToolsView: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            loadState()
+        }
+        .onDisappear {
+            saveState()
+        }
     }
     
     @ViewBuilder
@@ -373,6 +379,38 @@ struct URLToolsView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.declareTypes([.string], owner: nil)
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(textInput, forKey: "URLTools.textInput")
+        defaults.set(encodedInput, forKey: "URLTools.encodedInput")
+        defaults.set(encodedOutput, forKey: "URLTools.encodedOutput")
+        defaults.set(decodedOutput, forKey: "URLTools.decodedOutput")
+        defaults.set(urlInput, forKey: "URLTools.urlInput")
+        defaults.set(selectedTab.title, forKey: "URLTools.selectedTab")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        textInput = defaults.string(forKey: "URLTools.textInput") ?? ""
+        encodedInput = defaults.string(forKey: "URLTools.encodedInput") ?? ""
+        encodedOutput = defaults.string(forKey: "URLTools.encodedOutput") ?? ""
+        decodedOutput = defaults.string(forKey: "URLTools.decodedOutput") ?? ""
+        urlInput = defaults.string(forKey: "URLTools.urlInput") ?? ""
+        
+        if let tabTitle = defaults.string(forKey: "URLTools.selectedTab") {
+            selectedTab = URLTab.allCases.first { $0.title == tabTitle } ?? .encoder
+        }
+        
+        // If we have input, trigger processing
+        if selectedTab == .encoder && !textInput.isEmpty {
+            encodeURL()
+        } else if selectedTab == .decoder && !encodedInput.isEmpty {
+            decodeURL()
+        } else if selectedTab == .parser && !urlInput.isEmpty {
+            parseURL()
+        }
     }
 }
 

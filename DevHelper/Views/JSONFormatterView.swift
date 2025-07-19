@@ -135,6 +135,12 @@ struct JSONFormatterView: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            loadState()
+        }
+        .onDisappear {
+            saveState()
+        }
     }
     
     private func processJSON() {
@@ -247,6 +253,32 @@ struct JSONFormatterView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.declareTypes([.string], owner: nil)
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(jsonInput, forKey: "JSONFormatter.jsonInput")
+        defaults.set(jsonOutput, forKey: "JSONFormatter.jsonOutput")
+        defaults.set(selectedMode.title, forKey: "JSONFormatter.selectedMode")
+        defaults.set(validationMessage, forKey: "JSONFormatter.validationMessage")
+        defaults.set(isValid, forKey: "JSONFormatter.isValid")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        jsonInput = defaults.string(forKey: "JSONFormatter.jsonInput") ?? ""
+        jsonOutput = defaults.string(forKey: "JSONFormatter.jsonOutput") ?? ""
+        validationMessage = defaults.string(forKey: "JSONFormatter.validationMessage") ?? ""
+        isValid = defaults.bool(forKey: "JSONFormatter.isValid")
+        
+        if let modeTitle = defaults.string(forKey: "JSONFormatter.selectedMode") {
+            selectedMode = JSONMode.allCases.first { $0.title == modeTitle } ?? .format
+        }
+        
+        // If we have input, trigger processing
+        if !jsonInput.isEmpty {
+            processJSON()
+        }
     }
 }
 

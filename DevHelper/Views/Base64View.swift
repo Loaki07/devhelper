@@ -192,6 +192,12 @@ struct Base64View: View {
                 decodeBase64()
             }
         }
+        .onAppear {
+            loadState()
+        }
+        .onDisappear {
+            saveState()
+        }
     }
     
     private func encodeText() {
@@ -252,6 +258,36 @@ struct Base64View: View {
         let pasteboard = NSPasteboard.general
         pasteboard.declareTypes([.string], owner: nil)
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(textInput, forKey: "Base64.textInput")
+        defaults.set(base64Input, forKey: "Base64.base64Input")
+        defaults.set(base64Output, forKey: "Base64.base64Output")
+        defaults.set(decodedOutput, forKey: "Base64.decodedOutput")
+        defaults.set(selectedTab.title, forKey: "Base64.selectedTab")
+        defaults.set(isURLSafe, forKey: "Base64.isURLSafe")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        textInput = defaults.string(forKey: "Base64.textInput") ?? ""
+        base64Input = defaults.string(forKey: "Base64.base64Input") ?? ""
+        base64Output = defaults.string(forKey: "Base64.base64Output") ?? ""
+        decodedOutput = defaults.string(forKey: "Base64.decodedOutput") ?? ""
+        isURLSafe = defaults.bool(forKey: "Base64.isURLSafe")
+        
+        if let tabTitle = defaults.string(forKey: "Base64.selectedTab") {
+            selectedTab = Base64Tab.allCases.first { $0.title == tabTitle } ?? .encode
+        }
+        
+        // If we have input, trigger processing
+        if selectedTab == .encode && !textInput.isEmpty {
+            encodeText()
+        } else if selectedTab == .decode && !base64Input.isEmpty {
+            decodeBase64()
+        }
     }
 }
 

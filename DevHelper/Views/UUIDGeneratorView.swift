@@ -143,7 +143,10 @@ struct UUIDGeneratorView: View {
         }
         .padding()
         .onAppear {
-            generateUUIDs()
+            loadState()
+        }
+        .onDisappear {
+            saveState()
         }
     }
     
@@ -238,6 +241,46 @@ struct UUIDGeneratorView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.declareTypes([.string], owner: nil)
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(selectedVersion.title, forKey: "UUIDGenerator.selectedVersion")
+        defaults.set(uuidFormat.title, forKey: "UUIDGenerator.uuidFormat")
+        defaults.set(bulkCount, forKey: "UUIDGenerator.bulkCount")
+        defaults.set(validationInput, forKey: "UUIDGenerator.validationInput")
+        defaults.set(generatedUUIDs, forKey: "UUIDGenerator.generatedUUIDs")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        
+        if let versionTitle = defaults.string(forKey: "UUIDGenerator.selectedVersion") {
+            selectedVersion = UUIDVersion.allCases.first { $0.title == versionTitle } ?? .v4
+        }
+        
+        if let formatTitle = defaults.string(forKey: "UUIDGenerator.uuidFormat") {
+            uuidFormat = UUIDFormat.allCases.first { $0.title == formatTitle } ?? .standard
+        }
+        
+        bulkCount = defaults.integer(forKey: "UUIDGenerator.bulkCount")
+        if bulkCount == 0 { bulkCount = 1 }
+        
+        validationInput = defaults.string(forKey: "UUIDGenerator.validationInput") ?? ""
+        
+        if let savedUUIDs = defaults.array(forKey: "UUIDGenerator.generatedUUIDs") as? [String] {
+            generatedUUIDs = savedUUIDs
+        }
+        
+        // If we have validation input, trigger validation
+        if !validationInput.isEmpty {
+            validateUUID(validationInput)
+        }
+        
+        // If no saved UUIDs, generate initial ones
+        if generatedUUIDs.isEmpty {
+            generateUUIDs()
+        }
     }
 }
 

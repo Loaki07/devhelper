@@ -107,6 +107,12 @@ struct TimestampConverterView: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            loadState()
+        }
+        .onDisappear {
+            saveState()
+        }
     }
     
     private func convertTimestampToDate(_ timestamp: String) {
@@ -314,6 +320,32 @@ struct TimestampConverterView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.declareTypes([.string], owner: nil)
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(timestampInput, forKey: "TimestampConverter.timestampInput")
+        defaults.set(dateInput, forKey: "TimestampConverter.dateInput")
+        defaults.set(convertedDate, forKey: "TimestampConverter.convertedDate")
+        defaults.set(convertedTimestamp, forKey: "TimestampConverter.convertedTimestamp")
+        defaults.set(isLocalTime, forKey: "TimestampConverter.isLocalTime")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        timestampInput = defaults.string(forKey: "TimestampConverter.timestampInput") ?? ""
+        dateInput = defaults.string(forKey: "TimestampConverter.dateInput") ?? ""
+        convertedDate = defaults.string(forKey: "TimestampConverter.convertedDate") ?? ""
+        convertedTimestamp = defaults.string(forKey: "TimestampConverter.convertedTimestamp") ?? ""
+        isLocalTime = defaults.bool(forKey: "TimestampConverter.isLocalTime")
+        
+        // If we have initial values, trigger conversions
+        if !timestampInput.isEmpty {
+            convertTimestampToDate(timestampInput)
+        }
+        if !dateInput.isEmpty {
+            convertDateToTimestamp(dateInput)
+        }
     }
 }
 

@@ -187,6 +187,12 @@ if isLoadingQuery {
             }.padding(.horizontal, 0)
         }
         .padding()
+        .onAppear {
+            loadState()
+        }
+        .onDisappear {
+            saveState()
+        }
     }
     
     @ViewBuilder
@@ -506,6 +512,24 @@ self.queryIPDetails = ipInfo
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(queryIPInput, forKey: "IPQuery.queryIPInput")
+        defaults.set(sampleIPs, forKey: "IPQuery.sampleIPs")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        queryIPInput = defaults.string(forKey: "IPQuery.queryIPInput") ?? ""
+        
+        if let savedSampleIPs = defaults.array(forKey: "IPQuery.sampleIPs") as? [String] {
+            sampleIPs = savedSampleIPs
+        }
+        
+        // If we have query input, don't auto-query on load to avoid unnecessary network requests
+        // User can manually click query if they want to
     }
     
 }

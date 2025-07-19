@@ -92,9 +92,10 @@ struct UnitConverterView: View {
         }
         .padding()
         .onAppear {
-            let units = selectedCategory.units
-            fromUnit = units.first?.name ?? ""
-            toUnit = units.count > 1 ? units[1].name : units.first?.name ?? ""
+            loadState()
+        }
+        .onDisappear {
+            saveState()
         }
     }
     
@@ -148,6 +149,40 @@ struct UnitConverterView: View {
             return celsius + 273.15
         default:
             return celsius
+        }
+    }
+    
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(selectedCategory.title, forKey: "UnitConverter.selectedCategory")
+        defaults.set(fromUnit, forKey: "UnitConverter.fromUnit")
+        defaults.set(toUnit, forKey: "UnitConverter.toUnit")
+        defaults.set(inputValue, forKey: "UnitConverter.inputValue")
+        defaults.set(outputValue, forKey: "UnitConverter.outputValue")
+    }
+    
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        
+        if let categoryTitle = defaults.string(forKey: "UnitConverter.selectedCategory") {
+            selectedCategory = UnitCategory.allCases.first { $0.title == categoryTitle } ?? .data
+        }
+        
+        fromUnit = defaults.string(forKey: "UnitConverter.fromUnit") ?? ""
+        toUnit = defaults.string(forKey: "UnitConverter.toUnit") ?? ""
+        inputValue = defaults.string(forKey: "UnitConverter.inputValue") ?? ""
+        outputValue = defaults.string(forKey: "UnitConverter.outputValue") ?? ""
+        
+        // If no saved units, set defaults for current category
+        if fromUnit.isEmpty || toUnit.isEmpty {
+            let units = selectedCategory.units
+            fromUnit = units.first?.name ?? ""
+            toUnit = units.count > 1 ? units[1].name : units.first?.name ?? ""
+        }
+        
+        // If we have input value, trigger conversion
+        if !inputValue.isEmpty {
+            convertUnits()
         }
     }
 }
