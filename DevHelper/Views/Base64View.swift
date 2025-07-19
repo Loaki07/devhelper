@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct Base64View: View {
     @State private var textInput: String = ""
@@ -39,7 +40,7 @@ struct Base64View: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        TextEditor(text: $textInput)
+                        CodeTextEditor(text: $textInput)
                             .font(.system(.body, design: .monospaced))
                             .border(Color.gray, width: 1)
                             .padding(5)
@@ -99,7 +100,7 @@ struct Base64View: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        TextEditor(text: $base64Input)
+                        CodeTextEditor(text: $base64Input)
                             .font(.system(.body, design: .monospaced))
                             .border(Color.gray, width: 1)
                             .padding(5)

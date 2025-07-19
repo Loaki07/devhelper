@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct URLToolsView: View {
     @State private var selectedTab: URLTab = .encoder
@@ -55,7 +56,7 @@ struct URLToolsView: View {
                     .buttonStyle(.borderless)
                 }
                 
-                TextEditor(text: $textInput)
+                CodeTextEditor(text: $textInput)
                     .font(.system(.body, design: .monospaced))
                     .border(Color.gray, width: 1)
                     .padding(5)
@@ -63,11 +64,6 @@ struct URLToolsView: View {
                     .onChange(of: textInput) { _, _ in
                         encodeURL()
                     }
-                
-                Button("Sample Text") {
-                    textInput = "Hello World! @#$%^&*()+=[]{}|;:,.<>?"
-                }
-                .buttonStyle(.bordered)
                 
                 Text("\(textInput.count) characters")
                     .font(.caption)
@@ -109,6 +105,17 @@ struct URLToolsView: View {
             }
         }
         .padding()
+        
+        // Sample button
+        HStack {
+            Button("Sample Text") {
+                textInput = "Hello World! @#$%^&*()+=[]{}|;:,.<>?"
+                encodeURL()
+            }
+            .buttonStyle(.bordered)
+            Spacer()
+        }
+        .padding(.horizontal)
     }
     
     @ViewBuilder
@@ -127,7 +134,7 @@ struct URLToolsView: View {
                     .buttonStyle(.borderless)
                 }
                 
-                TextEditor(text: $encodedInput)
+                CodeTextEditor(text: $encodedInput)
                     .font(.system(.body, design: .monospaced))
                     .border(Color.gray, width: 1)
                     .padding(5)
@@ -135,11 +142,6 @@ struct URLToolsView: View {
                     .onChange(of: encodedInput) { _, _ in
                         decodeURL()
                     }
-                
-                Button("Sample Encoded") {
-                    encodedInput = "Hello%20World%21%20%40%23%24%25%5E%26%2A%28%29%2B%3D%5B%5D%7B%7D%7C%3B%3A%2C.%3C%3E%3F"
-                }
-                .buttonStyle(.bordered)
                 
                 Text("\(encodedInput.count) characters")
                     .font(.caption)
@@ -181,6 +183,17 @@ struct URLToolsView: View {
             }
         }
         .padding()
+        
+        // Sample button
+        HStack {
+            Button("Sample Encoded") {
+                encodedInput = "Hello%20World%21%20%40%23%24%25%5E%26%2A%28%29%2B%3D%5B%5D%7B%7D%7C%3B%3A%2C.%3C%3E%3F"
+                decodeURL()
+            }
+            .buttonStyle(.bordered)
+            Spacer()
+        }
+        .padding(.horizontal)
     }
     
     @ViewBuilder

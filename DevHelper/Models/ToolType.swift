@@ -21,12 +21,12 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "JSON Formatter"
         case .base64:
             return "Base64 Encode/Decode"
+        case .urlTools:
+            return "URL Tools"
         case .regexTester:
             return "Regex Tester"
         case .uuidGenerator:
             return "UUID Generator"
-        case .urlTools:
-            return "URL Tools"
         }
     }
     
@@ -40,12 +40,12 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "doc.text"
         case .base64:
             return "6.circle"
+        case .urlTools:
+            return "link"
         case .regexTester:
             return "magnifyingglass"
         case .uuidGenerator:
             return "dice"
-        case .urlTools:
-            return "link"
         }
     }
 }

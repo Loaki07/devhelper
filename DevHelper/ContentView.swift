@@ -27,6 +27,7 @@ struct ContentView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Search Bar
                 HStack {
@@ -47,7 +48,7 @@ struct ContentView: View {
                         .tag(tool)
                 }
             }
-            .frame(minWidth: 210)
+            .frame(minWidth: 210, maxWidth: .infinity, alignment: .leading)
         } detail: {
             Group {
                 switch selectedTool {
@@ -69,7 +70,7 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(minWidth: 800, minHeight: 600)
+        .frame(minWidth: 1000, minHeight: 600)
     }
 }
 

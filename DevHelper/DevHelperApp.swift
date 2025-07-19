@@ -8,6 +8,6 @@ struct DevHelperApp: App {
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
-        .defaultSize(width: 1200, height: 800)
+        .defaultSize(width: 1000, height: 800)
     }
 }

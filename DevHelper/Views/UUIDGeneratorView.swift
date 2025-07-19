@@ -64,19 +64,23 @@ struct UUIDGeneratorView: View {
                                     
                                     Spacer()
                                     
-                                    Button("Copy") {
+                                    Button(action: {
                                         copyToClipboard(uuid)
+                                    }) {
+                                        Image(systemName: "doc.on.doc")
+                                            .foregroundColor(.blue)
                                     }
                                     .buttonStyle(.borderless)
+                                    .help("Copy to clipboard")
                                 }
-                                .padding(.horizontal)
+                                .padding(.horizontal, 5)
                                 .padding(.vertical, 2)
                                 .background(Color.gray.opacity(0.1))
                                 .cornerRadius(4)
                             }
                         }
                     }
-                    .frame(height: 200)
+                    .frame(height: 130)
                     
                     if !generatedUUIDs.isEmpty {
                         Button("Copy All") {

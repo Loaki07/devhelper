@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct RegexTesterView: View {
     @State private var regexPattern: String = ""
@@ -59,7 +60,7 @@ struct RegexTesterView: View {
             
             // Flags Selection
             VStack(alignment: .leading, spacing: 10) {
-                Text("Options")
+                Text("Regex Options")
                     .font(.headline)
                 
                 HStack(spacing: 20) {
@@ -94,7 +95,7 @@ struct RegexTesterView: View {
                         .buttonStyle(.borderless)
                     }
                     
-                    TextEditor(text: $testString)
+                    CodeTextEditor(text: $testString)
                         .font(.system(.body, design: .monospaced))
                         .border(Color.gray, width: 1)
                         .frame(height: 150)
@@ -345,6 +346,14 @@ enum RegexFlag: CaseIterable {
         case .caseInsensitive: return "Case Insensitive"
         case .multiline: return "Multiline"
         case .dotMatchesLineSeparators: return "Dot All"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .caseInsensitive: return "Ignore uppercase/lowercase differences"
+        case .multiline: return "^ and $ match start/end of lines"
+        case .dotMatchesLineSeparators: return ". matches newline characters"
         }
     }
 }
