@@ -2,6 +2,10 @@
 
 A native macOS application for developers, containing essential tools commonly used in software development.
 
+![DevHelper](./screenshots/devhelper.png)
+
+> This tool was 100% developed by `Claude Code`.
+
 ## Features
 
 - **Timestamp Converter** - Convert between timestamps and human-readable dates with multiple format support
@@ -32,11 +36,4 @@ A native macOS application for developers, containing essential tools commonly u
 
 ## Version
 
-Current version: 1.1 (Build 2)
-
-## TODO
-
-[ ] base64, url, regexp, all the text input need update to the same editor with json to avoid input auto changed after loss focus
-[ ] url page, move the sample text out of the input box, like base64 page
-[ ] uuid page, remove the input copy button, because it let the line break into two lines, or we can try change the copy to a small icon 
-[ ] regexp page, there are three options, i am not sure what is the design, it is a static text
+Current version: 1.2 (Build 3)
