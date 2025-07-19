@@ -2,8 +2,6 @@
 
 A native macOS application for developers, containing essential tools commonly used in software development.
 
-![DevHelper](./screenshots/devhelper.png)
-
 > This tool was 100% developed by `Claude Code`.
 
 ## Features
@@ -15,8 +13,8 @@ A native macOS application for developers, containing essential tools commonly u
 - **Regex Tester** - Test regular expressions with pattern matching
 - **UUID Generator** - Generate UUIDs in various formats
 - **URL Tools** - URL encoding/decoding and parsing
-- **IP Query** - Discover your IP address and query geolocation data for any IP
 - **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, and response handling
+- **IP Query** - Discover your IP address and query geolocation data for any IP
 
 ## Key Features
 
@@ -39,3 +37,22 @@ A native macOS application for developers, containing essential tools commonly u
 ## Version
 
 Current version: 1.4 (Build 5)
+
+## Screenshots
+
+![DevHelper Timestamp Converter](./screenshots/timestamp.png)
+
+![DevHelper Unit Converter](./screenshots/unit.png)
+
+![DevHelper Json Formater](./screenshots/json.png)
+
+![DevHelper Url Tools](./screenshots/url.png)
+
+![DevHelper Regexp Test](./screenshots/regexp.png)
+
+![DevHelper UUID Generator](./screenshots/uuid.png)
+
+![DevHelper Http Request](./screenshots/http.png)
+![DevHelper Http Request History](./screenshots/http_history.png)
+
+![DevHelper IP Query](./screenshots/ip.png)
