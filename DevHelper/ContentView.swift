@@ -73,6 +73,8 @@ struct ContentView: View {
                     UUIDGeneratorView()
                 case .urlTools:
                     URLToolsView()
+                case .ipQuery:
+                    IPQueryView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

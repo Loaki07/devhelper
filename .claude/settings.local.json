@@ -6,7 +6,10 @@
       "Bash(xcodebuild:*)",
       "mcp__ide__getDiagnostics",
       "Bash(sips:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(python3:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

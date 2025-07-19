@@ -15,6 +15,7 @@ A native macOS application for developers, containing essential tools commonly u
 - **Regex Tester** - Test regular expressions with pattern matching
 - **UUID Generator** - Generate UUIDs in various formats
 - **URL Tools** - URL encoding/decoding and parsing
+- **IP Query** - Discover your IP address and query geolocation data for any IP
 
 ## Key Features
 
@@ -36,4 +37,4 @@ A native macOS application for developers, containing essential tools commonly u
 
 ## Version
 
-Current version: 1.2 (Build 3)
+Current version: 1.3 (Build 4)

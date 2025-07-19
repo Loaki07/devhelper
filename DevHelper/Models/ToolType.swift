@@ -8,6 +8,7 @@ enum ToolType: String, CaseIterable, Identifiable {
     case urlTools = "url"
     case regexTester = "regex"
     case uuidGenerator = "uuid"
+    case ipQuery = "ip"
     
     var id: String { rawValue }
     
@@ -27,6 +28,8 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "Regex Tester"
         case .uuidGenerator:
             return "UUID Generator"
+        case .ipQuery:
+            return "IP Query"
         }
     }
     
@@ -46,6 +49,8 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "magnifyingglass"
         case .uuidGenerator:
             return "dice"
+        case .ipQuery:
+            return "globe"
         }
     }
 }

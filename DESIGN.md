@@ -21,7 +21,8 @@ DevHelper/
 │   │   ├── Base64View.swift
 │   │   ├── UUIDGeneratorView.swift
 │   │   ├── URLToolsView.swift
-│   │   └── RegexTesterView.swift
+│   │   ├── RegexTesterView.swift
+│   │   └── IPQueryView.swift
 │   ├── Assets.xcassets/          # App icons and assets
 │   └── Preview Content/          # SwiftUI preview assets
 └── README.md                     # Project documentation
@@ -77,7 +78,7 @@ Each tool follows a consistent pattern:
 **File**: `UnitConverterView.swift`
 
 **Features**:
-- 7 unit categories: Length, Weight, Temperature, Data, Time, Area, Volume
+- 6 unit categories: Data, Length, Weight, Temperature, Area, Volume
 - Real-time bidirectional conversion
 - Swap units functionality
 - Special temperature conversion logic
@@ -116,7 +117,7 @@ Each tool follows a consistent pattern:
 - Real-time processing with input validation
 - Character count tracking
 
-### 4. Base64 Encoder/Decoder
+### 4. Base64 Encode/Decode
 **File**: `Base64View.swift`
 
 **Features**:
@@ -138,7 +139,30 @@ Each tool follows a consistent pattern:
 - URL-safe character substitution
 - UTF-8 encoding/decoding
 
-### 5. UUID Generator
+### 5. Regex Tester
+**File**: `RegexTesterView.swift`
+
+**Features**:
+- Pattern testing with match highlighting
+- Capture group display
+- Flag support (case-insensitive, multiline, dotall)
+- Match replacement functionality
+- Common pattern library with descriptions
+
+**UI Components**:
+- Pattern input with flag toggles
+- Test string area with match highlighting
+- Results display with capture groups
+- Common patterns button library
+- Replace mode interface
+
+**Implementation Details**:
+- `NSRegularExpression` for pattern matching
+- Real-time highlighting of matches
+- Flag handling for regex options
+- String replacement with capture group support
+
+### 6. UUID Generator
 **File**: `UUIDGeneratorView.swift`
 
 **Features**:
@@ -161,7 +185,7 @@ Each tool follows a consistent pattern:
 - Validation using `UUID(uuidString:)`
 - Version detection from UUID structure
 
-### 6. URL Tools
+### 7. URL Tools
 **File**: `URLToolsView.swift`
 
 **Features**:
@@ -183,38 +207,30 @@ Each tool follows a consistent pattern:
 - `URLComponents` for parsing
 - Query parameter array management
 
-### 7. HTTP Request Tool (Planned)
-**File**: `HTTPRequestView.swift`
+### 8. IP Query
+**File**: `IPQueryView.swift`
 
-**Planned Features**:
-- HTTP method selection (GET, POST, PUT, DELETE, etc.)
-- Header management
-- Request body support (JSON, form data, raw)
-- Response display with formatting
-- Request history
-- Authentication support
+**Features**:
+- Dual IP detection (international vs China networks)
+- Current IP address discovery
+- IP geolocation query for any IP address
+- Smart dual IP display (only when different)
+- Comprehensive location information
 
-**UI Design**:
-- Request builder interface
-- Response viewer with syntax highlighting
-- History sidebar
-- Export to cURL functionality
+**UI Components**:
+- Two-column layout (My IP / Query IP)
+- Dual IP display with clear labeling
+- Sample IP buttons for quick testing
+- Copy functionality for all IP addresses
+- Detailed location breakdown
 
-### 8. Regex Tester (Planned)
-**File**: `RegexTesterView.swift`
+**Implementation Details**:
+- Concurrent API calls using `DispatchGroup`
+- ipinfo.io for international IP detection
+- Baidu API for China network detection
+- User-Agent headers to avoid bot detection
+- Comprehensive error handling and validation
 
-**Planned Features**:
-- Pattern testing with highlighting
-- Capture group display
-- Flag support (global, case-insensitive, etc.)
-- Match replacement
-- Common pattern library
-
-**UI Design**:
-- Pattern input field
-- Test string area with highlighting
-- Match results panel
-- Replace mode interface
 
 ## UI Design Principles
 
@@ -249,7 +265,7 @@ Each tool follows a consistent pattern:
 ```swift
 enum ToolType: String, CaseIterable, Identifiable {
     case timestampConverter, unitConverter, jsonFormatter, 
-         base64, httpRequest, regexTester, uuidGenerator, urlTools
+         base64, regexTester, uuidGenerator, urlTools, ipQuery
     
     var title: String { /* Display names */ }
     var iconName: String { /* SF Symbols */ }
@@ -262,6 +278,7 @@ enum ToolType: String, CaseIterable, Identifiable {
 - `Base64Tab` for encoding modes
 - `UUIDVersion` and `UUIDFormat` for UUID options
 - `URLTab` for URL tool modes
+- `IPLocationInfo` and `BaiduIPInfo` for IP geolocation data
 
 ## Build Configuration
 
@@ -293,12 +310,12 @@ enum ToolType: String, CaseIterable, Identifiable {
 ## Future Enhancements
 
 ### Planned Features
-1. **HTTP Request Tool**: Complete implementation with advanced features
-2. **Regex Tester**: Pattern matching with visual feedback
-3. **Preferences**: User customization options
-4. **Themes**: Light/dark mode preferences
-5. **Export/Import**: Save tool configurations
-6. **Shortcuts**: Keyboard shortcuts for common actions
+1. **Preferences**: User customization options
+2. **Themes**: Light/dark mode preferences
+3. **Export/Import**: Save tool configurations
+4. **Shortcuts**: Keyboard shortcuts for common actions
+5. **Request History**: Persistent storage for IP queries
+6. **Additional IP Services**: More geolocation data providers
 
 ### Technical Improvements
 - **Performance**: Optimize for large data processing

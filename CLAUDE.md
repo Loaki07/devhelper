@@ -1,10 +1,10 @@
 # DevHelper - Claude Context
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 7 fully-functional tools commonly used by developers, with search functionality and modern UI design.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 8 fully-functional tools commonly used by developers, with search functionality and modern UI design.
 
 ## Current Status
-**✅ COMPLETE** - All 7 tools are fully implemented and working. Version 1.1 released.
+**✅ COMPLETE** - All 8 tools are fully implemented and working. Version 1.3 released.
 
 ## Tools Implemented
 
@@ -46,6 +46,12 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 - **Features**: URL encoding/decoding, comprehensive URL parsing, query parameter breakdown
 - **UI**: Three-tab interface (Encoder/Decoder/Parser)
 
+### 8. IP Query (`IPQueryView.swift`)
+- **Status**: ✅ Complete
+- **Features**: Dual IP detection (international vs China networks), current IP discovery, IP geolocation query, comprehensive location information
+- **UI**: Two-column layout with smart dual IP display, sample IP buttons, detailed location breakdown
+- **Recent Updates**: Added User-Agent headers for bot detection avoidance, uses Baidu API for reliable China IP detection
+
 ## Architecture
 
 ### Project Structure
@@ -64,7 +70,8 @@ DevHelper/
 │       ├── Base64View.swift
 │       ├── UUIDGeneratorView.swift
 │       ├── URLToolsView.swift
-│       └── RegexTesterView.swift
+│       ├── RegexTesterView.swift
+│       └── IPQueryView.swift
 └── DESIGN.md                       # Comprehensive design document
 ```
 
@@ -101,7 +108,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.2 (Build 3)
+- **Version**: 1.3 (Build 4)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
@@ -110,23 +117,23 @@ DevHelper/
 - Foundation for core utilities
 - AppKit for clipboard access (NSPasteboard)
 
-## Recent Updates (Version 1.2)
+## Recent Updates (Version 1.3)
 
-### Removed Features
-- **HTTP Request Tool**: Completely removed to simplify the app focus
-- **Time Unit Category**: Removed from Unit Converter to streamline categories
+### Major New Feature
+- **IP Query Tool**: Complete new tool for IP address discovery and geolocation
+  - Dual IP detection for international vs China networks
+  - Smart display logic (only shows both IPs when different)
+  - Current IP discovery with comprehensive location data
+  - Query any IP address for detailed geolocation information
+  - Concurrent API calls using DispatchGroup for optimal performance
+  - User-Agent headers to avoid bot detection
+  - Integration with ipinfo.io (international) and Baidu API (China)
 
-### Added Features
-- **Consistent text editors**: All tools now use the same CodeTextEditor component to prevent automatic text changes when losing focus
-- **Improved URL tools layout**: Sample buttons moved outside input areas for better UX consistency
-- **Enhanced UUID generator**: Copy buttons replaced with compact icons to prevent line breaking
-- **Better regex options**: Added descriptions for regex flags (Case Insensitive, Multiline, Dot All) with clear explanations
-
-### UI Improvements
-- **Text input consistency**: Base64, URL, and Regex tools now use proper text editors that don't auto-format content
-- **Better button layout**: Sample buttons repositioned for better visual hierarchy
-- **Icon improvements**: Small copy icons replace text buttons where space is constrained
-- **Enhanced tooltips**: Better explanations for regex options to improve usability
+### Previous Updates (Version 1.2)
+- **Consistent text editors**: All tools now use the same CodeTextEditor component
+- **Improved layouts**: Better button positioning and visual hierarchy
+- **Enhanced tooltips**: Better explanations for complex options
+- **Removed features**: HTTP Request Tool and Time unit category for focus
 
 ## Common Development Tasks
 
@@ -157,7 +164,8 @@ DevHelper/
 ### Common Gotchas
 - **macOS vs iOS modifiers**: Some SwiftUI modifiers are iOS-only
 - **Clipboard access**: Use `NSPasteboard` for macOS, not `UIPasteboard`
-- **Network requests**: Ensure app has network entitlements for HTTP tool
+- **Network requests**: Ensure app has network entitlements for IP Query tool
+- **App Transport Security**: Use HTTPS endpoints to avoid ATS blocks
 
 ## Future Enhancements
 
@@ -166,7 +174,8 @@ DevHelper/
 - **Themes**: Light/dark mode preferences
 - **Keyboard shortcuts**: Quick access to common functions
 - **Export/Import**: Save tool configurations
-- **Request history**: Persistent storage for HTTP requests
+- **IP Query history**: Persistent storage for IP queries
+- **Additional geolocation providers**: More IP data sources
 
 ### Technical Improvements
 - **Performance**: Optimize for large text processing
@@ -190,7 +199,7 @@ open DevHelper.xcodeproj
 - **README**: `README.md` contains user-facing project information
 
 ## Success Metrics
-- ✅ All 7 essential tools fully implemented
+- ✅ All 8 essential tools fully implemented
 - ✅ Consistent UI/UX across all tools
 - ✅ Real-time processing and feedback
 - ✅ Professional macOS native experience
@@ -202,5 +211,5 @@ open DevHelper.xcodeproj
 
 ---
 
-**Last Updated**: Version 1.2 released with consistent text editors, improved UI layouts, and enhanced user experience across all tools.
-**Next Steps**: Optional enhancements like preferences, keyboard shortcuts, or additional export formats.
+**Last Updated**: Version 1.3 released with new IP Query tool featuring dual IP detection, comprehensive geolocation data, and smart network routing awareness for China users.
+**Next Steps**: Optional enhancements like preferences, keyboard shortcuts, or IP query history storage.
