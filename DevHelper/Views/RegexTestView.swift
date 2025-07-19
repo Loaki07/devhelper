@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-struct RegexTesterView: View {
+struct RegexTestView: View {
     @State private var regexPattern: String = ""
     @State private var testString: String = ""
     @State private var replacementString: String = ""
@@ -14,7 +14,7 @@ struct RegexTesterView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Regex Tester")
+            Text("Regex Test")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
@@ -414,5 +414,5 @@ Mixed text with UPPERCASE and lowercase words.
 """
 
 #Preview {
-    RegexTesterView()
+    RegexTestView()
 }

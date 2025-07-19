@@ -10,7 +10,7 @@ A native macOS application for developers, containing essential tools commonly u
 - **Unit Converter** - Convert between different units (Data, Length, Weight, Temperature, Area, Volume)
 - **JSON Formatter** - Format and validate JSON data
 - **Base64 Encode/Decode** - Encode and decode Base64 strings
-- **Regex Tester** - Test regular expressions with pattern matching
+- **Regex Test** - Test regular expressions with pattern matching
 - **UUID Generator** - Generate UUIDs in various formats
 - **URL Tools** - URL encoding/decoding and parsing
 - **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, and response handling
@@ -40,19 +40,32 @@ Current version: 1.4 (Build 5)
 
 ## Screenshots
 
+Timestamp Converter
 ![DevHelper Timestamp Converter](./screenshots/timestamp.png)
 
+Unit Converter
 ![DevHelper Unit Converter](./screenshots/unit.png)
 
+Json Formater
 ![DevHelper Json Formater](./screenshots/json.png)
 
+Base64 Encode/Decode
+![DevHelper Json Formater](./screenshots/base64.png)
+
+URL Tools
 ![DevHelper Url Tools](./screenshots/url.png)
 
-![DevHelper Regexp Test](./screenshots/regexp.png)
+Regex Test
+![DevHelper Regex Test](./screenshots/regex.png)
 
+UUID Generator
 ![DevHelper UUID Generator](./screenshots/uuid.png)
 
+Http Request
 ![DevHelper Http Request](./screenshots/http.png)
+
+Http Request History
 ![DevHelper Http Request History](./screenshots/http_history.png)
 
+IP Query
 ![DevHelper IP Query](./screenshots/ip.png)

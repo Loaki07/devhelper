@@ -6,7 +6,7 @@ enum ToolType: String, CaseIterable, Identifiable {
     case jsonFormatter = "json"
     case base64 = "base64"
     case urlTools = "url"
-    case regexTester = "regex"
+    case regexTest = "regex"
     case uuidGenerator = "uuid"
     case httpRequest = "http"
     case ipQuery = "ip"
@@ -25,8 +25,8 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "Base64 Encode/Decode"
         case .urlTools:
             return "URL Tools"
-        case .regexTester:
-            return "Regex Tester"
+        case .regexTest:
+            return "Regex Test"
         case .uuidGenerator:
             return "UUID Generator"
         case .httpRequest:
@@ -48,7 +48,7 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "6.circle"
         case .urlTools:
             return "link"
-        case .regexTester:
+        case .regexTest:
             return "magnifyingglass"
         case .uuidGenerator:
             return "dice"

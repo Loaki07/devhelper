@@ -67,8 +67,8 @@ struct ContentView: View {
                     JSONFormatterView()
                 case .base64:
                     Base64View()
-                case .regexTester:
-                    RegexTesterView()
+                case .regexTest:
+                    RegexTestView()
                 case .uuidGenerator:
                     UUIDGeneratorView()
                 case .urlTools:

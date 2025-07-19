@@ -15,7 +15,7 @@
 		D5F4E8042C5A1B3000123456 /* UnitConverterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8032C5A1B3000123456 /* UnitConverterView.swift */; };
 		D5F4E8062C5A1B3000123456 /* JSONFormatterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8052C5A1B3000123456 /* JSONFormatterView.swift */; };
 		D5F4E8082C5A1B3000123456 /* Base64View.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8072C5A1B3000123456 /* Base64View.swift */; };
-		D5F4E80C2C5A1B3000123456 /* RegexTesterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80B2C5A1B3000123456 /* RegexTesterView.swift */; };
+		D5F4E80C2C5A1B3000123456 /* RegexTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80B2C5A1B3000123456 /* RegexTestView.swift */; };
 		D5F4E80E2C5A1B3000123456 /* UUIDGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */; };
 		D5F4E8102C5A1B3000123456 /* URLToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */; };
 		B822A4CAC32A426BA9E4E438123456 /* IPQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */; };
@@ -35,7 +35,7 @@
 		D5F4E8032C5A1B3000123456 /* UnitConverterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConverterView.swift; sourceTree = "<group>"; };
 		D5F4E8052C5A1B3000123456 /* JSONFormatterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONFormatterView.swift; sourceTree = "<group>"; };
 		D5F4E8072C5A1B3000123456 /* Base64View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64View.swift; sourceTree = "<group>"; };
-		D5F4E80B2C5A1B3000123456 /* RegexTesterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTesterView.swift; sourceTree = "<group>"; };
+		D5F4E80B2C5A1B3000123456 /* RegexTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTestView.swift; sourceTree = "<group>"; };
 		D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDGeneratorView.swift; sourceTree = "<group>"; };
 		D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLToolsView.swift; sourceTree = "<group>"; };
 		B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPQueryView.swift; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 				D5F4E8032C5A1B3000123456 /* UnitConverterView.swift */,
 				D5F4E8052C5A1B3000123456 /* JSONFormatterView.swift */,
 				D5F4E8072C5A1B3000123456 /* Base64View.swift */,
-				D5F4E80B2C5A1B3000123456 /* RegexTesterView.swift */,
+				D5F4E80B2C5A1B3000123456 /* RegexTestView.swift */,
 				D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */,
 				D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */,
 				B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */,
@@ -200,7 +200,7 @@
 				D5F4E8042C5A1B3000123456 /* UnitConverterView.swift in Sources */,
 				D5F4E8062C5A1B3000123456 /* JSONFormatterView.swift in Sources */,
 				D5F4E8082C5A1B3000123456 /* Base64View.swift in Sources */,
-				D5F4E80C2C5A1B3000123456 /* RegexTesterView.swift in Sources */,
+				D5F4E80C2C5A1B3000123456 /* RegexTestView.swift in Sources */,
 				D5F4E80E2C5A1B3000123456 /* UUIDGeneratorView.swift in Sources */,
 				D5F4E8102C5A1B3000123456 /* URLToolsView.swift in Sources */,
 				B822A4CAC32A426BA9E4E438123456 /* IPQueryView.swift in Sources */,

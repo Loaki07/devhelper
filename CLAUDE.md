@@ -31,7 +31,7 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 - **UI**: Tabbed interface with encode/decode modes
 - **Recent Updates**: Renamed from "Base64 Encoder/Decoder" to "Base64 Encode/Decode"
 
-### 5. Regex Tester (`RegexTesterView.swift`)
+### 5. Regex Test (`RegexTestView.swift`)
 - **Status**: ✅ Complete
 - **Features**: Pattern matching, capture groups, replacement, common patterns library, regex flags
 - **UI**: Pattern input with results display and common pattern buttons
@@ -76,7 +76,7 @@ DevHelper/
 │       ├── Base64View.swift
 │       ├── UUIDGeneratorView.swift
 │       ├── URLToolsView.swift
-│       ├── RegexTesterView.swift
+│       ├── RegexTestView.swift
 │       ├── IPQueryView.swift
 │       └── HTTPRequestView.swift
 └── DESIGN.md                       # Comprehensive design document

@@ -21,7 +21,7 @@ DevHelper/
 │   │   ├── Base64View.swift
 │   │   ├── UUIDGeneratorView.swift
 │   │   ├── URLToolsView.swift
-│   │   ├── RegexTesterView.swift
+│   │   ├── RegexTestView.swift
 │   │   ├── IPQueryView.swift
 │   │   └── HTTPRequestView.swift
 │   ├── Assets.xcassets/          # App icons and assets
@@ -140,8 +140,8 @@ Each tool follows a consistent pattern:
 - URL-safe character substitution
 - UTF-8 encoding/decoding
 
-### 5. Regex Tester
-**File**: `RegexTesterView.swift`
+### 5. Regex Test
+**File**: `RegexTestView.swift`
 
 **Features**:
 - Pattern testing with match highlighting
@@ -302,7 +302,7 @@ Each tool follows a consistent pattern:
 ```swift
 enum ToolType: String, CaseIterable, Identifiable {
     case timestampConverter, unitConverter, jsonFormatter, 
-         base64, regexTester, uuidGenerator, urlTools, ipQuery, httpRequest
+         base64, regexTest, uuidGenerator, urlTools, ipQuery, httpRequest
     
     var title: String { /* Display names */ }
     var iconName: String { /* SF Symbols */ }

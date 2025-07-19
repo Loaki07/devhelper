@@ -7,6 +7,7 @@ struct Base64View: View {
     @State private var base64Input: String = ""
     @State private var decodedOutput: String = ""
     @State private var isURLSafe: Bool = false
+    @State private var processLineByLine: Bool = false
     @State private var selectedTab: Base64Tab = .encode
     
     var body: some View {
@@ -150,9 +151,17 @@ struct Base64View: View {
             HStack(spacing: 20) {
                 Button("Sample") {
                     if selectedTab == .encode {
-                        textInput = "Hello, World! This is a sample text for Base64 encoding."
+                        if processLineByLine {
+                            textInput = "Hello, World!\nThis is line 2\nAnd this is line 3"
+                        } else {
+                            textInput = "Hello, World! This is a sample text for Base64 encoding."
+                        }
                     } else {
-                        base64Input = "SGVsbG8sIFdvcmxkISBUaGlzIGlzIGEgc2FtcGxlIHRleHQgZm9yIEJhc2U2NCBlbmNvZGluZy4="
+                        if processLineByLine {
+                            base64Input = "SGVsbG8sIFdvcmxkIQ==\nVGhpcyBpcyBsaW5lIDI=\nQW5kIHRoaXMgaXMgbGluZSAz"
+                        } else {
+                            base64Input = "SGVsbG8sIFdvcmxkISBUaGlzIGlzIGEgc2FtcGxlIHRleHQgZm9yIEJhc2U2NCBlbmNvZGluZy4="
+                        }
                     }
                 }
                 .buttonStyle(.bordered)
@@ -171,6 +180,16 @@ struct Base64View: View {
                          (selectedTab == .decode && decodedOutput.isEmpty))
                 
                 Spacer()
+                
+                Toggle("Line-by-Line", isOn: $processLineByLine)
+                    .onChange(of: processLineByLine) { _, _ in
+                        if selectedTab == .encode {
+                            encodeText()
+                        } else {
+                            decodeBase64()
+                        }
+                    }
+                
                 
                 Toggle("URL-Safe Base64", isOn: $isURLSafe)
                     .onChange(of: isURLSafe) { _, _ in
@@ -206,19 +225,40 @@ struct Base64View: View {
             return
         }
         
-        guard let data = textInput.data(using: .utf8) else {
-            base64Output = "Error: Unable to encode text"
-            return
-        }
-        
-        if isURLSafe {
-            let base64 = data.base64EncodedString()
-            base64Output = base64
-                .replacingOccurrences(of: "+", with: "-")
-                .replacingOccurrences(of: "/", with: "_")
-                .replacingOccurrences(of: "=", with: "")
+        if processLineByLine {
+            let lines = textInput.components(separatedBy: .newlines)
+            let encodedLines = lines.map { line -> String in
+                guard !line.isEmpty else { return "" }
+                guard let data = line.data(using: .utf8) else {
+                    return "Error: Unable to encode line"
+                }
+                
+                if isURLSafe {
+                    let base64 = data.base64EncodedString()
+                    return base64
+                        .replacingOccurrences(of: "+", with: "-")
+                        .replacingOccurrences(of: "/", with: "_")
+                        .replacingOccurrences(of: "=", with: "")
+                } else {
+                    return data.base64EncodedString()
+                }
+            }
+            base64Output = encodedLines.joined(separator: "\n")
         } else {
-            base64Output = data.base64EncodedString()
+            guard let data = textInput.data(using: .utf8) else {
+                base64Output = "Error: Unable to encode text"
+                return
+            }
+            
+            if isURLSafe {
+                let base64 = data.base64EncodedString()
+                base64Output = base64
+                    .replacingOccurrences(of: "+", with: "-")
+                    .replacingOccurrences(of: "/", with: "_")
+                    .replacingOccurrences(of: "=", with: "")
+            } else {
+                base64Output = data.base64EncodedString()
+            }
         }
     }
     
@@ -228,29 +268,61 @@ struct Base64View: View {
             return
         }
         
-        var base64String = base64Input.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if isURLSafe {
-            // Convert URL-safe Base64 to standard Base64
-            base64String = base64String
-                .replacingOccurrences(of: "-", with: "+")
-                .replacingOccurrences(of: "_", with: "/")
-            
-            // Add padding if needed
-            while base64String.count % 4 != 0 {
-                base64String += "="
+        if processLineByLine {
+            let lines = base64Input.components(separatedBy: .newlines)
+            let decodedLines = lines.map { line -> String in
+                guard !line.isEmpty else { return "" }
+                
+                var base64String = line.trimmingCharacters(in: .whitespaces)
+                
+                if isURLSafe {
+                    // Convert URL-safe Base64 to standard Base64
+                    base64String = base64String
+                        .replacingOccurrences(of: "-", with: "+")
+                        .replacingOccurrences(of: "_", with: "/")
+                    
+                    // Add padding if needed
+                    while base64String.count % 4 != 0 {
+                        base64String += "="
+                    }
+                }
+                
+                guard let data = Data(base64Encoded: base64String) else {
+                    return "Error: Invalid Base64 input"
+                }
+                
+                if let decodedString = String(data: data, encoding: .utf8) {
+                    return decodedString
+                } else {
+                    return "Error: Unable to decode as UTF-8 text"
+                }
             }
-        }
-        
-        guard let data = Data(base64Encoded: base64String) else {
-            decodedOutput = "Error: Invalid Base64 input"
-            return
-        }
-        
-        if let decodedString = String(data: data, encoding: .utf8) {
-            decodedOutput = decodedString
+            decodedOutput = decodedLines.joined(separator: "\n")
         } else {
-            decodedOutput = "Error: Unable to decode as UTF-8 text"
+            var base64String = base64Input.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if isURLSafe {
+                // Convert URL-safe Base64 to standard Base64
+                base64String = base64String
+                    .replacingOccurrences(of: "-", with: "+")
+                    .replacingOccurrences(of: "_", with: "/")
+                
+                // Add padding if needed
+                while base64String.count % 4 != 0 {
+                    base64String += "="
+                }
+            }
+            
+            guard let data = Data(base64Encoded: base64String) else {
+                decodedOutput = "Error: Invalid Base64 input"
+                return
+            }
+            
+            if let decodedString = String(data: data, encoding: .utf8) {
+                decodedOutput = decodedString
+            } else {
+                decodedOutput = "Error: Unable to decode as UTF-8 text"
+            }
         }
     }
     
@@ -268,6 +340,7 @@ struct Base64View: View {
         defaults.set(decodedOutput, forKey: "Base64.decodedOutput")
         defaults.set(selectedTab.title, forKey: "Base64.selectedTab")
         defaults.set(isURLSafe, forKey: "Base64.isURLSafe")
+        defaults.set(processLineByLine, forKey: "Base64.processLineByLine")
     }
     
     private func loadState() {
@@ -277,6 +350,7 @@ struct Base64View: View {
         base64Output = defaults.string(forKey: "Base64.base64Output") ?? ""
         decodedOutput = defaults.string(forKey: "Base64.decodedOutput") ?? ""
         isURLSafe = defaults.bool(forKey: "Base64.isURLSafe")
+        processLineByLine = defaults.bool(forKey: "Base64.processLineByLine")
         
         if let tabTitle = defaults.string(forKey: "Base64.selectedTab") {
             selectedTab = Base64Tab.allCases.first { $0.title == tabTitle } ?? .encode
