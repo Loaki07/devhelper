@@ -230,7 +230,7 @@ enum UnitCategory: String, CaseIterable {
             ]
         case .data:
             return [
-                UnitData(name: "byte", symbol: "B", toBaseMultiplier: 1.0),
+                UnitData(name: "byte", symbol: "Byte", toBaseMultiplier: 1.0),
                 UnitData(name: "kilobyte", symbol: "KB", toBaseMultiplier: 1024.0),
                 UnitData(name: "megabyte", symbol: "MB", toBaseMultiplier: 1024.0 * 1024.0),
                 UnitData(name: "gigabyte", symbol: "GB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0),
