@@ -195,6 +195,7 @@ struct IPQueryView: View {
                                 ipDetailsView(details: details)
                             }
                             .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color(NSColor.controlBackgroundColor))
                             .cornerRadius(10)
                         }
