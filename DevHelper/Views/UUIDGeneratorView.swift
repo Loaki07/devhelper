@@ -137,7 +137,7 @@ struct UUIDGeneratorView: View {
                     }
                 }
             }
-            .padding()
+            .padding(.horizontal, 0)
             
             Spacer()
         }

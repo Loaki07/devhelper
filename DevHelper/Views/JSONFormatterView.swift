@@ -43,7 +43,7 @@ struct JSONFormatterView: View {
                     
                     CodeTextEditor(text: $jsonInput)
                         .padding(5)
-                        .frame(height: 320)
+                        .frame(maxHeight: .infinity)
                         .onChange(of: jsonInput) { _, _ in
                             processJSON()
                         }
@@ -66,7 +66,7 @@ struct JSONFormatterView: View {
                 Image(systemName: "arrow.right")
                     .font(.title)
                     .foregroundColor(.blue)
-                    .frame(height: 320, alignment: .center)
+                    .frame(maxHeight: .infinity, alignment: .center)
                 
                 // Output Section
                 VStack(alignment: .leading, spacing: 10) {
@@ -88,7 +88,7 @@ struct JSONFormatterView: View {
                             .textSelection(.enabled)
                     }
                     .padding(5)
-                    .frame(height: 320)
+                    .frame(maxHeight: .infinity)
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(8)
                     
@@ -97,7 +97,7 @@ struct JSONFormatterView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .padding()
+            .padding(.horizontal, 0)
             
             // Action Buttons
             HStack(spacing: 20) {

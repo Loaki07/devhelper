@@ -1,10 +1,10 @@
 # DevHelper - Claude Context
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 8 fully-functional tools commonly used by developers, with search functionality and modern UI design.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 9 fully-functional tools commonly used by developers, with search functionality and modern UI design.
 
 ## Current Status
-**✅ COMPLETE** - All 8 tools are fully implemented and working. Version 1.3 released.
+**✅ COMPLETE** - All 9 tools are fully implemented and working. Version 1.4 released.
 
 ## Tools Implemented
 
@@ -52,6 +52,12 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 - **UI**: Two-column layout with smart dual IP display, sample IP buttons, detailed location breakdown
 - **Recent Updates**: Added User-Agent headers for bot detection avoidance, uses Baidu API for reliable China IP detection
 
+### 9. HTTP Request (`HTTPRequestView.swift`)
+- **Status**: ✅ Complete
+- **Features**: Full HTTP client with all methods (GET/POST/PUT/DELETE/etc), headers management, Basic/Bearer authentication, request body support, TLS verification skip, response timing, SSE streaming support, binary download
+- **UI**: Split layout with request configuration (headers/auth/body tabs) and response display (body/headers), real-time timer, status code indicators, copy/save functionality
+- **Recent Updates**: Added comprehensive HTTP client with SSE streaming, binary download support, and professional request/response handling
+
 ## Architecture
 
 ### Project Structure
@@ -63,7 +69,7 @@ DevHelper/
 │   ├── ContentView.swift           # Navigation split view
 │   ├── Models/
 │   │   └── ToolType.swift          # Tool definitions
-│   └── Views/                      # All 8 tool implementations
+│   └── Views/                      # All 9 tool implementations
 │       ├── TimestampConverterView.swift
 │       ├── UnitConverterView.swift
 │       ├── JSONFormatterView.swift
@@ -71,7 +77,8 @@ DevHelper/
 │       ├── UUIDGeneratorView.swift
 │       ├── URLToolsView.swift
 │       ├── RegexTesterView.swift
-│       └── IPQueryView.swift
+│       ├── IPQueryView.swift
+│       └── HTTPRequestView.swift
 └── DESIGN.md                       # Comprehensive design document
 ```
 
@@ -108,7 +115,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.3 (Build 4)
+- **Version**: 1.4 (Build 5)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
@@ -117,23 +124,26 @@ DevHelper/
 - Foundation for core utilities
 - AppKit for clipboard access (NSPasteboard)
 
-## Recent Updates (Version 1.3)
+## Recent Updates (Version 1.4)
 
 ### Major New Feature
-- **IP Query Tool**: Complete new tool for IP address discovery and geolocation
-  - Dual IP detection for international vs China networks
-  - Smart display logic (only shows both IPs when different)
-  - Current IP discovery with comprehensive location data
-  - Query any IP address for detailed geolocation information
-  - Concurrent API calls using DispatchGroup for optimal performance
-  - User-Agent headers to avoid bot detection
-  - Integration with ipinfo.io (international) and Baidu API (China)
+- **HTTP Request Tool**: Professional-grade HTTP client with comprehensive functionality
+  - All HTTP methods (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)
+  - Advanced headers management with common header shortcuts
+  - Authentication support (Basic Auth, Bearer Token)
+  - Request body support for JSON, XML, form data
+  - TLS verification bypass option for development
+  - Real-time request timer and response time measurement
+  - Server-Sent Events (SSE) streaming support with real-time updates
+  - Response viewing modes (Preview/Raw) with automatic JSON formatting
+  - Binary data download functionality with file save dialog
+  - Comprehensive error handling and status code visualization
+  - Copy/save functionality for requests and responses
 
-### Previous Updates (Version 1.2)
-- **Consistent text editors**: All tools now use the same CodeTextEditor component
-- **Improved layouts**: Better button positioning and visual hierarchy
-- **Enhanced tooltips**: Better explanations for complex options
-- **Removed features**: HTTP Request Tool and Time unit category for focus
+### Previous Updates (Version 1.3)
+- **IP Query Tool**: Complete IP address discovery and geolocation
+- **Dual IP detection**: International vs China network awareness
+- **User-Agent headers**: Bot detection avoidance for API calls
 
 ## Common Development Tasks
 
@@ -199,7 +209,7 @@ open DevHelper.xcodeproj
 - **README**: `README.md` contains user-facing project information
 
 ## Success Metrics
-- ✅ All 8 essential tools fully implemented
+- ✅ All 9 essential tools fully implemented
 - ✅ Consistent UI/UX across all tools
 - ✅ Real-time processing and feedback
 - ✅ Professional macOS native experience
@@ -211,5 +221,5 @@ open DevHelper.xcodeproj
 
 ---
 
-**Last Updated**: Version 1.3 released with new IP Query tool featuring dual IP detection, comprehensive geolocation data, and smart network routing awareness for China users.
-**Next Steps**: Optional enhancements like preferences, keyboard shortcuts, or IP query history storage.
+**Last Updated**: Version 1.4 released with comprehensive HTTP Request tool featuring professional-grade HTTP client capabilities, SSE streaming support, and advanced request/response handling.
+**Next Steps**: Optional enhancements like request history, cURL export, environment variables, or API testing collections.

@@ -22,7 +22,8 @@ DevHelper/
 │   │   ├── UUIDGeneratorView.swift
 │   │   ├── URLToolsView.swift
 │   │   ├── RegexTesterView.swift
-│   │   └── IPQueryView.swift
+│   │   ├── IPQueryView.swift
+│   │   └── HTTPRequestView.swift
 │   ├── Assets.xcassets/          # App icons and assets
 │   └── Preview Content/          # SwiftUI preview assets
 └── README.md                     # Project documentation
@@ -231,6 +232,42 @@ Each tool follows a consistent pattern:
 - User-Agent headers to avoid bot detection
 - Comprehensive error handling and validation
 
+### 9. HTTP Request
+**File**: `HTTPRequestView.swift`
+
+**Features**:
+- Complete HTTP client with all standard methods (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)
+- Advanced headers management with add/remove functionality
+- Common header shortcuts (Content-Type, Accept, User-Agent)
+- Authentication support (None, Basic Auth, Bearer Token)
+- Request body support for JSON, XML, form data, and raw text
+- TLS verification bypass option for development/testing
+- Configurable timeout settings
+- Real-time request timer with elapsed time display
+- Server-Sent Events (SSE) streaming support with live updates
+- Response time measurement and display
+- Binary data download with file save dialog
+
+**UI Components**:
+- Split layout with request configuration and response display
+- Tabbed request interface (Headers, Auth, Body)
+- HTTP method dropdown and URL input field
+- Real-time timer and cancel functionality
+- Response tabs (Body, Headers) with raw/preview modes
+- Status code color indicators (green/orange/red)
+- Copy and save functionality throughout
+- Sample data buttons for quick testing
+
+**Implementation Details**:
+- `URLSession` with custom configuration for requests
+- `URLSessionDelegate` for TLS bypass functionality
+- Real-time timer using `Timer.scheduledTimer` for elapsed time
+- Streaming response handling for SSE content types
+- JSON formatting with `JSONSerialization` for preview mode
+- File save functionality using `NSSavePanel`
+- Comprehensive error handling for network issues
+- Automatic content type detection for response formatting
+- Thread-safe UI updates using `DispatchQueue.main.async`
 
 ## UI Design Principles
 
@@ -265,7 +302,7 @@ Each tool follows a consistent pattern:
 ```swift
 enum ToolType: String, CaseIterable, Identifiable {
     case timestampConverter, unitConverter, jsonFormatter, 
-         base64, regexTester, uuidGenerator, urlTools, ipQuery
+         base64, regexTester, uuidGenerator, urlTools, ipQuery, httpRequest
     
     var title: String { /* Display names */ }
     var iconName: String { /* SF Symbols */ }
@@ -279,6 +316,9 @@ enum ToolType: String, CaseIterable, Identifiable {
 - `UUIDVersion` and `UUIDFormat` for UUID options
 - `URLTab` for URL tool modes
 - `IPLocationInfo` and `BaiduIPInfo` for IP geolocation data
+- `HTTPMethod` and `AuthType` for HTTP request configuration
+- `HTTPHeader` and `HTTPResponseData` for request/response handling
+- `RequestTab`, `ResponseTab`, and `ResponseViewMode` for HTTP UI state
 
 ## Build Configuration
 

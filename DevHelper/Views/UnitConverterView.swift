@@ -77,7 +77,7 @@ struct UnitConverterView: View {
                         .disabled(true)
                 }
             }
-            .padding()
+            .padding(.horizontal, 0)
             
             // Swap Button
             Button("Swap Units") {

@@ -58,7 +58,7 @@ struct URLToolsView: View {
                 
                 CodeTextEditor(text: $textInput)
                     .padding(5)
-                    .frame(height: 320)
+                    .frame(maxHeight: .infinity)
                     .onChange(of: textInput) { _, _ in
                         encodeURL()
                     }
@@ -71,7 +71,7 @@ struct URLToolsView: View {
             Image(systemName: "arrow.right")
                 .font(.title)
                 .foregroundColor(.blue)
-                .frame(height: 320, alignment: .center)
+                .frame(maxHeight: .infinity, alignment: .center)
             
             // Output Section
             VStack(alignment: .leading, spacing: 10) {
@@ -93,7 +93,7 @@ struct URLToolsView: View {
                         .textSelection(.enabled)
                 }
                 .padding(5)
-                .frame(height: 320)
+                .frame(maxHeight: .infinity)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
                 
@@ -102,7 +102,7 @@ struct URLToolsView: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding()
+        .padding(.horizontal, 0)
         
         // Sample button
         HStack {
@@ -113,7 +113,7 @@ struct URLToolsView: View {
             .buttonStyle(.bordered)
             Spacer()
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 0)
     }
     
     @ViewBuilder
@@ -134,7 +134,7 @@ struct URLToolsView: View {
                 
                 CodeTextEditor(text: $encodedInput)
                     .padding(5)
-                    .frame(height: 320)
+                    .frame(maxHeight: .infinity)
                     .onChange(of: encodedInput) { _, _ in
                         decodeURL()
                     }
@@ -147,7 +147,7 @@ struct URLToolsView: View {
             Image(systemName: "arrow.right")
                 .font(.title)
                 .foregroundColor(.blue)
-                .frame(height: 320, alignment: .center)
+                .frame(maxHeight: .infinity, alignment: .center)
             
             // Output Section
             VStack(alignment: .leading, spacing: 10) {
@@ -169,7 +169,7 @@ struct URLToolsView: View {
                         .textSelection(.enabled)
                 }
                 .padding(5)
-                .frame(height: 320)
+                .frame(maxHeight: .infinity)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
                 
@@ -178,7 +178,7 @@ struct URLToolsView: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding()
+        .padding(.horizontal, 0)
         
         // Sample button
         HStack {
@@ -189,7 +189,7 @@ struct URLToolsView: View {
             .buttonStyle(.bordered)
             Spacer()
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 0)
     }
     
     @ViewBuilder

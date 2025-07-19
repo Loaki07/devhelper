@@ -15,11 +15,11 @@
 		D5F4E8042C5A1B3000123456 /* UnitConverterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8032C5A1B3000123456 /* UnitConverterView.swift */; };
 		D5F4E8062C5A1B3000123456 /* JSONFormatterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8052C5A1B3000123456 /* JSONFormatterView.swift */; };
 		D5F4E8082C5A1B3000123456 /* Base64View.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8072C5A1B3000123456 /* Base64View.swift */; };
-		D5F4E80A2C5A1B3000123456 /* HTTPRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8092C5A1B3000123456 /* HTTPRequestView.swift */; };
 		D5F4E80C2C5A1B3000123456 /* RegexTesterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80B2C5A1B3000123456 /* RegexTesterView.swift */; };
 		D5F4E80E2C5A1B3000123456 /* UUIDGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */; };
 		D5F4E8102C5A1B3000123456 /* URLToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */; };
 		B822A4CAC32A426BA9E4E438123456 /* IPQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */; };
+		HTTP4E7F2C5A1B3000654321 /* HTTPRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */; };
 		D5F4E8122C5A1B3000123456 /* ToolType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8112C5A1B3000123456 /* ToolType.swift */; };
 		D5F4E8162C5A1B3000123456 /* CodeTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8172C5A1B3000123456 /* CodeTextEditor.swift */; };
 /* End PBXBuildFile section */
@@ -35,11 +35,11 @@
 		D5F4E8032C5A1B3000123456 /* UnitConverterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConverterView.swift; sourceTree = "<group>"; };
 		D5F4E8052C5A1B3000123456 /* JSONFormatterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONFormatterView.swift; sourceTree = "<group>"; };
 		D5F4E8072C5A1B3000123456 /* Base64View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64View.swift; sourceTree = "<group>"; };
-		D5F4E8092C5A1B3000123456 /* HTTPRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPRequestView.swift; sourceTree = "<group>"; };
 		D5F4E80B2C5A1B3000123456 /* RegexTesterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTesterView.swift; sourceTree = "<group>"; };
 		D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDGeneratorView.swift; sourceTree = "<group>"; };
 		D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLToolsView.swift; sourceTree = "<group>"; };
 		B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPQueryView.swift; sourceTree = "<group>"; };
+		HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPRequestView.swift; sourceTree = "<group>"; };
 		D5F4E8112C5A1B3000123456 /* ToolType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolType.swift; sourceTree = "<group>"; };
 		D5F4E8172C5A1B3000123456 /* CodeTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeTextEditor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -101,11 +101,11 @@
 				D5F4E8032C5A1B3000123456 /* UnitConverterView.swift */,
 				D5F4E8052C5A1B3000123456 /* JSONFormatterView.swift */,
 				D5F4E8072C5A1B3000123456 /* Base64View.swift */,
-				D5F4E8092C5A1B3000123456 /* HTTPRequestView.swift */,
 				D5F4E80B2C5A1B3000123456 /* RegexTesterView.swift */,
 				D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */,
 				D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */,
 				B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */,
+				HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -200,11 +200,11 @@
 				D5F4E8042C5A1B3000123456 /* UnitConverterView.swift in Sources */,
 				D5F4E8062C5A1B3000123456 /* JSONFormatterView.swift in Sources */,
 				D5F4E8082C5A1B3000123456 /* Base64View.swift in Sources */,
-				D5F4E80A2C5A1B3000123456 /* HTTPRequestView.swift in Sources */,
 				D5F4E80C2C5A1B3000123456 /* RegexTesterView.swift in Sources */,
 				D5F4E80E2C5A1B3000123456 /* UUIDGeneratorView.swift in Sources */,
 				D5F4E8102C5A1B3000123456 /* URLToolsView.swift in Sources */,
 				B822A4CAC32A426BA9E4E438123456 /* IPQueryView.swift in Sources */,
+				HTTP4E7F2C5A1B3000654321 /* HTTPRequestView.swift in Sources */,
 				D5F4E8122C5A1B3000123456 /* ToolType.swift in Sources */,
 				D5F4E8162C5A1B3000123456 /* CodeTextEditor.swift in Sources */,
 				D5F4E7F62C5A1B2E00123456 /* ContentView.swift in Sources */,
@@ -347,7 +347,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"DevHelper/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -361,7 +361,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp --options=runtime";
 				PRODUCT_BUNDLE_IDENTIFIER = com.devhelper.DevHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -380,7 +380,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"DevHelper/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -394,7 +394,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp --options=runtime";
 				PRODUCT_BUNDLE_IDENTIFIER = com.devhelper.DevHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";

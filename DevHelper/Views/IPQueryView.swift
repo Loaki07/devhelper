@@ -13,6 +13,7 @@ struct IPQueryView: View {
     @State private var queryIPDetails: IPLocationInfo? = nil
     @State private var isLoadingQuery: Bool = false
     @State private var queryError: String = ""
+@State private var sampleIPs: [String] = ["8.8.8.8", "1.1.1.1", "208.67.222.222"]
     
     var body: some View {
         VStack(spacing: 20) {
@@ -34,9 +35,10 @@ struct IPQueryView: View {
                             .buttonStyle(.borderedProminent)
                             .disabled(isLoadingMyIP)
                             
-                            if isLoadingMyIP {
+if isLoadingMyIP {
                                 ProgressView()
-                                    .scaleEffect(0.8)
+                                    .scaleEffect(0.5)
+                                    .frame(width: 16, height: 16)
                             }
                         }
                         
@@ -106,7 +108,7 @@ struct IPQueryView: View {
                 
                 // Query IP Section
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Query IP Location")
+Text("Query IP Location")
                         .font(.headline)
                     
                     VStack(alignment: .leading, spacing: 10) {
@@ -123,23 +125,29 @@ struct IPQueryView: View {
                             .buttonStyle(.borderedProminent)
                             .disabled(queryIPInput.isEmpty || isLoadingQuery)
                             
-                            if isLoadingQuery {
+if isLoadingQuery {
                                 ProgressView()
-                                    .scaleEffect(0.8)
+                                    .scaleEffect(0.5)
+                                    .frame(width: 16, height: 16)
                             }
                         }
                         
-                        // Sample IPs
+// Sample IPs with history
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Sample IPs:")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            HStack {
-                                Button("8.8.8.8") { queryIPInput = "8.8.8.8" }
-                                Button("1.1.1.1") { queryIPInput = "1.1.1.1" }
-                                Button("208.67.222.222") { queryIPInput = "208.67.222.222" }
+                            
+                            let rows = sampleIPs.chunked(into: 3)
+                            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                HStack {
+                                    ForEach(row, id: \.self) { ip in
+                                        Button(ip) { queryIPInput = ip }
+                                    }
+                                    Spacer()
+                                }
+                                .buttonStyle(.bordered)
                             }
-                            .buttonStyle(.bordered)
                         }
                         
                         if !queryError.isEmpty {
@@ -172,12 +180,11 @@ struct IPQueryView: View {
                             .background(Color(NSColor.controlBackgroundColor))
                             .cornerRadius(10)
                         }
+                        
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            
-            Spacer()
+            }.padding(.horizontal, 0)
         }
         .padding()
     }
@@ -341,6 +348,7 @@ struct IPQueryView: View {
         
         var internationalRequest = URLRequest(url: internationalURL)
         internationalRequest.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        internationalRequest.timeoutInterval = 10.0
         
         URLSession.shared.dataTask(with: internationalRequest) { data, response, error in
             defer { group.leave() }
@@ -377,6 +385,7 @@ struct IPQueryView: View {
         
         var chinaRequest = URLRequest(url: chinaURL)
         chinaRequest.setValue("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        chinaRequest.timeoutInterval = 10.0
         
         URLSession.shared.dataTask(with: chinaRequest) { data, response, error in
             defer { group.leave() }
@@ -440,6 +449,7 @@ struct IPQueryView: View {
         
         var request = URLRequest(url: url)
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 10.0
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -459,8 +469,20 @@ struct IPQueryView: View {
                     let decoder = JSONDecoder()
                     let ipInfo = try decoder.decode(IPLocationInfo.self, from: data)
                     
-                    self.queryIPDetails = ipInfo
+self.queryIPDetails = ipInfo
                     self.queryError = ""
+                    
+                    // Add to sample IPs if not already present
+                    if !self.sampleIPs.contains(ipInfo.ip) {
+                        // Remove existing entry if present and add to beginning
+                        self.sampleIPs.removeAll { $0 == ipInfo.ip }
+                        self.sampleIPs.insert(ipInfo.ip, at: 0)
+                        
+                        // Keep only the most recent 9 IPs (3 rows of 3)
+                        if self.sampleIPs.count > 9 {
+                            self.sampleIPs = Array(self.sampleIPs.prefix(9))
+                        }
+                    }
                 } catch {
                     self.queryError = "Error parsing response: \(error.localizedDescription)"
                 }
@@ -485,6 +507,7 @@ struct IPQueryView: View {
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
     }
+    
 }
 
 struct BaiduIPInfo: Codable {
@@ -563,6 +586,17 @@ struct IPLocationInfo: Codable {
         self.org = ""
         self.postal = ""
         self.timezone = ""
+    }
+}
+
+
+// MARK: - Array Extension for Chunking
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
     }
 }
 

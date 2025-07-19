@@ -75,6 +75,8 @@ struct ContentView: View {
                     URLToolsView()
                 case .ipQuery:
                     IPQueryView()
+                case .httpRequest:
+                    HTTPRequestView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

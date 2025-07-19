@@ -92,7 +92,7 @@ struct TimestampConverterView: View {
                     .frame(height: 120)
                 }
             }
-            .padding()
+            .padding(.horizontal, 0)
             
             Toggle("Use Local Time", isOn: $isLocalTime)
                 .onChange(of: isLocalTime) { _, _ in

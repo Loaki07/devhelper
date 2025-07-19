@@ -42,7 +42,7 @@ struct Base64View: View {
                         
                         CodeTextEditor(text: $textInput)
                             .padding(5)
-                            .frame(height: 320)
+                            .frame(maxHeight: .infinity)
                             .onChange(of: textInput) { _, _ in
                                 encodeText()
                             }
@@ -55,7 +55,7 @@ struct Base64View: View {
                     Image(systemName: "arrow.right")
                         .font(.title)
                         .foregroundColor(.blue)
-                        .frame(height: 320, alignment: .center)
+                        .frame(maxHeight: .infinity, alignment: .center)
                     
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
@@ -76,7 +76,7 @@ struct Base64View: View {
                                 .textSelection(.enabled)
                         }
                         .padding(5)
-                        .frame(height: 320)
+                        .frame(maxHeight: .infinity)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                         
@@ -100,7 +100,7 @@ struct Base64View: View {
                         
                         CodeTextEditor(text: $base64Input)
                             .padding(5)
-                            .frame(height: 320)
+                            .frame(maxHeight: .infinity)
                             .onChange(of: base64Input) { _, _ in
                                 decodeBase64()
                             }
@@ -113,7 +113,7 @@ struct Base64View: View {
                     Image(systemName: "arrow.right")
                         .font(.title)
                         .foregroundColor(.blue)
-                        .frame(height: 320, alignment: .center)
+                        .frame(maxHeight: .infinity, alignment: .center)
                     
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
@@ -134,7 +134,7 @@ struct Base64View: View {
                                 .textSelection(.enabled)
                         }
                         .padding(5)
-                        .frame(height: 320)
+                        .frame(maxHeight: .infinity)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                         
@@ -144,7 +144,7 @@ struct Base64View: View {
                     }
                 }
             }
-            .padding()
+            .padding(.horizontal, 0)
             
             // Additional Tools
             HStack(spacing: 20) {

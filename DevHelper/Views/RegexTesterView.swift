@@ -97,14 +97,10 @@ struct RegexTesterView: View {
                     
                     CodeTextEditor(text: $testString)
                         .padding(5)
-                        .frame(height: 200)
+                        .frame(maxHeight: .infinity)
                         .onChange(of: testString) { _, _ in
                             testRegex()
                         }
-                    
-                    Text("\(testString.count) characters")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
                 
                 // Results/Replacement
@@ -137,7 +133,7 @@ struct RegexTesterView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .padding(5)
-                        .frame(height: 200)
+                        .frame(maxHeight: .infinity)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                     } else {
@@ -158,7 +154,7 @@ struct RegexTesterView: View {
                                 .textSelection(.enabled)
                         }
                         .padding(5)
-                        .frame(height: 168)
+                        .frame(maxHeight: .infinity)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
                     }

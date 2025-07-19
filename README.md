@@ -16,6 +16,7 @@ A native macOS application for developers, containing essential tools commonly u
 - **UUID Generator** - Generate UUIDs in various formats
 - **URL Tools** - URL encoding/decoding and parsing
 - **IP Query** - Discover your IP address and query geolocation data for any IP
+- **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, and response handling
 
 ## Key Features
 
@@ -37,4 +38,4 @@ A native macOS application for developers, containing essential tools commonly u
 
 ## Version
 
-Current version: 1.3 (Build 4)
+Current version: 1.4 (Build 5)
