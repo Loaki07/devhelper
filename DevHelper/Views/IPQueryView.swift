@@ -48,7 +48,7 @@ struct IPQueryView: View {
                                 if !myIPAddress.isEmpty {
                                     VStack(alignment: .leading, spacing: 8) {
                                         HStack {
-                                            Text(showDualIP ? "International IP:" : "IP Address:")
+                                            Text(showDualIP ? "IP:" : "IP Address:")
                                                 .fontWeight(.medium)
                                             Text(myIPAddress)
                                                 .font(.system(.body, design: .monospaced))
@@ -57,9 +57,11 @@ struct IPQueryView: View {
                                             Button(action: {
                                                 copyToClipboard(myIPAddress)
                                             }) {
-                                                Image(systemName: "doc.on.doc")
+                                                 Image(systemName: "doc.on.doc")
+                                                .foregroundColor(.blue)
+                                                .font(.caption)
                                             }
-                                            .buttonStyle(.bordered)
+                                            .buttonStyle(.borderless)
                                             .help("Copy IP Address")
                                         }
                                         
@@ -75,7 +77,7 @@ struct IPQueryView: View {
                                     
                                     VStack(alignment: .leading, spacing: 8) {
                                         HStack {
-                                            Text("China Network IP:")
+                                            Text("IP:")
                                                 .fontWeight(.medium)
                                             Text(chinaIPAddress)
                                                 .font(.system(.body, design: .monospaced))
@@ -84,9 +86,11 @@ struct IPQueryView: View {
                                             Button(action: {
                                                 copyToClipboard(chinaIPAddress)
                                             }) {
-                                                Image(systemName: "doc.on.doc")
+                                                 Image(systemName: "doc.on.doc")
+                                                .foregroundColor(.blue)
+                                                .font(.caption)
                                             }
-                                            .buttonStyle(.bordered)
+                                            .buttonStyle(.borderless)
                                             .help("Copy IP Address")
                                         }
                                         
@@ -181,8 +185,10 @@ struct IPQueryView: View {
                                         copyToClipboard(details.query)
                                     }) {
                                         Image(systemName: "doc.on.doc")
+                                        .foregroundColor(.blue)
+                                        .font(.caption)
                                     }
-                                    .buttonStyle(.bordered)
+                                    .buttonStyle(.borderless)
                                     .help("Copy IP Address")
                                 }
                                 
