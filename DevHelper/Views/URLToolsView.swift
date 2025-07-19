@@ -57,8 +57,6 @@ struct URLToolsView: View {
                 }
                 
                 CodeTextEditor(text: $textInput)
-                    .font(.system(.body, design: .monospaced))
-                    .border(Color.gray, width: 1)
                     .padding(5)
                     .frame(height: 320)
                     .onChange(of: textInput) { _, _ in
@@ -108,7 +106,7 @@ struct URLToolsView: View {
         
         // Sample button
         HStack {
-            Button("Sample Text") {
+            Button("Sample") {
                 textInput = "Hello World! @#$%^&*()+=[]{}|;:,.<>?"
                 encodeURL()
             }
@@ -135,8 +133,6 @@ struct URLToolsView: View {
                 }
                 
                 CodeTextEditor(text: $encodedInput)
-                    .font(.system(.body, design: .monospaced))
-                    .border(Color.gray, width: 1)
                     .padding(5)
                     .frame(height: 320)
                     .onChange(of: encodedInput) { _, _ in
@@ -186,7 +182,7 @@ struct URLToolsView: View {
         
         // Sample button
         HStack {
-            Button("Sample Encoded") {
+            Button("Sample") {
                 encodedInput = "Hello%20World%21%20%40%23%24%25%5E%26%2A%28%29%2B%3D%5B%5D%7B%7D%7C%3B%3A%2C.%3C%3E%3F"
                 decodeURL()
             }

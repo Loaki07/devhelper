@@ -96,8 +96,6 @@ struct RegexTesterView: View {
                     }
                     
                     CodeTextEditor(text: $testString)
-                        .font(.system(.body, design: .monospaced))
-                        .border(Color.gray, width: 1)
                         .frame(height: 150)
                         .onChange(of: testString) { _, _ in
                             testRegex()

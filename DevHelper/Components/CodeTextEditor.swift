@@ -18,6 +18,19 @@ struct CodeTextEditor: NSViewRepresentable {
         textView.usesFindPanel = true
         textView.delegate = context.coordinator
         
+        // Add padding around the text
+        textView.textContainerInset = NSSize(width: 0, height: 4)
+        
+        // Set font to match SwiftUI's system monospaced font
+        textView.font = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
+        
+        // Add rounded corners
+        scrollView.wantsLayer = true
+        scrollView.layer?.cornerRadius = 8
+        scrollView.layer?.masksToBounds = true
+        scrollView.layer?.borderWidth = 1
+        scrollView.layer?.borderColor = NSColor.separatorColor.cgColor
+        
         return scrollView
     }
     

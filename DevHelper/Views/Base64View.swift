@@ -41,8 +41,6 @@ struct Base64View: View {
                         }
                         
                         CodeTextEditor(text: $textInput)
-                            .font(.system(.body, design: .monospaced))
-                            .border(Color.gray, width: 1)
                             .padding(5)
                             .frame(height: 320)
                             .onChange(of: textInput) { _, _ in
@@ -101,8 +99,6 @@ struct Base64View: View {
                         }
                         
                         CodeTextEditor(text: $base64Input)
-                            .font(.system(.body, design: .monospaced))
-                            .border(Color.gray, width: 1)
                             .padding(5)
                             .frame(height: 320)
                             .onChange(of: base64Input) { _, _ in
@@ -152,7 +148,7 @@ struct Base64View: View {
             
             // Additional Tools
             HStack(spacing: 20) {
-                Button("Sample Text") {
+                Button("Sample") {
                     if selectedTab == .encode {
                         textInput = "Hello, World! This is a sample text for Base64 encoding."
                     } else {

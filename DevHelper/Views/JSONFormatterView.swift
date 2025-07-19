@@ -39,17 +39,9 @@ struct JSONFormatterView: View {
                             validationMessage = ""
                         }
                         .buttonStyle(.borderless)
-                        
-                        Button("Sample") {
-                            jsonInput = sampleJSON
-                            processJSON()
-                        }
-                        .buttonStyle(.borderless)
                     }
                     
                     CodeTextEditor(text: $jsonInput)
-                        .font(.system(.body, design: .monospaced))
-                        .border(isValid ? Color.gray : Color.red, width: 1)
                         .padding(5)
                         .frame(height: 320)
                         .onChange(of: jsonInput) { _, _ in
@@ -109,6 +101,12 @@ struct JSONFormatterView: View {
             
             // Action Buttons
             HStack(spacing: 20) {
+                Button("Sample") {
+                    jsonInput = sampleJSON
+                    processJSON()
+                }
+                .buttonStyle(.bordered)
+                
                 Button("Format") {
                     selectedMode = .format
                     processJSON()
