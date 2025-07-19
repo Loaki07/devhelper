@@ -4,7 +4,7 @@
 DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 9 fully-functional tools commonly used by developers, with search functionality and modern UI design.
 
 ## Current Status
-**✅ COMPLETE** - All 9 tools are fully implemented and working. Version 1.4 released.
+**✅ COMPLETE** - All 9 tools are fully implemented and working. Version 1.5 released.
 
 ## Tools Implemented
 
@@ -22,8 +22,9 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 
 ### 3. JSON Formatter (`JSONFormatterView.swift`)
 - **Status**: ✅ Complete
-- **Features**: Format (pretty print), minify, validate, escape for strings, syntax error highlighting
-- **UI**: Two-panel layout with mode selection
+- **Features**: Format (pretty print), minify, validate, escape for strings, JSON diff/compare mode, syntax error highlighting
+- **UI**: Two-panel layout with mode selection, three-panel layout for diff mode
+- **Recent Updates**: Added diff mode for JSON comparison with side-by-side view
 
 ### 4. Base64 Encode/Decode (`Base64View.swift`)
 - **Status**: ✅ Complete
@@ -54,9 +55,9 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 
 ### 9. HTTP Request (`HTTPRequestView.swift`)
 - **Status**: ✅ Complete
-- **Features**: Full HTTP client with all methods (GET/POST/PUT/DELETE/etc), headers management, Basic/Bearer authentication, request body support, TLS verification skip, response timing, SSE streaming support, binary download
-- **UI**: Split layout with request configuration (headers/auth/body tabs) and response display (body/headers), real-time timer, status code indicators, copy/save functionality
-- **Recent Updates**: Added comprehensive HTTP client with SSE streaming, binary download support, and professional request/response handling
+- **Features**: Full HTTP client with all methods (GET/POST/PUT/DELETE/etc), headers management, Basic/Bearer authentication, request body support, TLS verification skip, response timing, SSE streaming support, binary download, JSON tree view, request history
+- **UI**: Split layout with request configuration (headers/auth/body tabs) and response display (body/headers/tree), real-time timer, status code indicators, copy/save functionality
+- **Recent Updates**: Added JSON tree view for structured response exploration, improved request history display
 
 ## Architecture
 
@@ -115,7 +116,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.4 (Build 5)
+- **Version**: 1.5 (Build 6)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
@@ -124,7 +125,23 @@ DevHelper/
 - Foundation for core utilities
 - AppKit for clipboard access (NSPasteboard)
 
-## Recent Updates (Version 1.4)
+## Recent Updates (Version 1.5)
+
+### Major New Features
+- **JSON Differ**: Added comprehensive JSON comparison functionality to JSON Formatter
+  - Side-by-side comparison view with three panels (JSON 1, JSON 2, Differences)
+  - Real-time diff highlighting and detailed change detection
+  - Integrated into existing JSON Formatter with seamless mode switching
+- **JSON Tree View**: Enhanced HTTP Request tool with structured JSON response exploration
+  - Interactive tree view for JSON responses with expand/collapse functionality
+  - Hierarchical display of JSON objects and arrays
+  - Improved readability for complex API responses
+- **UI Improvements**: Various layout and user experience enhancements
+  - Optimized IP Query display layout
+  - Improved request history ordering in HTTP Request tool
+  - Better visual hierarchy and spacing
+
+## Previous Updates (Version 1.4)
 
 ### Major New Feature
 - **HTTP Request Tool**: Professional-grade HTTP client with comprehensive functionality
@@ -221,5 +238,5 @@ open DevHelper.xcodeproj
 
 ---
 
-**Last Updated**: Version 1.4 released with comprehensive HTTP Request tool featuring professional-grade HTTP client capabilities, SSE streaming support, and advanced request/response handling.
-**Next Steps**: Optional enhancements like request history, cURL export, environment variables, or API testing collections.
+**Last Updated**: Version 1.5 released with JSON diff/comparison functionality and enhanced HTTP Request tool with JSON tree view for better API response exploration.
+**Next Steps**: Optional enhancements like cURL export, environment variables, API testing collections, or additional response format viewers.

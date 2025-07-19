@@ -104,11 +104,13 @@ Each tool follows a consistent pattern:
 - Minify (remove whitespace)
 - Validate with detailed feedback
 - Escape for string embedding
+- JSON diff/compare mode with side-by-side comparison
 - Syntax error highlighting
 
 **UI Components**:
-- Segmented picker for modes
-- Two-panel layout (input/output)
+- Segmented picker for modes (Format/Minify/Validate/Escape/Diff)
+- Two-panel layout (input/output) for most modes
+- Three-panel layout for diff mode (JSON 1, JSON 2, Differences)
 - Validation status indicator
 - Sample JSON button
 
@@ -247,13 +249,15 @@ Each tool follows a consistent pattern:
 - Server-Sent Events (SSE) streaming support with live updates
 - Response time measurement and display
 - Binary data download with file save dialog
+- JSON tree view for structured response exploration
+- Request history with timeline display
 
 **UI Components**:
 - Split layout with request configuration and response display
 - Tabbed request interface (Headers, Auth, Body)
 - HTTP method dropdown and URL input field
 - Real-time timer and cancel functionality
-- Response tabs (Body, Headers) with raw/preview modes
+- Response tabs (Body, Headers) with raw/preview/tree modes
 - Status code color indicators (green/orange/red)
 - Copy and save functionality throughout
 - Sample data buttons for quick testing
@@ -264,6 +268,7 @@ Each tool follows a consistent pattern:
 - Real-time timer using `Timer.scheduledTimer` for elapsed time
 - Streaming response handling for SSE content types
 - JSON formatting with `JSONSerialization` for preview mode
+- Interactive JSON tree view with expand/collapse functionality
 - File save functionality using `NSSavePanel`
 - Comprehensive error handling for network issues
 - Automatic content type detection for response formatting

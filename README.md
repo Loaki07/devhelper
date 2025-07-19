@@ -8,12 +8,12 @@ A native macOS application for developers, containing essential tools commonly u
 
 - **Timestamp Converter** - Convert between timestamps and human-readable dates with multiple format support
 - **Unit Converter** - Convert between different units (Data, Length, Weight, Temperature, Area, Volume)
-- **JSON Formatter** - Format and validate JSON data
+- **JSON Formatter** - Format, validate, and compare JSON data with diff view
 - **Base64 Encode/Decode** - Encode and decode Base64 strings
 - **Regex Test** - Test regular expressions with pattern matching
 - **UUID Generator** - Generate UUIDs in various formats
 - **URL Tools** - URL encoding/decoding and parsing
-- **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, and response handling
+- **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, response handling, and JSON tree view
 - **IP Query** - Discover your IP address and query geolocation data for any IP
 
 ## Key Features
@@ -36,7 +36,7 @@ A native macOS application for developers, containing essential tools commonly u
 
 ## Version
 
-Current version: 1.4 (Build 5)
+Current version: 1.5 (Build 6)
 
 ## Screenshots
 
