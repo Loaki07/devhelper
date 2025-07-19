@@ -409,7 +409,7 @@ struct HTTPRequestView: View {
                     HStack {
                         Picker("View Mode", selection: $responseViewMode) {
                             ForEach(ResponseViewMode.allCases, id: \.self) { mode in
-                                Text(mode.rawValue.capitalized).tag(mode)
+                                Text(mode.displayName).tag(mode)
                             }
                         }
                         .pickerStyle(.segmented)
@@ -429,12 +429,19 @@ struct HTTPRequestView: View {
                         }
                     }
                     
-                    ScrollView {
-                        Text(formatResponseBody(response))
-                            .font(.system(.body, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding()
+                    Group {
+                        if responseViewMode == .tree && response.contentType.contains("application/json"), let data = response.data {
+                            JSONTreeView(jsonData: data)
+                                .padding()
+                        } else {
+                            ScrollView {
+                                Text(formatResponseBody(response))
+                                    .font(.system(.body, design: .monospaced))
+                                    .textSelection(.enabled)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
+                            }
+                        }
                     }
                     .background(Color(NSColor.controlBackgroundColor))
                     .cornerRadius(8)
@@ -1027,7 +1034,16 @@ enum ResponseTab: String, CaseIterable {
 
 enum ResponseViewMode: String, CaseIterable {
     case preview = "preview"
+    case tree = "tree"
     case raw = "raw"
+    
+    var displayName: String {
+        switch self {
+        case .preview: return "Preview"
+        case .tree: return "Tree"
+        case .raw: return "Raw"
+        }
+    }
 }
 
 struct HTTPHeader {
@@ -1060,6 +1076,194 @@ struct HTTPRequestHistoryItem: Identifiable {
     let skipTLSVerify: Bool
     let timeout: Double
     let timestamp: Date
+}
+
+// MARK: - JSON Tree Viewer
+
+struct JSONTreeNode: Identifiable {
+    let id = UUID()
+    let key: String?
+    let value: Any
+    let type: JSONNodeType
+    var isExpanded: Bool = true
+    var children: [JSONTreeNode] = []
+    
+    enum JSONNodeType {
+        case object
+        case array
+        case string
+        case number
+        case boolean
+        case null
+    }
+}
+
+class JSONTreeViewModel: ObservableObject {
+    @Published var rootNode: JSONTreeNode?
+    
+    func parseJSON(_ data: Data) {
+        do {
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+            rootNode = createNode(from: jsonObject, key: nil)
+        } catch {
+            rootNode = nil
+        }
+    }
+    
+    private func createNode(from value: Any, key: String?) -> JSONTreeNode {
+        var node = JSONTreeNode(key: key, value: value, type: .string)
+        
+        if let dict = value as? [String: Any] {
+            node = JSONTreeNode(key: key, value: value, type: .object, isExpanded: true)
+            node.children = dict.map { createNode(from: $0.value, key: $0.key) }
+        } else if let array = value as? [Any] {
+            node = JSONTreeNode(key: key, value: value, type: .array, isExpanded: true)
+            node.children = array.enumerated().map { createNode(from: $0.element, key: "[\($0.offset)]") }
+        } else if value is String {
+            node = JSONTreeNode(key: key, value: value, type: .string)
+        } else if value is NSNumber {
+            let number = value as! NSNumber
+            if CFBooleanGetTypeID() == CFGetTypeID(number) {
+                node = JSONTreeNode(key: key, value: value, type: .boolean)
+            } else {
+                node = JSONTreeNode(key: key, value: value, type: .number)
+            }
+        } else if value is NSNull {
+            node = JSONTreeNode(key: key, value: value, type: .null)
+        }
+        
+        return node
+    }
+    
+    func toggleExpansion(for nodeId: UUID) {
+        if let updatedRoot = toggleNodeExpansion(rootNode, nodeId: nodeId) {
+            rootNode = updatedRoot
+        }
+    }
+    
+    private func toggleNodeExpansion(_ node: JSONTreeNode?, nodeId: UUID) -> JSONTreeNode? {
+        guard var node = node else { return nil }
+        
+        if node.id == nodeId {
+            node.isExpanded.toggle()
+            return node
+        }
+        
+        var updatedChildren: [JSONTreeNode] = []
+        for child in node.children {
+            if let updatedChild = toggleNodeExpansion(child, nodeId: nodeId) {
+                updatedChildren.append(updatedChild)
+            } else {
+                updatedChildren.append(child)
+            }
+        }
+        node.children = updatedChildren
+        
+        return node
+    }
+}
+
+struct JSONTreeView: View {
+    @StateObject private var viewModel = JSONTreeViewModel()
+    let jsonData: Data
+    
+    var body: some View {
+        ScrollView {
+            if let rootNode = viewModel.rootNode {
+                JSONNodeView(node: rootNode, level: 0, viewModel: viewModel)
+            } else {
+                Text("Invalid JSON")
+                    .foregroundColor(.red)
+            }
+        }
+        .onAppear {
+            viewModel.parseJSON(jsonData)
+        }
+    }
+}
+
+struct JSONNodeView: View {
+    let node: JSONTreeNode
+    let level: Int
+    let viewModel: JSONTreeViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 4) {
+                // Indentation
+                ForEach(0..<level, id: \.self) { _ in
+                    Text("  ")
+                        .font(.system(.body, design: .monospaced))
+                }
+                
+                // Expand/collapse button for containers
+                if node.type == .object || node.type == .array {
+                    Button(action: {
+                        viewModel.toggleExpansion(for: node.id)
+                    }) {
+                        Image(systemName: node.isExpanded ? "chevron.down" : "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    Text("  ")
+                        .font(.caption)
+                }
+                
+                // Key (if present)
+                if let key = node.key {
+                    Text("\"\(key)\":")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.blue)
+                }
+                
+                // Value
+                nodeValueView
+                
+                Spacer()
+            }
+            
+            // Children (if expanded)
+            if node.isExpanded && !node.children.isEmpty {
+                ForEach(node.children) { child in
+                    JSONNodeView(node: child, level: level + 1, viewModel: viewModel)
+                }
+            }
+        }
+        .textSelection(.enabled)
+    }
+    
+    @ViewBuilder
+    private var nodeValueView: some View {
+        switch node.type {
+        case .object:
+            Text(node.isExpanded ? "{" : "{ ... }")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.primary)
+        case .array:
+            let arrayValue = node.value as? [Any] ?? []
+            Text(node.isExpanded ? "[" : "[ \(arrayValue.count) items ]")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.primary)
+        case .string:
+            Text("\"\(node.value)\"")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.green)
+        case .number:
+            Text("\(node.value)")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.purple)
+        case .boolean:
+            Text("\(node.value)")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.orange)
+        case .null:
+            Text("null")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.gray)
+        }
+    }
 }
 
 // MARK: - TLS Bypass Delegate
