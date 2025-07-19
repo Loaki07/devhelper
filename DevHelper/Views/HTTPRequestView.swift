@@ -163,7 +163,7 @@ struct HTTPRequestView: View {
                         // History content
                         ScrollView {
                             LazyVStack(spacing: 0) {
-                                ForEach(requestHistory.reversed()) { item in
+                                ForEach(requestHistory) { item in
                                     historyItemView(item: item)
                                 }
                             }
@@ -308,11 +308,19 @@ struct HTTPRequestView: View {
                 
             case .basic:
                 VStack(alignment: .leading, spacing: 10) {
-                    TextField("Username", text: $username)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    SecureField("Password", text: $password)
-                        .textFieldStyle(.roundedBorder)
+                    HStack {
+                        TextField("Username", text: $username)
+                            .textFieldStyle(.roundedBorder)
+                        
+                        SecureField("Password", text: $password)
+                            .textFieldStyle(.roundedBorder)
+                        
+                        Button("Use Sample") {
+                            username = "root@example.com"
+                            password = "Complexpass#123"
+                        }
+                        .buttonStyle(.bordered)
+                    }
                 }
                 
             case .bearer:
