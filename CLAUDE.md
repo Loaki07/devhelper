@@ -101,7 +101,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.1 (Build 2)
+- **Version**: 1.2 (Build 3)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
@@ -110,20 +110,23 @@ DevHelper/
 - Foundation for core utilities
 - AppKit for clipboard access (NSPasteboard)
 
-## Recent Updates (Version 1.1)
+## Recent Updates (Version 1.2)
 
 ### Removed Features
 - **HTTP Request Tool**: Completely removed to simplify the app focus
 - **Time Unit Category**: Removed from Unit Converter to streamline categories
 
 ### Added Features
-- **Search functionality**: Search bar in sidebar to quickly find tools
-- **Improved text selection**: Timestamp converter results are now selectable and copyable
+- **Consistent text editors**: All tools now use the same CodeTextEditor component to prevent automatic text changes when losing focus
+- **Improved URL tools layout**: Sample buttons moved outside input areas for better UX consistency
+- **Enhanced UUID generator**: Copy buttons replaced with compact icons to prevent line breaking
+- **Better regex options**: Added descriptions for regex flags (Case Insensitive, Multiline, Dot All) with clear explanations
 
 ### UI Improvements
-- **Better tool organization**: Data units moved to first position in Unit Converter
-- **Color compatibility**: Fixed all macOS color references for better compatibility
-- **Cleaner interface**: Removed less commonly used features for better focus
+- **Text input consistency**: Base64, URL, and Regex tools now use proper text editors that don't auto-format content
+- **Better button layout**: Sample buttons repositioned for better visual hierarchy
+- **Icon improvements**: Small copy icons replace text buttons where space is constrained
+- **Enhanced tooltips**: Better explanations for regex options to improve usability
 
 ## Common Development Tasks
 
@@ -199,5 +202,5 @@ open DevHelper.xcodeproj
 
 ---
 
-**Last Updated**: Version 1.1 released with search functionality, improved text selection, and streamlined tool set.
+**Last Updated**: Version 1.2 released with consistent text editors, improved UI layouts, and enhanced user experience across all tools.
 **Next Steps**: Optional enhancements like preferences, keyboard shortcuts, or additional export formats.
