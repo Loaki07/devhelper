@@ -78,7 +78,7 @@ struct UUIDGeneratorView: View {
                                     }) {
                                         Image(systemName: copiedButtonId == uuid ? "checkmark" : "doc.on.doc")
                                             .foregroundColor(copiedButtonId == uuid ? .green : .blue)
-                                            .frame(width: 14, height: 14)
+                                            .font(.caption)
                                     }
                                     .buttonStyle(.borderless)
                                     .help("Copy to clipboard")

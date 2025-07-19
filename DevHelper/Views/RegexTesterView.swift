@@ -196,10 +196,15 @@ struct RegexTesterView: View {
                     .background(Color.blue.opacity(0.2))
                     .cornerRadius(4)
                 Spacer()
-                Button("Copy") {
+                Button(action: {
                     copyToClipboard(match.match)
+                }) {
+                    Image(systemName: "doc.on.doc")
+                        .foregroundColor(.blue)
+                        .font(.caption)
                 }
                 .buttonStyle(.borderless)
+                .font(.caption)
             }
             
             HStack {

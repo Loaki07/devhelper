@@ -209,7 +209,7 @@ struct TimestampConverterView: View {
             }) {
                 Image(systemName: copiedButtonId == "\(label)-\(value)" ? "checkmark" : "doc.on.doc")
                     .foregroundColor(copiedButtonId == "\(label)-\(value)" ? .green : .blue)
-                    .frame(width: 14, height: 14)
+                    .font(.caption)
             }
             .buttonStyle(.borderless)
             .help("Copy to clipboard")
@@ -289,7 +289,7 @@ struct TimestampConverterView: View {
             }) {
                 Image(systemName: copiedButtonId == "\(label)-\(value)" ? "checkmark" : "doc.on.doc")
                     .foregroundColor(copiedButtonId == "\(label)-\(value)" ? .green : .blue)
-                    .frame(width: 14, height: 14)
+                    .font(.caption)
             }
             .buttonStyle(.borderless)
             .help("Copy to clipboard")

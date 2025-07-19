@@ -13,7 +13,7 @@ struct IPQueryView: View {
     @State private var queryIPDetails: IPLocationInfo? = nil
     @State private var isLoadingQuery: Bool = false
     @State private var queryError: String = ""
-@State private var sampleIPs: [String] = ["8.8.8.8", "1.1.1.1", "208.67.222.222"]
+    @State private var sampleIPs: [String] = ["8.8.8.8", "1.1.1.1", "208.67.222.222"]
     
     var body: some View {
         VStack(spacing: 20) {
@@ -35,7 +35,7 @@ struct IPQueryView: View {
                             .buttonStyle(.borderedProminent)
                             .disabled(isLoadingMyIP)
                             
-if isLoadingMyIP {
+                            if isLoadingMyIP {
                                 ProgressView()
                                     .scaleEffect(0.5)
                                     .frame(width: 16, height: 16)
@@ -108,7 +108,7 @@ if isLoadingMyIP {
                 
                 // Query IP Section
                 VStack(alignment: .leading, spacing: 15) {
-Text("Query IP Location")
+                        Text("Query IP Location")
                         .font(.headline)
                     
                     VStack(alignment: .leading, spacing: 10) {
@@ -125,18 +125,30 @@ Text("Query IP Location")
                             .buttonStyle(.borderedProminent)
                             .disabled(queryIPInput.isEmpty || isLoadingQuery)
                             
-if isLoadingQuery {
+                            if isLoadingQuery {
                                 ProgressView()
                                     .scaleEffect(0.5)
                                     .frame(width: 16, height: 16)
                             }
                         }
                         
-// Sample IPs with history
+                        // Sample IPs with history
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Sample IPs:")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Text("Sample IPs:")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Spacer()
+                                
+                                if sampleIPs.count > 3 { // Only show if we have history beyond default IPs
+                                    Button("Clear History") {
+                                        clearIPHistory()
+                                    }
+                                    .font(.caption)
+                                    .buttonStyle(.borderless)
+                                }
+                            }
                             
                             let rows = sampleIPs.chunked(into: 3)
                             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
@@ -475,7 +487,7 @@ if isLoadingQuery {
                     let decoder = JSONDecoder()
                     let ipInfo = try decoder.decode(IPLocationInfo.self, from: data)
                     
-self.queryIPDetails = ipInfo
+                    self.queryIPDetails = ipInfo
                     self.queryError = ""
                     
                     // Add to sample IPs if not already present
@@ -512,6 +524,15 @@ self.queryIPDetails = ipInfo
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+    }
+    
+    private func clearIPHistory() {
+        // Reset to default sample IPs
+        sampleIPs = ["8.8.8.8", "1.1.1.1", "208.67.222.222"]
+        
+        // Clear from UserDefaults
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: "IPQuery.sampleIPs")
     }
     
     private func saveState() {

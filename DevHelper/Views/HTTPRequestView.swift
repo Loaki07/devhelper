@@ -70,6 +70,7 @@ struct HTTPRequestView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .tint(isLoading ? .red : .blue)
                 .disabled(urlInput.isEmpty)
                 
                 Button(action: {

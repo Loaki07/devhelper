@@ -74,7 +74,6 @@ struct UnitConverterView: View {
                     
                     TextField("Result", text: $outputValue)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .disabled(true)
                 }
             }
             .padding(.horizontal, 0)

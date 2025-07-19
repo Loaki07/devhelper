@@ -258,10 +258,14 @@ struct URLToolsView: View {
                                         Text("=")
                                         Text(queryParameters[index].value)
                                         Spacer()
-                                        Button("Copy") {
+                                        Button(action: {
                                             copyToClipboard("\(queryParameters[index].key)=\(queryParameters[index].value)")
+                                        }) {
+                                            Image(systemName: "doc.on.doc")
+                                                .foregroundColor(.blue)
                                         }
                                         .buttonStyle(.borderless)
+                                        .font(.caption)
                                     }
                                     .font(.system(.body, design: .monospaced))
                                     .padding(.horizontal, 8)
@@ -291,10 +295,15 @@ struct URLToolsView: View {
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
                         
-                        Button("Copy") {
+                        Button(action: {
                             copyToClipboard(reconstructURL())
+                        }) {
+                            Image(systemName: "doc.on.doc")
+                                .foregroundColor(.blue)
+                                .font(.caption)
                         }
                         .buttonStyle(.borderless)
+                        .font(.caption)
                     }
                 }
             }
@@ -312,10 +321,15 @@ struct URLToolsView: View {
                 .foregroundColor(value.isEmpty ? .secondary : .primary)
             Spacer()
             if !value.isEmpty {
-                Button("Copy") {
+                Button(action: {
                     copyToClipboard(value)
+                }) {
+                    Image(systemName: "doc.on.doc")
+                        .foregroundColor(.blue)
+                        .font(.caption)
                 }
                 .buttonStyle(.borderless)
+                .font(.caption)
             }
         }
         .padding(.horizontal, 8)
