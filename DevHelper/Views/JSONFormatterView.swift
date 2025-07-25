@@ -43,7 +43,7 @@ struct JSONFormatterView: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        CodeTextEditor(text: $jsonInput)
+                        CodeEditor.json(text: $jsonInput)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: jsonInput) { _, _ in
@@ -68,7 +68,7 @@ struct JSONFormatterView: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        CodeTextEditor(text: $jsonInput2)
+                        CodeEditor.json(text: $jsonInput2)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: jsonInput2) { _, _ in
@@ -129,7 +129,7 @@ struct JSONFormatterView: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        CodeTextEditor(text: $jsonInput)
+                        CodeEditor.json(text: $jsonInput)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: jsonInput) { _, _ in

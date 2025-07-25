@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-struct CodeTextEditor: NSViewRepresentable {
+struct TextEditor: NSViewRepresentable {
     @Binding var text: String
     
     func makeNSView(context: Context) -> NSScrollView {
@@ -46,9 +46,9 @@ struct CodeTextEditor: NSViewRepresentable {
     }
     
     class Coordinator: NSObject, NSTextViewDelegate {
-        let parent: CodeTextEditor
+        let parent: TextEditor
         
-        init(_ parent: CodeTextEditor) {
+        init(_ parent: TextEditor) {
             self.parent = parent
         }
         

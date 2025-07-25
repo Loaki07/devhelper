@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		930D8A442E3289B900D2DC16 /* CodeMirror-SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 930D8A432E3289B900D2DC16 /* CodeMirror-SwiftUI */; settings = {ATTRIBUTES = (Required, ); }; };
+		930D8A452E328B4B00D2DC16 /* CodeMirror-SwiftUI in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 930D8A432E3289B900D2DC16 /* CodeMirror-SwiftUI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		93C47C912E3312690069B278 /* IPQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */; };
+		93C47C932E3312A00069B278 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93C47C922E3312A00069B278 /* CodeEditor.swift */; };
 		D5F4E7F42C5A1B2E00123456 /* DevHelperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E7F32C5A1B2E00123456 /* DevHelperApp.swift */; };
 		D5F4E7F62C5A1B2E00123456 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E7F52C5A1B2E00123456 /* ContentView.swift */; };
 		D5F4E7F82C5A1B2F00123456 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5F4E7F72C5A1B2F00123456 /* Assets.xcassets */; };
@@ -18,13 +22,28 @@
 		D5F4E80C2C5A1B3000123456 /* RegexTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80B2C5A1B3000123456 /* RegexTestView.swift */; };
 		D5F4E80E2C5A1B3000123456 /* UUIDGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */; };
 		D5F4E8102C5A1B3000123456 /* URLToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */; };
-		B822A4CAC32A426BA9E4E438123456 /* IPQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */; };
-		HTTP4E7F2C5A1B3000654321 /* HTTPRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */; };
 		D5F4E8122C5A1B3000123456 /* ToolType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8112C5A1B3000123456 /* ToolType.swift */; };
-		D5F4E8162C5A1B3000123456 /* CodeTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8172C5A1B3000123456 /* CodeTextEditor.swift */; };
+		D5F4E8162C5A1B3000123456 /* TextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F4E8172C5A1B3000123456 /* TextEditor.swift */; };
+		HTTP4E7F2C5A1B3000654321 /* HTTPRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		930D8A462E328B4B00D2DC16 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				930D8A452E328B4B00D2DC16 /* CodeMirror-SwiftUI in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		93C47C922E3312A00069B278 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
+		B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPQueryView.swift; sourceTree = "<group>"; };
 		D5F4E7F02C5A1B2E00123456 /* DevHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DevHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5F4E7F32C5A1B2E00123456 /* DevHelperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevHelperApp.swift; sourceTree = "<group>"; };
 		D5F4E7F52C5A1B2E00123456 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -38,10 +57,9 @@
 		D5F4E80B2C5A1B3000123456 /* RegexTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTestView.swift; sourceTree = "<group>"; };
 		D5F4E80D2C5A1B3000123456 /* UUIDGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDGeneratorView.swift; sourceTree = "<group>"; };
 		D5F4E80F2C5A1B3000123456 /* URLToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLToolsView.swift; sourceTree = "<group>"; };
-		B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPQueryView.swift; sourceTree = "<group>"; };
-		HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPRequestView.swift; sourceTree = "<group>"; };
 		D5F4E8112C5A1B3000123456 /* ToolType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolType.swift; sourceTree = "<group>"; };
-		D5F4E8172C5A1B3000123456 /* CodeTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeTextEditor.swift; sourceTree = "<group>"; };
+		D5F4E8172C5A1B3000123456 /* TextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditor.swift; sourceTree = "<group>"; };
+		HTTP4E7F2C5A1B3000654322 /* HTTPRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPRequestView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				930D8A442E3289B900D2DC16 /* CodeMirror-SwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +140,8 @@
 		D5F4E8152C5A1B3000123456 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				D5F4E8172C5A1B3000123456 /* CodeTextEditor.swift */,
+				D5F4E8172C5A1B3000123456 /* TextEditor.swift */,
+				93C47C922E3312A00069B278 /* CodeEditor.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -136,6 +156,7 @@
 				D5F4E7EC2C5A1B2E00123456 /* Sources */,
 				D5F4E7ED2C5A1B2E00123456 /* Frameworks */,
 				D5F4E7EE2C5A1B2E00123456 /* Resources */,
+				930D8A462E328B4B00D2DC16 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -170,6 +191,9 @@
 				Base,
 			);
 			mainGroup = D5F4E7E72C5A1B2E00123456;
+			packageReferences = (
+				930D8A422E3289B900D2DC16 /* XCRemoteSwiftPackageReference "CodeMirror-SwiftUI" */,
+			);
 			productRefGroup = D5F4E7F12C5A1B2E00123456 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -196,6 +220,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93C47C912E3312690069B278 /* IPQueryView.swift in Sources */,
 				D5F4E8022C5A1B3000123456 /* TimestampConverterView.swift in Sources */,
 				D5F4E8042C5A1B3000123456 /* UnitConverterView.swift in Sources */,
 				D5F4E8062C5A1B3000123456 /* JSONFormatterView.swift in Sources */,
@@ -203,10 +228,10 @@
 				D5F4E80C2C5A1B3000123456 /* RegexTestView.swift in Sources */,
 				D5F4E80E2C5A1B3000123456 /* UUIDGeneratorView.swift in Sources */,
 				D5F4E8102C5A1B3000123456 /* URLToolsView.swift in Sources */,
-				B822A4CAC32A426BA9E4E438123456 /* IPQueryView.swift in Sources */,
 				HTTP4E7F2C5A1B3000654321 /* HTTPRequestView.swift in Sources */,
+				93C47C932E3312A00069B278 /* CodeEditor.swift in Sources */,
 				D5F4E8122C5A1B3000123456 /* ToolType.swift in Sources */,
-				D5F4E8162C5A1B3000123456 /* CodeTextEditor.swift in Sources */,
+				D5F4E8162C5A1B3000123456 /* TextEditor.swift in Sources */,
 				D5F4E7F62C5A1B2E00123456 /* ContentView.swift in Sources */,
 				D5F4E7F42C5A1B2E00123456 /* DevHelperApp.swift in Sources */,
 			);
@@ -350,6 +375,7 @@
 				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"DevHelper/Preview Content\"";
+				DEVELOPMENT_TEAM = VS7S7V6J2F;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -383,6 +409,7 @@
 				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"DevHelper/Preview Content\"";
+				DEVELOPMENT_TEAM = VS7S7V6J2F;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -425,6 +452,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		930D8A422E3289B900D2DC16 /* XCRemoteSwiftPackageReference "CodeMirror-SwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Pictarine/CodeMirror-SwiftUI";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		930D8A432E3289B900D2DC16 /* CodeMirror-SwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 930D8A422E3289B900D2DC16 /* XCRemoteSwiftPackageReference "CodeMirror-SwiftUI" */;
+			productName = "CodeMirror-SwiftUI";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D5F4E7E82C5A1B2E00123456 /* Project object */;
 }

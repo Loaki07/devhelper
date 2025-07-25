@@ -62,7 +62,7 @@ struct URLToolsView: View {
                     .buttonStyle(.borderless)
                 }
                 
-                CodeTextEditor(text: $textInput)
+                TextEditor(text: $textInput)
                     .padding(5)
                     .frame(maxHeight: .infinity)
                     .onChange(of: textInput) { _, _ in
@@ -138,7 +138,7 @@ struct URLToolsView: View {
                     .buttonStyle(.borderless)
                 }
                 
-                CodeTextEditor(text: $encodedInput)
+                TextEditor(text: $encodedInput)
                     .padding(5)
                     .frame(maxHeight: .infinity)
                     .onChange(of: encodedInput) { _, _ in

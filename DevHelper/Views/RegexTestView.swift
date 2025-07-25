@@ -95,7 +95,7 @@ struct RegexTestView: View {
                         .buttonStyle(.borderless)
                     }
                     
-                    CodeTextEditor(text: $testString)
+                    TextEditor(text: $testString)
                         .padding(5)
                         .frame(maxHeight: .infinity)
                         .onChange(of: testString) { _, _ in

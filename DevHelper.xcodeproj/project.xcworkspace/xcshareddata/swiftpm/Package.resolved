@@ -1,0 +1,15 @@
+{
+  "originHash" : "750bcc48215aef459ea86ae488c9a9f12385b6fe678bd28540f70eb6310f64f4",
+  "pins" : [
+    {
+      "identity" : "codemirror-swiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Pictarine/CodeMirror-SwiftUI",
+      "state" : {
+        "branch" : "master",
+        "revision" : "a61c18f989192432ec9cded20257d50bf0f2663e"
+      }
+    }
+  ],
+  "version" : 3
+}

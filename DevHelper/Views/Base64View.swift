@@ -41,7 +41,7 @@ struct Base64View: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        CodeTextEditor(text: $textInput)
+                        TextEditor(text: $textInput)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: textInput) { _, _ in
@@ -99,7 +99,7 @@ struct Base64View: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        CodeTextEditor(text: $base64Input)
+                        TextEditor(text: $base64Input)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: base64Input) { _, _ in
