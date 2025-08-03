@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # DevHelper - Claude Context
 
 ## Project Overview
@@ -120,10 +124,10 @@ DevHelper/
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
-- SwiftUI for UI framework
-- Combine for reactive programming
-- Foundation for core utilities
-- AppKit for clipboard access (NSPasteboard)
+- **SwiftUI**: UI framework (macOS 11.0+)
+- **Foundation**: Core utilities and networking
+- **AppKit**: Clipboard access (NSPasteboard), file dialogs
+- **No external packages**: Pure Apple frameworks only
 
 ## Recent Updates (Version 1.5)
 
@@ -213,12 +217,21 @@ DevHelper/
 
 ### Build & Run
 ```bash
-# Build project
+# Open project in Xcode (recommended)
+open DevHelper.xcodeproj
+
+# Build from command line
 xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug
 
-# Or open in Xcode
-open DevHelper.xcodeproj
+# Build and run from command line
+xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug build
 ```
+
+### Key Development Notes
+- **No external dependencies**: Project uses only native SwiftUI, Foundation, and AppKit
+- **No package managers**: No CocoaPods, SPM packages, or Carthage dependencies
+- **App Sandbox enabled**: Network client access granted for IP Query tool
+- **Target**: macOS 14.0+, requires Xcode 15.4+
 
 ### Project Management
 - **Design Document**: `DESIGN.md` contains comprehensive architecture details
