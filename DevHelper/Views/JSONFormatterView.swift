@@ -225,6 +225,12 @@ struct JSONFormatterView: View {
                 }
                 .buttonStyle(.bordered)
                 
+                Button("Unescape") {
+                    selectedMode = .unescape
+                    processJSON()
+                }
+                .buttonStyle(.bordered)
+                
                 Button("Diff") {
                     selectedMode = .diff
                     processJSON()
@@ -259,6 +265,8 @@ struct JSONFormatterView: View {
             validateJSON()
         case .escape:
             escapeJSON()
+        case .unescape:
+            unescapeJSON()
         case .diff:
             diffJSON()
         }
@@ -349,6 +357,49 @@ struct JSONFormatterView: View {
         jsonOutput = "\"\(escapedJSON)\""
         isValid = true
         validationMessage = "JSON escaped for string use"
+    }
+    
+    private func unescapeJSON() {
+        var unescapedJSON = jsonInput
+        
+        // Remove outer quotes if present
+        if unescapedJSON.hasPrefix("\"") && unescapedJSON.hasSuffix("\"") {
+            unescapedJSON = String(unescapedJSON.dropFirst().dropLast())
+        }
+        
+        // Unescape JSON escape sequences
+        let unescaped = unescapedJSON
+            .replacingOccurrences(of: "\\n", with: "\n")
+            .replacingOccurrences(of: "\\r", with: "\r")
+            .replacingOccurrences(of: "\\t", with: "\t")
+            .replacingOccurrences(of: "\\\"", with: "\"")
+            .replacingOccurrences(of: "\\\\", with: "\\")
+            .replacingOccurrences(of: "\\/", with: "/")
+            .replacingOccurrences(of: "\\b", with: "\u{8}")
+            .replacingOccurrences(of: "\\f", with: "\u{c}")
+        
+        // Handle unicode escape sequences \uXXXX
+        var result = unescaped
+        let unicodePattern = #"\\u([0-9a-fA-F]{4})"#
+        if let regex = try? NSRegularExpression(pattern: unicodePattern) {
+            let matches = regex.matches(in: result, range: NSRange(result.startIndex..., in: result))
+            
+            // Process matches in reverse order to maintain string indices
+            for match in matches.reversed() {
+                if let range = Range(match.range, in: result),
+                   let hexRange = Range(match.range(at: 1), in: result) {
+                    let hexString = String(result[hexRange])
+                    if let unicodeValue = UInt32(hexString, radix: 16),
+                       let unicodeScalar = UnicodeScalar(unicodeValue) {
+                        result.replaceSubrange(range, with: String(Character(unicodeScalar)))
+                    }
+                }
+            }
+        }
+        
+        jsonOutput = result
+        isValid = true
+        validationMessage = "JSON unescaped from string format"
     }
     
     private func diffJSON() {
@@ -550,7 +601,7 @@ struct JSONFormatterView: View {
 }
 
 enum JSONMode: CaseIterable {
-    case format, minify, validate, escape, diff
+    case format, minify, validate, escape, unescape, diff
     
     var title: String {
         switch self {
@@ -558,6 +609,7 @@ enum JSONMode: CaseIterable {
         case .minify: return "Minify"
         case .validate: return "Validate"
         case .escape: return "Escape"
+        case .unescape: return "Unescape"
         case .diff: return "Diff"
         }
     }
