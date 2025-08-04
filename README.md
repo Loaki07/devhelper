@@ -1,6 +1,6 @@
 # DevHelper
 
-A native macOS application for developers, containing essential tools commonly used in software development.
+A native macOS application for developers, containing 10 essential tools commonly used in software development.
 
 > This tool was 100% developed by `Claude Code`.
 
@@ -15,6 +15,7 @@ A native macOS application for developers, containing essential tools commonly u
 - **URL Tools** - URL encoding/decoding and parsing
 - **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, response handling, and JSON tree view
 - **IP Query** - Discover your IP address and query geolocation data for any IP
+- **QR Code** - Generate QR codes with multiple sizes and error correction levels, scan QR codes from images
 
 ## Key Features
 
@@ -36,7 +37,7 @@ A native macOS application for developers, containing essential tools commonly u
 
 ## Version
 
-Current version: 1.5 (Build 6)
+Current version: 1.7
 
 ## Screenshots
 
@@ -69,3 +70,6 @@ Http Request History
 
 IP Query
 ![DevHelper IP Query](./screenshots/ip.png)
+
+QR Code
+![DevHelper QR Code](./screenshots/qrcode.png)

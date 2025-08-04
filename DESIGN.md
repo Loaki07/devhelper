@@ -23,7 +23,8 @@ DevHelper/
 │   │   ├── URLToolsView.swift
 │   │   ├── RegexTestView.swift
 │   │   ├── IPQueryView.swift
-│   │   └── HTTPRequestView.swift
+│   │   ├── HTTPRequestView.swift
+│   │   └── QRCodeView.swift
 │   ├── Assets.xcassets/          # App icons and assets
 │   └── Preview Content/          # SwiftUI preview assets
 └── README.md                     # Project documentation
@@ -103,7 +104,7 @@ Each tool follows a consistent pattern:
 - Format (pretty print)
 - Minify (remove whitespace)
 - Validate with detailed feedback
-- Escape for string embedding
+- Escape/Unescape for string embedding
 - JSON diff/compare mode with side-by-side comparison
 - Syntax error highlighting
 
@@ -273,6 +274,41 @@ Each tool follows a consistent pattern:
 - Comprehensive error handling for network issues
 - Automatic content type detection for response formatting
 - Thread-safe UI updates using `DispatchQueue.main.async`
+
+### 10. QR Code
+**File**: `QRCodeView.swift`
+
+**Features**:
+- QR code generation with multiple size options (Small 128x128, Medium 256x256, Large 512x512, Extra Large 1024x1024, Custom size)
+- Configurable error correction levels (L/M/Q/H) for different reliability needs
+- Real-time QR code generation as user types
+- Copy generated QR code to clipboard functionality
+- Save QR code as PNG file with proper filename formatting
+- QR code scanning from image files or clipboard
+- Image preview for scanning operations
+- Automatic URL detection and opening from scan results
+- Sample data buttons for quick testing (URL, text, WiFi)
+
+**UI Components**:
+- Tabbed interface (Generate/Scan) with segmented picker
+- Two-column layouts with visual flow indicators (arrow icons)
+- Size picker dropdown with descriptive labels
+- Custom size text field for pixel-perfect dimensions
+- Dynamic QR code preview with size indicators
+- Action buttons positioned below QR code image
+- Image preview section for scanning operations
+- Scrollable scan result area with copy/open functionality
+
+**Implementation Details**:
+- `CoreImage.CIFilter.qrCodeGenerator()` for QR code generation
+- `Vision.VNDetectBarcodesRequest` for QR code scanning
+- Dynamic scaling calculation based on selected size
+- `NSOpenPanel` for file selection with image content types
+- `NSSavePanel` with `UniformTypeIdentifiers` for PNG saving
+- `NSPasteboard` integration for clipboard operations
+- Proper entitlements (`com.apple.security.files.user-selected.read-write`) for file operations
+- Real-time UI updates using `onChange` modifiers
+- Error handling for image processing and file operations
 
 ## UI Design Principles
 
