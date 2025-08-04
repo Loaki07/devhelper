@@ -125,7 +125,7 @@ DevHelper/
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
-- **SwiftUI**: UI framework (macOS 11.0+)
+- **SwiftUI**: UI framework
 - **Foundation**: Core utilities and networking
 - **AppKit**: Clipboard access (NSPasteboard), file dialogs
 - **No external packages**: Pure Apple frameworks only
