@@ -77,6 +77,8 @@ struct ContentView: View {
                     IPQueryView()
                 case .httpRequest:
                     HTTPRequestView()
+                case .qrCode:
+                    QRCodeView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

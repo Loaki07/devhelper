@@ -10,6 +10,7 @@ enum ToolType: String, CaseIterable, Identifiable {
     case uuidGenerator = "uuid"
     case httpRequest = "http"
     case ipQuery = "ip"
+    case qrCode = "qrcode"
     
     var id: String { rawValue }
     
@@ -33,6 +34,8 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "HTTP Request"
         case .ipQuery:
             return "IP Query"
+        case .qrCode:
+            return "QR Code"
         }
     }
     
@@ -56,6 +59,8 @@ enum ToolType: String, CaseIterable, Identifiable {
             return "network"
         case .ipQuery:
             return "dot.radiowaves.left.and.right"
+        case .qrCode:
+            return "qrcode"
         }
     }
 }

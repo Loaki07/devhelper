@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # DevHelper - Claude Context
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 9 fully-functional tools commonly used by developers, with search functionality and modern UI design.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 10 fully-functional tools commonly used by developers, with search functionality and modern UI design.
 
 ## Current Status
-**✅ COMPLETE** - All 9 tools are fully implemented and working. Version 1.5 released.
+**✅ COMPLETE** - All 10 tools are fully implemented and working. Version 1.6+ released.
 
 ## Tools Implemented
 
@@ -64,6 +64,13 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 - **UI**: Split layout with request configuration (headers/auth/body tabs) and response display (body/headers/tree), real-time timer, status code indicators, copy/save functionality
 - **Recent Updates**: Added JSON tree view for structured response exploration, improved request history display
 
+### 10. QR Code (`QRCodeView.swift`)
+- **Status**: ✅ Complete
+- **Features**: QR code generation with multiple sizes (128x128 to 1024x1024+ custom), error correction levels, QR code scanning from files/clipboard, URL detection and opening
+- **UI**: Tabbed interface (Generate/Scan), two-column layouts with visual flow indicators, size-aware generation, image preview for scanning
+- **Generation**: Real-time QR code creation, copy to clipboard, save to file with proper entitlements, dynamic sizing with pixel indicators
+- **Scanning**: File selection, clipboard paste, image preview with scan results, automatic URL recognition
+
 ## Architecture
 
 ### Project Structure
@@ -84,7 +91,8 @@ DevHelper/
 │       ├── URLToolsView.swift
 │       ├── RegexTestView.swift
 │       ├── IPQueryView.swift
-│       └── HTTPRequestView.swift
+│       ├── HTTPRequestView.swift
+│       └── QRCodeView.swift
 └── DESIGN.md                       # Comprehensive design document
 ```
 
@@ -128,24 +136,26 @@ DevHelper/
 - **SwiftUI**: UI framework
 - **Foundation**: Core utilities and networking
 - **AppKit**: Clipboard access (NSPasteboard), file dialogs
+- **CoreImage**: QR code generation with CIFilter.qrCodeGenerator()
+- **Vision**: QR code scanning with VNDetectBarcodesRequest
+- **UniformTypeIdentifiers**: Modern file type handling for save dialogs
 - **No external packages**: Pure Apple frameworks only
 
-## Recent Updates (Version 1.6)
+## Recent Updates (Version 1.6+)
 
-### Latest Features (Version 1.6)
+### Latest Features (Version 1.6+)
+- **QR Code Tool**: Comprehensive QR code generation and scanning functionality
+  - **Generation**: Multiple sizes (Small 128x128, Medium 256x256, Large 512x512, Extra Large 1024x1024, Custom size)
+  - **Error Correction**: Configurable levels (L/M/Q/H) for different use cases
+  - **File Operations**: Copy to clipboard, save to PNG with proper entitlements (read-write access)
+  - **Scanning**: File selection, clipboard paste, image preview with scan results
+  - **UI Enhancement**: Two-column layout with visual flow indicators, buttons positioned below QR code
 - **UUID v7 Support**: Added timestamp-ordered UUID generation to UUID Generator
   - **UUID v7 Generation**: Creates timestamp-ordered UUIDs with embedded millisecond timestamps
   - **Timestamp Extraction**: Automatically extracts and displays embedded timestamps from UUID v7
-    - Shows human-readable date/time in local timezone
-    - Displays ISO 8601 format with fractional seconds
-    - Shows raw timestamp in milliseconds
   - Lexicographically sortable UUIDs for time-based ordering
-  - Enhanced validation with automatic UUID v7 detection
 - **JSON Unescape**: Enhanced JSON Formatter with bidirectional string processing
-  - Unescape escaped JSON strings back to readable format
-  - Handles all standard JSON escape sequences (\n, \t, \", \\, etc.)
-  - Supports Unicode escape sequences (\uXXXX)
-  - Complements existing escape functionality
+  - Handles all standard JSON escape sequences and Unicode sequences
 
 ### Previous Updates (Version 1.5)
 - **JSON Differ**: Added comprehensive JSON comparison functionality to JSON Formatter
@@ -196,19 +206,30 @@ DevHelper/
 - SwiftUI Previews available for all views
 - Manual testing covers error cases and edge conditions
 
-## Known Issues & Solutions
+## Key Architecture Notes
 
-### Fixed Issues
-- ✅ **Unit Converter keyboardType error**: Removed iOS-specific `.keyboardType(.decimalPad)` modifier
-- ✅ **HTTP Response headers type conversion**: Fixed `AnyHashable` to `String` conversion for response headers
-- ✅ **macOS Color References**: Fixed all `systemGray5`, `systemGray6`, `systemBackground` references to use proper NSColor equivalents
-- ✅ **Timestamp Converter Selectability**: Added `.textSelection(.enabled)` to result text areas
+### Tool Implementation Pattern
+Each tool follows a consistent pattern:
+1. **Enum definition** in `ToolType.swift` with title and SF Symbol icon
+2. **SwiftUI View** in `Views/` directory with @State management
+3. **Switch case** in `ContentView.swift` for navigation
+4. **Common UI patterns**: Two-column layouts, copy buttons, sample data
 
-### Common Gotchas
-- **macOS vs iOS modifiers**: Some SwiftUI modifiers are iOS-only
-- **Clipboard access**: Use `NSPasteboard` for macOS, not `UIPasteboard`
-- **Network requests**: Ensure app has network entitlements for IP Query tool
-- **App Transport Security**: Use HTTPS endpoints to avoid ATS blocks
+### State Management
+- Uses `@State` for local view state (input text, results, UI state)
+- No complex state management - each tool is self-contained
+- Real-time updates via `onChange` modifiers
+
+### File Operations & Entitlements
+- **Save operations** require `com.apple.security.files.user-selected.read-write` entitlement
+- **Network requests** require `com.apple.security.network.client` entitlement  
+- **Clipboard access** uses `NSPasteboard` (macOS) not `UIPasteboard` (iOS)
+
+### Common Development Issues
+- **Xcode project updates**: When adding new Swift files, must manually update `.pbxproj` file
+- **macOS vs iOS APIs**: Avoid iOS-specific modifiers like `.keyboardType(.decimalPad)`
+- **File type handling**: Use `UniformTypeIdentifiers` for modern file operations
+- **Image operations**: Use `CoreImage` for generation, `Vision` for recognition
 
 ## Future Enhancements
 
@@ -232,12 +253,22 @@ DevHelper/
 # Open project in Xcode (recommended)
 open DevHelper.xcodeproj
 
-# Build from command line
+# Build for macOS from command line
 xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug
 
-# Build and run from command line
-xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug build
+# Clean build artifacts
+xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
+
+# Build and launch app (using Claude Code MCP tools)
+# 1. Build: mcp__XcodeBuildMCP__build_mac_proj
+# 2. Get app path: mcp__XcodeBuildMCP__get_mac_app_path_proj  
+# 3. Launch: mcp__XcodeBuildMCP__launch_mac_app
 ```
+
+### Xcode Project Management
+- **Adding new tools**: Must add both the Swift file AND update the Xcode project file (.pbxproj)
+- **Entitlements**: Located in `DevHelper.entitlements` - includes sandbox, network, and file read-write permissions
+- **Target settings**: Bundle ID `com.devhelper.DevHelper`, minimum macOS 14.0
 
 ### Key Development Notes
 - **No external dependencies**: Project uses only native SwiftUI, Foundation, and AppKit
@@ -251,7 +282,7 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug b
 - **README**: `README.md` contains user-facing project information
 
 ## Success Metrics
-- ✅ All 9 essential tools fully implemented
+- ✅ All 10 essential tools fully implemented
 - ✅ Consistent UI/UX across all tools
 - ✅ Real-time processing and feedback
 - ✅ Professional macOS native experience
@@ -259,10 +290,11 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug b
 - ✅ Copy-to-clipboard functionality throughout
 - ✅ Search functionality for quick tool access
 - ✅ Selectable text in results areas
+- ✅ File save/load operations with proper entitlements
 - ✅ Streamlined feature set focused on core developer needs
 
 ---
 
-**Last Updated**: Version 1.6 released with UUID v7 support and JSON unescape functionality.
-**Recent Additions**: UUID v7 timestamp-ordered generation and extraction, JSON string unescape capability.
-**Next Steps**: Optional enhancements like cURL export, environment variables, API testing collections, or additional response format viewers.
+**Last Updated**: Version 1.6+ with QR Code tool implementation.
+**Latest Addition**: Complete QR Code generation and scanning with multiple sizes, error correction levels, file operations, and improved UI layout.
+**Architecture**: Uses CoreImage for QR generation, Vision framework for scanning, proper entitlements for file operations.
