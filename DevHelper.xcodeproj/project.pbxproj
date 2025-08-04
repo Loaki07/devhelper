@@ -460,9 +460,9 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		930D8A422E3289B900D2DC16 /* XCRemoteSwiftPackageReference "CodeMirror-SwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Pictarine/CodeMirror-SwiftUI";
+			repositoryURL = "https://github.com/hengfeiyang/CodeMirror-SwiftUI";
 			requirement = {
-				branch = master;
+				branch = main;
 				kind = branch;
 			};
 		};

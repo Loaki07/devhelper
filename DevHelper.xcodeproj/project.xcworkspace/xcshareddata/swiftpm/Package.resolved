@@ -1,13 +1,13 @@
 {
-  "originHash" : "750bcc48215aef459ea86ae488c9a9f12385b6fe678bd28540f70eb6310f64f4",
+  "originHash" : "578cb1972fe2ae9766ede9f596930ef682805ccc77f07519b22a907d37c36bcc",
   "pins" : [
     {
       "identity" : "codemirror-swiftui",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Pictarine/CodeMirror-SwiftUI",
+      "location" : "https://github.com/hengfeiyang/CodeMirror-SwiftUI",
       "state" : {
-        "branch" : "master",
-        "revision" : "a61c18f989192432ec9cded20257d50bf0f2663e"
+        "branch" : "main",
+        "revision" : "b18645aeed1a4d445e525bb331e4e2d432ae62f8"
       }
     }
   ],
