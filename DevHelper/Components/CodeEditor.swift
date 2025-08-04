@@ -12,8 +12,8 @@ struct CodeEditor: View {
     init(
         text: Binding<String>,
         mode: Mode = CodeMode.javascript.mode(),
-        theme: CodeViewTheme = .materialPalenight,
-        fontSize: Int = 14,
+        theme: CodeViewTheme = .devhelperNight,
+        fontSize: Int = 12,
         showInvisibleCharacters: Bool = false,
         lineWrapping: Bool = true
     ) {
@@ -58,8 +58,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.json.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -68,8 +68,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.text.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -77,9 +77,9 @@ extension CodeEditor {
     static func httpBody(text: Binding<String>) -> CodeEditor {
         CodeEditor(
             text: text,
-            mode: CodeMode.javascript.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            mode: CodeMode.json.mode(),
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -88,8 +88,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.swift.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -98,8 +98,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.javascript.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -108,8 +108,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.python.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -118,8 +118,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.html.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -128,8 +128,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.css.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -138,8 +138,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.sql.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -148,8 +148,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.xml.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -158,8 +158,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.yaml.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -168,8 +168,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.markdown.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
     
@@ -178,8 +178,8 @@ extension CodeEditor {
         CodeEditor(
             text: text,
             mode: CodeMode.shell.mode(),
-            theme: .materialPalenight,
-            fontSize: 14
+            theme: .devhelperNight,
+            fontSize: 12
         )
     }
 }

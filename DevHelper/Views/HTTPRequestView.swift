@@ -437,7 +437,7 @@ struct HTTPRequestView: View {
                                     .font(.system(.body, design: .monospaced))
                                     .textSelection(.enabled)
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding()
+                                    .padding(5)
                             }
                             .background(Color(NSColor.controlBackgroundColor))
                             .cornerRadius(8)
@@ -453,7 +453,7 @@ struct HTTPRequestView: View {
                                         .font(.system(.body, design: .monospaced))
                                         .textSelection(.enabled)
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding()
+                                        .padding(5)
                                 }
                                 .background(Color(NSColor.controlBackgroundColor))
                                 .cornerRadius(8)
@@ -654,17 +654,14 @@ struct HTTPRequestView: View {
         
         let contentType = httpResponse.value(forHTTPHeaderField: "Content-Type") ?? "text/plain"
         
-        // Handle SSE streaming
-        if contentType.contains("text/event-stream") {
-            handleStreamingResponse(httpResponse, headers: headers)
-            return
-        }
-        
         let bodyString: String
         if let data = data {
             if contentType.hasPrefix("application/json") {
                 bodyString = formatJSON(data) ?? String(data: data, encoding: .utf8) ?? "Binary data"
             } else if contentType.hasPrefix("text/") || contentType.contains("xml") {
+                bodyString = String(data: data, encoding: .utf8) ?? "Binary data"
+            } else if contentType.contains("text/event-stream") {
+                // Handle SSE streaming
                 bodyString = String(data: data, encoding: .utf8) ?? "Binary data"
             } else {
                 bodyString = "Binary data (\(data.count) bytes)"
@@ -680,19 +677,6 @@ struct HTTPRequestView: View {
             contentType: contentType,
             data: data
         )
-    }
-    
-    private func handleStreamingResponse(_ httpResponse: HTTPURLResponse, headers: [HTTPHeader]) {
-        isStreaming = true
-        
-        currentTask = urlSession?.dataTask(with: httpResponse.url!) { data, response, error in
-            if let data = data, let chunk = String(data: data, encoding: .utf8) {
-                DispatchQueue.main.async {
-                    self.streamingContent += chunk
-                }
-            }
-        }
-        currentTask?.resume()
     }
     
     private func startTimer() {
