@@ -26,9 +26,9 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 
 ### 3. JSON Formatter (`JSONFormatterView.swift`)
 - **Status**: ✅ Complete
-- **Features**: Format (pretty print), minify, validate, escape for strings, JSON diff/compare mode, syntax error highlighting
+- **Features**: Format (pretty print), minify, validate, escape/unescape for strings, JSON diff/compare mode, syntax error highlighting
 - **UI**: Two-panel layout with mode selection, three-panel layout for diff mode
-- **Recent Updates**: Added diff mode for JSON comparison with side-by-side view
+- **Recent Updates**: Added unescape functionality for escaped JSON strings, diff mode for JSON comparison with side-by-side view
 
 ### 4. Base64 Encode/Decode (`Base64View.swift`)
 - **Status**: ✅ Complete
@@ -43,8 +43,9 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 
 ### 6. UUID Generator (`UUIDGeneratorView.swift`)
 - **Status**: ✅ Complete
-- **Features**: Multiple formats, bulk generation (1-100), UUID validation, common pattern examples
+- **Features**: Multiple UUID versions (v1, v4, v5, v7), multiple formats, bulk generation (1-100), UUID validation, common pattern examples, **UUID v7 timestamp extraction**
 - **UI**: Generation controls with scrollable results list
+- **Recent Updates**: Added UUID v7 support with timestamp-ordered generation and automatic timestamp extraction from v7 UUIDs
 
 ### 7. URL Tools (`URLToolsView.swift`)
 - **Status**: ✅ Complete
@@ -120,7 +121,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.5 (Build 6)
+- **Version**: 1.6 (Build 7)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
@@ -129,9 +130,24 @@ DevHelper/
 - **AppKit**: Clipboard access (NSPasteboard), file dialogs
 - **No external packages**: Pure Apple frameworks only
 
-## Recent Updates (Version 1.5)
+## Recent Updates (Version 1.6)
 
-### Major New Features
+### Latest Features (Version 1.6)
+- **UUID v7 Support**: Added timestamp-ordered UUID generation to UUID Generator
+  - **UUID v7 Generation**: Creates timestamp-ordered UUIDs with embedded millisecond timestamps
+  - **Timestamp Extraction**: Automatically extracts and displays embedded timestamps from UUID v7
+    - Shows human-readable date/time in local timezone
+    - Displays ISO 8601 format with fractional seconds
+    - Shows raw timestamp in milliseconds
+  - Lexicographically sortable UUIDs for time-based ordering
+  - Enhanced validation with automatic UUID v7 detection
+- **JSON Unescape**: Enhanced JSON Formatter with bidirectional string processing
+  - Unescape escaped JSON strings back to readable format
+  - Handles all standard JSON escape sequences (\n, \t, \", \\, etc.)
+  - Supports Unicode escape sequences (\uXXXX)
+  - Complements existing escape functionality
+
+### Previous Updates (Version 1.5)
 - **JSON Differ**: Added comprehensive JSON comparison functionality to JSON Formatter
   - Side-by-side comparison view with three panels (JSON 1, JSON 2, Differences)
   - Real-time diff highlighting and detailed change detection
@@ -140,10 +156,6 @@ DevHelper/
   - Interactive tree view for JSON responses with expand/collapse functionality
   - Hierarchical display of JSON objects and arrays
   - Improved readability for complex API responses
-- **UI Improvements**: Various layout and user experience enhancements
-  - Optimized IP Query display layout
-  - Improved request history ordering in HTTP Request tool
-  - Better visual hierarchy and spacing
 
 ## Previous Updates (Version 1.4)
 
@@ -251,5 +263,6 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug b
 
 ---
 
-**Last Updated**: Version 1.5 released with JSON diff/comparison functionality and enhanced HTTP Request tool with JSON tree view for better API response exploration.
+**Last Updated**: Version 1.6 released with UUID v7 support and JSON unescape functionality.
+**Recent Additions**: UUID v7 timestamp-ordered generation and extraction, JSON string unescape capability.
 **Next Steps**: Optional enhancements like cURL export, environment variables, API testing collections, or additional response format viewers.

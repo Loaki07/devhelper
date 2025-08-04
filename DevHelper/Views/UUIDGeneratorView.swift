@@ -118,8 +118,9 @@ struct UUIDGeneratorView: View {
                             .padding()
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
+                            .textSelection(.enabled)
                     }
-                    .frame(height: 100)
+                    .frame(minHeight: 100, maxHeight: 192)
                     
                     // Common UUID Patterns
                     Text("Common Patterns:")
@@ -138,9 +139,9 @@ struct UUIDGeneratorView: View {
                 }
             }
             .padding(.horizontal, 0)
-            
+
             Spacer()
-        }
+         }
         .padding()
         .onAppear {
             loadState()
@@ -154,10 +155,56 @@ struct UUIDGeneratorView: View {
         generatedUUIDs.removeAll()
         
         for _ in 0..<bulkCount {
-            let uuid = UUID()
+            let uuid: UUID
+            
+            switch selectedVersion {
+            case .v7:
+                uuid = generateUUIDv7()
+            default:
+                uuid = UUID() // Standard v4 UUID
+            }
+            
             let formattedUUID = formatUUID(uuid, format: uuidFormat)
             generatedUUIDs.append(formattedUUID)
         }
+    }
+    
+    private func generateUUIDv7() -> UUID {
+        // UUID v7 format:
+        // 48 bits: Unix timestamp in milliseconds
+        // 12 bits: Random data for sub-millisecond precision
+        // 4 bits: Version (0111 for v7)
+        // 62 bits: Random data
+        // 2 bits: Variant (10)
+        
+        let now = Date()
+        let timestamp = UInt64(now.timeIntervalSince1970 * 1000) // milliseconds since epoch
+        
+        // Generate random bytes
+        var randomBytes = [UInt8](repeating: 0, count: 16)
+        _ = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+        
+        // Set timestamp (first 48 bits / 6 bytes)
+        randomBytes[0] = UInt8((timestamp >> 40) & 0xFF)
+        randomBytes[1] = UInt8((timestamp >> 32) & 0xFF)
+        randomBytes[2] = UInt8((timestamp >> 24) & 0xFF)
+        randomBytes[3] = UInt8((timestamp >> 16) & 0xFF)
+        randomBytes[4] = UInt8((timestamp >> 8) & 0xFF)
+        randomBytes[5] = UInt8(timestamp & 0xFF)
+        
+        // Set version (4 bits at position 6, upper nibble) - version 7
+        randomBytes[6] = (randomBytes[6] & 0x0F) | 0x70
+        
+        // Set variant (2 bits at position 8, upper 2 bits) - variant 10
+        randomBytes[8] = (randomBytes[8] & 0x3F) | 0x80
+        
+        // Create UUID from bytes
+        let uuidBytes = (randomBytes[0], randomBytes[1], randomBytes[2], randomBytes[3],
+                        randomBytes[4], randomBytes[5], randomBytes[6], randomBytes[7],
+                        randomBytes[8], randomBytes[9], randomBytes[10], randomBytes[11],
+                        randomBytes[12], randomBytes[13], randomBytes[14], randomBytes[15])
+        
+        return UUID(uuid: uuidBytes)
     }
     
     private func formatUUID(_ uuid: UUID, format: UUIDFormat) -> String {
@@ -192,13 +239,20 @@ struct UUIDGeneratorView: View {
         
         // Check if it's a valid UUID format
         if let _ = UUID(uuidString: uuidString) {
-            validationResult = """
+            var result = """
             ✅ Valid UUID
             
             Format: \(detectFormat(cleanedInput))
             Length: \(cleanedInput.count) characters
             Version: \(detectVersion(uuidString))
             """
+            
+            // Add timestamp information for UUID v7
+            if let timestampInfo = extractTimestampFromUUIDv7(uuidString) {
+                result += "\n\n📅 Timestamp Information:\n\(timestampInfo)"
+            }
+            
+            validationResult = result
         } else {
             validationResult = """
             ❌ Invalid UUID
@@ -232,9 +286,42 @@ struct UUIDGeneratorView: View {
             return "Version 4 (Random)"
         case "5":
             return "Version 5 (Name-based SHA-1)"
+        case "7":
+            return "Version 7 (Timestamp-ordered)"
         default:
             return "Version \(versionChar)"
         }
+    }
+    
+    private func extractTimestampFromUUIDv7(_ uuidString: String) -> String? {
+        // Check if it's a v7 UUID
+        let versionIndex = uuidString.index(uuidString.startIndex, offsetBy: 14)
+        let versionChar = uuidString[versionIndex]
+        
+        guard versionChar == "7" else {
+            return nil
+        }
+        
+        // Extract the first 48 bits (12 hex characters) as timestamp
+        let cleanUUID = uuidString.replacingOccurrences(of: "-", with: "")
+        let timestampHex = String(cleanUUID.prefix(12))
+        
+        guard let timestamp = UInt64(timestampHex, radix: 16) else {
+            return nil
+        }
+        
+        // Convert from milliseconds to seconds
+        let date = Date(timeIntervalSince1970: Double(timestamp) / 1000.0)
+        
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .medium
+        formatter.timeZone = TimeZone.current
+        
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        
+        return "\(formatter.string(from: date))\n\(isoFormatter.string(from: date))\nTimestamp: \(timestamp) ms"
     }
     
     private func copyToClipboard(_ text: String) {
@@ -285,13 +372,14 @@ struct UUIDGeneratorView: View {
 }
 
 enum UUIDVersion: CaseIterable {
-    case v1, v4, v5
+    case v1, v4, v5, v7
     
     var title: String {
         switch self {
-        case .v1: return "V1 (Time)"
-        case .v4: return "V4 (Random)"
-        case .v5: return "V5 (Name)"
+        case .v1: return "V1"
+        case .v4: return "V4"
+        case .v5: return "V5"
+        case .v7: return "V7"
         }
     }
 }
@@ -317,6 +405,7 @@ struct UUIDPattern {
 
 private let commonPatterns = [
     UUIDPattern(name: "Standard UUID", example: "550e8400-e29b-41d4-a716-446655440000"),
+    UUIDPattern(name: "UUID v7 Sample", example: "01912345-6789-7abc-def0-123456789abc"),
     UUIDPattern(name: "No Hyphens", example: "550e8400e29b41d4a716446655440000"),
     UUIDPattern(name: "With Braces", example: "{550e8400-e29b-41d4-a716-446655440000}"),
     UUIDPattern(name: "Nil UUID", example: "00000000-0000-0000-0000-000000000000")
