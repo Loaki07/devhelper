@@ -10,6 +10,7 @@ struct URLToolsView: View {
     @State private var urlInput: String = ""
     @State private var parsedComponents: URLComponents = URLComponents()
     @State private var queryParameters: [QueryParameter] = []
+    @State private var useAlphanumericOnly: Bool = false
     
     var body: some View {
         VStack(spacing: 20) {
@@ -69,9 +70,17 @@ struct URLToolsView: View {
                         encodeURL()
                     }
                 
-                Text("\(textInput.count) characters")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("\(textInput.count) characters")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    // Encoding options
+                    Toggle("Alphanumeric Only", isOn: $useAlphanumericOnly)
+                        .onChange(of: useAlphanumericOnly) { _, _ in
+                            encodeURL()
+                        }
+                }
             }
             
             Image(systemName: "arrow.right")
@@ -344,7 +353,8 @@ struct URLToolsView: View {
             return
         }
         
-        encodedOutput = textInput.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Error: Unable to encode"
+        let allowedCharacters: CharacterSet = useAlphanumericOnly ? .alphanumerics : .urlQueryAllowed
+        encodedOutput = textInput.addingPercentEncoding(withAllowedCharacters: allowedCharacters) ?? "Error: Unable to encode"
     }
     
     private func decodeURL() {
@@ -403,6 +413,7 @@ struct URLToolsView: View {
         defaults.set(decodedOutput, forKey: "URLTools.decodedOutput")
         defaults.set(urlInput, forKey: "URLTools.urlInput")
         defaults.set(selectedTab.title, forKey: "URLTools.selectedTab")
+        defaults.set(useAlphanumericOnly, forKey: "URLTools.useAlphanumericOnly")
     }
     
     private func loadState() {
@@ -412,6 +423,7 @@ struct URLToolsView: View {
         encodedOutput = defaults.string(forKey: "URLTools.encodedOutput") ?? ""
         decodedOutput = defaults.string(forKey: "URLTools.decodedOutput") ?? ""
         urlInput = defaults.string(forKey: "URLTools.urlInput") ?? ""
+        useAlphanumericOnly = defaults.bool(forKey: "URLTools.useAlphanumericOnly")
         
         if let tabTitle = defaults.string(forKey: "URLTools.selectedTab") {
             selectedTab = URLTab.allCases.first { $0.title == tabTitle } ?? .encoder
