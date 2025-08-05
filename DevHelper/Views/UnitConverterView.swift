@@ -191,10 +191,10 @@ enum UnitCategory: String, CaseIterable {
     
     var title: String {
         switch self {
+        case .data: return "Data"
         case .length: return "Length"
         case .weight: return "Weight"
         case .temperature: return "Temperature"
-        case .data: return "Data"
         case .area: return "Area"
         case .volume: return "Volume"
         }
@@ -202,6 +202,16 @@ enum UnitCategory: String, CaseIterable {
     
     var units: [UnitData] {
         switch self {
+        case .data:
+            return [
+                UnitData(name: "bit", symbol: "bit", toBaseMultiplier: 0.125),
+                UnitData(name: "byte", symbol: "Byte", toBaseMultiplier: 1.0),
+                UnitData(name: "kilobyte", symbol: "KB", toBaseMultiplier: 1024.0),
+                UnitData(name: "megabyte", symbol: "MB", toBaseMultiplier: 1024.0 * 1024.0),
+                UnitData(name: "gigabyte", symbol: "GB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0),
+                UnitData(name: "terabyte", symbol: "TB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0),
+                UnitData(name: "petabyte", symbol: "PB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0)
+            ]
         case .length:
             return [
                 UnitData(name: "millimeter", symbol: "mm", toBaseMultiplier: 0.001),
@@ -227,15 +237,6 @@ enum UnitCategory: String, CaseIterable {
                 UnitData(name: "celsius", symbol: "°C", toBaseMultiplier: 1.0),
                 UnitData(name: "fahrenheit", symbol: "°F", toBaseMultiplier: 1.0),
                 UnitData(name: "kelvin", symbol: "K", toBaseMultiplier: 1.0)
-            ]
-        case .data:
-            return [
-                UnitData(name: "byte", symbol: "Byte", toBaseMultiplier: 1.0),
-                UnitData(name: "kilobyte", symbol: "KB", toBaseMultiplier: 1024.0),
-                UnitData(name: "megabyte", symbol: "MB", toBaseMultiplier: 1024.0 * 1024.0),
-                UnitData(name: "gigabyte", symbol: "GB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0),
-                UnitData(name: "terabyte", symbol: "TB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0),
-                UnitData(name: "petabyte", symbol: "PB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0)
             ]
         case .area:
             return [
