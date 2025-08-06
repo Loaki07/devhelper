@@ -43,7 +43,7 @@ struct JSONFormatterView: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        TextEditor(text: $jsonInput)
+                        CodeEditor.json(text: $jsonInput)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: jsonInput) { _, _ in
@@ -68,7 +68,7 @@ struct JSONFormatterView: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        TextEditor(text: $jsonInput2)
+                        CodeEditor.json(text: $jsonInput2)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: jsonInput2) { _, _ in
@@ -129,7 +129,7 @@ struct JSONFormatterView: View {
                             .buttonStyle(.borderless)
                         }
                         
-                        TextEditor(text: $jsonInput)
+                        CodeEditor.json(text: $jsonInput)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                             .onChange(of: jsonInput) { _, _ in
@@ -169,16 +169,9 @@ struct JSONFormatterView: View {
                             .disabled(jsonOutput.isEmpty)
                         }
                         
-                        ScrollView {
-                            Text(jsonOutput.isEmpty ? "Formatted JSON will appear here" : jsonOutput)
-                                .font(.system(.body, design: .monospaced))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .textSelection(.enabled)
-                        }
-                        .padding(5)
-                        .frame(maxHeight: .infinity)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(8)
+                        CodeEditor.json(text: .constant(jsonOutput.isEmpty ? "Formatted JSON will appear here" : jsonOutput))
+                            .padding(5)
+                            .frame(maxHeight: .infinity)
                         
                         Text("\(jsonOutput.count) characters")
                             .font(.caption)
