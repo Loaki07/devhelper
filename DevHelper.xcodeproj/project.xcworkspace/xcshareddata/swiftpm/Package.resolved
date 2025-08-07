@@ -1,5 +1,5 @@
 {
-  "originHash" : "578cb1972fe2ae9766ede9f596930ef682805ccc77f07519b22a907d37c36bcc",
+  "originHash" : "79667c73569da3679ef7e7987fc41cbce2d177f8479a314c1bb3a6b51c7c6810",
   "pins" : [
     {
       "identity" : "codemirror-swiftui",
@@ -8,6 +8,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "97013721b3efbc8cd94afae0941b41c65e30e651"
+      }
+    },
+    {
+      "identity" : "duckdb-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/duckdb/duckdb-swift",
+      "state" : {
+        "branch" : "v1.4.0-dev1354",
+        "revision" : "92f578c5e7237bbc3bcf8b468f02b30452bdd157"
       }
     }
   ],

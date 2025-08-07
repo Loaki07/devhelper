@@ -79,6 +79,8 @@ struct ContentView: View {
                     HTTPRequestView()
                 case .qrCode:
                     QRCodeView()
+                case .parquetViewer:
+                    ParquetViewerView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

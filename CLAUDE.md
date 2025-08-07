@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # DevHelper - Claude Context
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 10 fully-functional tools commonly used by developers, with search functionality and modern UI design.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design.
 
 ## Current Status
-**✅ COMPLETE** - All 10 tools are fully implemented and working. Version 1.6+ released.
+**✅ COMPLETE** - All 11 tools are fully implemented and working. Version 1.7+ released.
 
 ## Tools Implemented
 
@@ -71,6 +71,14 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 - **Generation**: Real-time QR code creation, copy to clipboard, save to file with proper entitlements, dynamic sizing with pixel indicators
 - **Scanning**: File selection, clipboard paste, image preview with scan results, automatic URL recognition
 
+### 11. Parquet Viewer (`ParquetViewerView.swift`)
+- **Status**: ✅ Complete (with limitations)
+- **Features**: Parquet file validation, file structure verification, basic metadata display, sample data preview
+- **UI**: Tabbed interface (Data/Schema/Metadata), file selection with drag-and-drop support, table view for data preview
+- **Validation**: Checks PAR1 magic bytes, validates file structure, reads footer length, provides file size and format info
+- **Limitations**: Full data extraction requires external libraries (DuckDB/Arrow). Current implementation validates format and shows file structure only
+- **Recent Updates**: Added as requested in GitHub issue #4, provides basic Parquet file inspection without external dependencies
+
 ## Architecture
 
 ### Project Structure
@@ -92,7 +100,8 @@ DevHelper/
 │       ├── RegexTestView.swift
 │       ├── IPQueryView.swift
 │       ├── HTTPRequestView.swift
-│       └── QRCodeView.swift
+│       ├── QRCodeView.swift
+│       └── ParquetViewerView.swift
 └── DESIGN.md                       # Comprehensive design document
 ```
 
@@ -141,9 +150,19 @@ DevHelper/
 - **UniformTypeIdentifiers**: Modern file type handling for save dialogs
 - **No external packages**: Pure Apple frameworks only
 
-## Recent Updates (Version 1.6+)
+## Recent Updates (Version 1.7+)
 
-### Latest Features (Version 1.6+)
+### Latest Features (Version 1.7+)
+- **Parquet Viewer Tool**: Basic Parquet file validation and inspection functionality
+  - **File Validation**: Checks PAR1 magic bytes at header and footer for valid Parquet format
+  - **Structure Analysis**: Reads footer length and validates file structure integrity
+  - **Preview Interface**: Three-tab view for Data, Schema, and Metadata inspection
+  - **Sample Data Display**: Shows sample data grid for file preview (not actual data)
+  - **File Metadata**: Displays file size, format version, and structure information
+  - **Limitations Notice**: Clearly indicates that full parsing requires external libraries
+  - **Recommendations**: Provides guidance on tools for complete Parquet analysis (DuckDB, Arrow, Python)
+
+### Previous Features (Version 1.6)
 - **QR Code Tool**: Comprehensive QR code generation and scanning functionality
   - **Generation**: Multiple sizes (Small 128x128, Medium 256x256, Large 512x512, Extra Large 1024x1024, Custom size)
   - **Error Correction**: Configurable levels (L/M/Q/H) for different use cases
@@ -282,7 +301,7 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
 - **README**: `README.md` contains user-facing project information
 
 ## Success Metrics
-- ✅ All 10 essential tools fully implemented
+- ✅ All 11 essential tools fully implemented
 - ✅ Consistent UI/UX across all tools
 - ✅ Real-time processing and feedback
 - ✅ Professional macOS native experience
@@ -295,6 +314,6 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
 
 ---
 
-**Last Updated**: Version 1.6+ with QR Code tool implementation.
-**Latest Addition**: Complete QR Code generation and scanning with multiple sizes, error correction levels, file operations, and improved UI layout.
-**Architecture**: Uses CoreImage for QR generation, Vision framework for scanning, proper entitlements for file operations.
+**Last Updated**: Version 1.7+ with Parquet Viewer tool implementation.
+**Latest Addition**: Parquet file validation and inspection tool with format verification, structure analysis, and metadata display.
+**Architecture**: Pure Swift implementation for file validation, provides guidance for full parsing with external libraries.
