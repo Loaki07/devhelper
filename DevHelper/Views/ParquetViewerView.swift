@@ -41,7 +41,7 @@ struct ParquetViewerView: View {
     
     @State private var selectedRows = Set<ParquetRow.ID>()
     
-    private let maxPreviewRows = 1000
+    private let maxPreviewRows = 100
     
     var body: some View {
         VStack(spacing: 20) {
