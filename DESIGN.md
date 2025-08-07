@@ -24,7 +24,8 @@ DevHelper/
 │   │   ├── RegexTestView.swift
 │   │   ├── IPQueryView.swift
 │   │   ├── HTTPRequestView.swift
-│   │   └── QRCodeView.swift
+│   │   ├── QRCodeView.swift
+│   │   └── ParquetViewerView.swift
 │   ├── Assets.xcassets/          # App icons and assets
 │   └── Preview Content/          # SwiftUI preview assets
 └── README.md                     # Project documentation
@@ -80,10 +81,11 @@ Each tool follows a consistent pattern:
 **File**: `UnitConverterView.swift`
 
 **Features**:
-- 6 unit categories: Data, Length, Weight, Temperature, Area, Volume
+- 7 unit categories: Data, Time, Length, Weight, Temperature, Area, Volume
 - Real-time bidirectional conversion
 - Swap units functionality
 - Special temperature conversion logic
+- Comprehensive time unit support (nanoseconds to years)
 
 **UI Components**:
 - Segmented picker for categories
@@ -96,6 +98,7 @@ Each tool follows a consistent pattern:
 - `UnitData` struct for conversion multipliers
 - Special handling for temperature conversions (C/F/K)
 - Base unit conversion pattern
+- Time conversions from nanoseconds to years
 
 ### 3. JSON Formatter
 **File**: `JSONFormatterView.swift`
@@ -170,11 +173,12 @@ Each tool follows a consistent pattern:
 **File**: `UUIDGeneratorView.swift`
 
 **Features**:
-- Multiple UUID versions (V1, V4, V5)
+- Multiple UUID versions (V1, V4, V5, V7)
 - Bulk generation (1-100 UUIDs)
 - Multiple format options
 - UUID validation
 - Common pattern examples
+- UUID v7 timestamp extraction
 
 **UI Components**:
 - Version picker
@@ -188,6 +192,8 @@ Each tool follows a consistent pattern:
 - Format transformations (hyphens, case, braces)
 - Validation using `UUID(uuidString:)`
 - Version detection from UUID structure
+- UUID v7 timestamp-ordered generation
+- Automatic timestamp extraction from v7 UUIDs
 
 ### 7. URL Tools
 **File**: `URLToolsView.swift`
@@ -310,6 +316,34 @@ Each tool follows a consistent pattern:
 - Real-time UI updates using `onChange` modifiers
 - Error handling for image processing and file operations
 
+### 11. Parquet Viewer
+**File**: `ParquetViewerView.swift`
+
+**Features**:
+- Complete Parquet file reading using DuckDB Swift library
+- Schema extraction with column details (name, type, nullable)
+- Data preview with native SwiftUI table
+- File metadata display via `parquet_file_metadata()`
+- Key-value metadata display via `parquet_kv_metadata()`
+- CSV and JSON export options for data and schema
+
+**UI Components**:
+- Tabbed interface (Data/Schema/Metadata)
+- File selection button and filename display
+- Native SwiftUI table with fixed column widths (150px)
+- Schema table with column_name, data_type, nullable columns
+- Two-section metadata display
+- Export dropdown menu for each tab
+
+**Implementation Details**:
+- DuckDB Swift package integration via SPM
+- SQL queries for data extraction
+- `DESCRIBE SELECT` for schema information
+- `parquet_file_metadata()` and `parquet_kv_metadata()` functions
+- Fixed-width table columns for consistent display
+- CSV formatting with proper escaping
+- JSON export with structured data
+
 ## UI Design Principles
 
 ### Color Scheme
@@ -343,7 +377,8 @@ Each tool follows a consistent pattern:
 ```swift
 enum ToolType: String, CaseIterable, Identifiable {
     case timestampConverter, unitConverter, jsonFormatter, 
-         base64, regexTest, uuidGenerator, urlTools, ipQuery, httpRequest
+         base64, regexTest, uuidGenerator, urlTools, ipQuery, 
+         httpRequest, qrCode, parquetViewer
     
     var title: String { /* Display names */ }
     var iconName: String { /* SF Symbols */ }
@@ -360,21 +395,27 @@ enum ToolType: String, CaseIterable, Identifiable {
 - `HTTPMethod` and `AuthType` for HTTP request configuration
 - `HTTPHeader` and `HTTPResponseData` for request/response handling
 - `RequestTab`, `ResponseTab`, and `ResponseViewMode` for HTTP UI state
+- `QRCodeTab`, `QRCodeSize`, and `QRCodeCorrectionLevel` for QR code options
 
 ## Build Configuration
 
 ### Target Settings
 - **Minimum macOS**: 14.0
 - **Bundle Identifier**: com.devhelper.DevHelper
+- **Version**: 1.8 (Build 7)
 - **App Sandbox**: Enabled
-- **Network Access**: Enabled (for HTTP tool)
-- **File Access**: User-selected read-only
+- **Network Access**: Enabled (for HTTP and IP Query tools)
+- **File Access**: User-selected read-write
 
 ### Dependencies
 - **SwiftUI**: UI framework
 - **Combine**: Reactive programming
 - **Foundation**: Core utilities
-- **AppKit**: macOS integration (clipboard access)
+- **AppKit**: macOS integration (clipboard access, file dialogs)
+- **CoreImage**: QR code generation
+- **Vision**: QR code scanning
+- **UniformTypeIdentifiers**: Modern file type handling
+- **DuckDB**: Swift package for Parquet file reading (via SPM)
 
 ## Testing Strategy
 

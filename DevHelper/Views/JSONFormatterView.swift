@@ -279,7 +279,8 @@ struct JSONFormatterView: View {
             isValid = true
             validationMessage = "✅ Valid JSON"
         } catch {
-            jsonOutput = "Error: \(error.localizedDescription)"
+            let errorDetails = parseJSONError(error, input: jsonInput)
+            jsonOutput = errorDetails
             isValid = false
             validationMessage = "❌ Invalid JSON"
         }
@@ -333,7 +334,8 @@ struct JSONFormatterView: View {
             isValid = true
             validationMessage = "✅ Valid JSON"
         } catch {
-            jsonOutput = "❌ Invalid JSON\n\nError: \(error.localizedDescription)"
+            let errorDetails = parseJSONError(error, input: jsonInput)
+            jsonOutput = "❌ Invalid JSON\n\n\(errorDetails)"
             isValid = false
             validationMessage = "❌ Invalid JSON"
         }
@@ -556,6 +558,136 @@ struct JSONFormatterView: View {
         } else {
             return "\(value)"
         }
+    }
+    
+    private func parseJSONError(_ error: Error, input: String) -> String {
+        let nsError = error as NSError
+        var errorMessage = "Error parsing JSON:\n\n"
+        
+        // Try to extract line and character position from the error
+        if let debugDescription = nsError.userInfo[NSDebugDescriptionErrorKey] as? String {
+            // Look for character position in the debug description
+            if let charRange = debugDescription.range(of: "character ") {
+                let afterChar = debugDescription[charRange.upperBound...]
+                if let endRange = afterChar.firstIndex(where: { !$0.isNumber }) {
+                    let charPositionStr = afterChar[..<endRange]
+                    if let charPosition = Int(charPositionStr) {
+                        let (line, column, context) = findLineAndColumn(in: input, at: charPosition)
+                        errorMessage += "📍 Error at Line \(line), Column \(column)\n"
+                        errorMessage += "\n\(context)\n\n"
+                    }
+                }
+            }
+            
+            // Add the original error description
+            errorMessage += "Details: \(debugDescription)"
+        } else {
+            // Fallback to basic error description
+            errorMessage += error.localizedDescription
+            
+            // Try to identify common JSON errors by analyzing the input
+            if let errorDetail = analyzeJSONError(input) {
+                errorMessage += "\n\n" + errorDetail
+            }
+        }
+        
+        return errorMessage
+    }
+    
+    private func findLineAndColumn(in text: String, at position: Int) -> (line: Int, column: Int, context: String) {
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
+        var currentPosition = 0
+        var lineNumber = 1
+        
+        for line in lines {
+            let lineLength = line.count + 1 // +1 for the newline
+            if currentPosition + lineLength > position {
+                let column = position - currentPosition + 1
+                
+                // Create context with error pointer
+                var context = ""
+                
+                // Show previous line if exists
+                if lineNumber > 1 && lineNumber <= lines.count {
+                    let prevLine = lines[lineNumber - 2]
+                    context += "\(lineNumber - 1): \(prevLine)\n"
+                }
+                
+                // Show current line with error indicator
+                context += "\(lineNumber): \(line)\n"
+                context += String(repeating: " ", count: String(lineNumber).count + 2 + column - 1) + "^ Error here"
+                
+                // Show next line if exists
+                if lineNumber < lines.count {
+                    let nextLine = lines[lineNumber]
+                    context += "\n\(lineNumber + 1): \(nextLine)"
+                }
+                
+                return (lineNumber, column, context)
+            }
+            currentPosition += lineLength
+            lineNumber += 1
+        }
+        
+        return (lineNumber, 1, "Position out of range")
+    }
+    
+    private func analyzeJSONError(_ input: String) -> String? {
+        var issues: [String] = []
+        
+        // Check for common JSON errors
+        let lines = input.split(separator: "\n", omittingEmptySubsequences: false)
+        
+        for (index, line) in lines.enumerated() {
+            let lineNum = index + 1
+            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+            
+            // Check for trailing commas
+            if trimmedLine.hasSuffix(",}") || trimmedLine.hasSuffix(",]") {
+                issues.append("⚠️ Line \(lineNum): Trailing comma before closing bracket")
+            }
+            
+            // Check for single quotes (JSON requires double quotes)
+            if trimmedLine.contains("'") {
+                // Rough check - might have false positives
+                let singleQuoteCount = trimmedLine.filter { $0 == "'" }.count
+                if singleQuoteCount % 2 == 0 && singleQuoteCount > 0 {
+                    issues.append("⚠️ Line \(lineNum): JSON requires double quotes, not single quotes")
+                }
+            }
+            
+            // Check for missing quotes on keys
+            if trimmedLine.contains(":") && !trimmedLine.hasPrefix("//") {
+                let beforeColon = trimmedLine.split(separator: ":").first ?? ""
+                let trimmedKey = beforeColon.trimmingCharacters(in: .whitespaces)
+                if !trimmedKey.isEmpty && !trimmedKey.hasPrefix("\"") && !trimmedKey.hasPrefix("{") && !trimmedKey.hasPrefix("[") {
+                    issues.append("⚠️ Line \(lineNum): Object keys must be quoted")
+                }
+            }
+            
+            // Check for unclosed strings
+            let quoteCount = trimmedLine.filter { $0 == "\"" }.count
+            let escapedQuoteCount = trimmedLine.components(separatedBy: "\\\"").count - 1
+            let unescapedQuotes = quoteCount - escapedQuoteCount
+            if unescapedQuotes % 2 != 0 {
+                issues.append("⚠️ Line \(lineNum): Unclosed string (odd number of quotes)")
+            }
+        }
+        
+        // Check for unmatched brackets
+        let openBraces = input.filter { $0 == "{" }.count
+        let closeBraces = input.filter { $0 == "}" }.count
+        if openBraces != closeBraces {
+            issues.append("⚠️ Unmatched braces: \(openBraces) { vs \(closeBraces) }")
+        }
+        
+        let openBrackets = input.filter { $0 == "[" }.count
+        let closeBrackets = input.filter { $0 == "]" }.count
+        if openBrackets != closeBrackets {
+            issues.append("⚠️ Unmatched brackets: \(openBrackets) [ vs \(closeBrackets) ]")
+        }
+        
+        return issues.isEmpty ? nil : "Possible issues:\n" + issues.joined(separator: "\n")
     }
     
     private func copyToClipboard(_ text: String) {

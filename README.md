@@ -1,21 +1,22 @@
 # DevHelper
 
-A native macOS application for developers, containing 10 essential tools commonly used in software development.
+A native macOS application for developers, containing 11 essential tools commonly used in software development.
 
 > This tool was 100% developed by `Claude Code`.
 
 ## Features
 
 - **Timestamp Converter** - Convert between timestamps and human-readable dates with multiple format support
-- **Unit Converter** - Convert between different units (Data, Length, Weight, Temperature, Area, Volume)
+- **Unit Converter** - Convert between different units (Data, Time, Length, Weight, Temperature, Area, Volume)
 - **JSON Formatter** - Format, validate, and compare JSON data with diff view
 - **Base64 Encode/Decode** - Encode and decode Base64 strings
 - **Regex Test** - Test regular expressions with pattern matching
-- **UUID Generator** - Generate UUIDs in various formats
+- **UUID Generator** - Generate UUIDs in various formats including v7 with timestamp extraction
 - **URL Tools** - URL encoding/decoding and parsing
 - **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, response handling, and JSON tree view
 - **IP Query** - Discover your IP address and query geolocation data for any IP
 - **QR Code** - Generate QR codes with multiple sizes and error correction levels, scan QR codes from images
+- **Parquet Viewer** - Read and explore Parquet files with schema inspection and data export
 
 ## Key Features
 
@@ -37,7 +38,7 @@ A native macOS application for developers, containing 10 essential tools commonl
 
 ## Version
 
-Current version: 1.7
+Current version: 1.8
 
 ## Screenshots
 
@@ -73,3 +74,5 @@ Http Request History
 
 #### QR Code
 ![DevHelper QR Code](./screenshots/qrcode.png)
+
+#### Parquet Viewer

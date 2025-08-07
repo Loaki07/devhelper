@@ -2,13 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# DevHelper - Claude Context
-
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design.
-
-## Current Status
-**✅ COMPLETE** - All 11 tools are fully implemented and working. Version 1.7+ released.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design. Version 1.7+ released.
 
 ## Tools Implemented
 
@@ -20,9 +15,9 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 
 ### 2. Unit Converter (`UnitConverterView.swift`)
 - **Status**: ✅ Complete
-- **Features**: 6 categories (Data, Length, Weight, Temperature, Area, Volume), real-time conversion, special temperature handling
-- **UI**: Category picker with from/to unit selection, **Data category moved to first position**
-- **Recent Updates**: Removed Time category, Data now default selection
+- **Features**: 7 categories (Data, Time, Length, Weight, Temperature, Area, Volume), real-time conversion, special temperature handling
+- **UI**: Category picker with from/to unit selection, Data category in first position
+- **Recent Updates**: Added Time category with comprehensive time unit conversions (nanoseconds to years)
 
 ### 3. JSON Formatter (`JSONFormatterView.swift`)
 - **Status**: ✅ Complete
@@ -72,12 +67,13 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 - **Scanning**: File selection, clipboard paste, image preview with scan results, automatic URL recognition
 
 ### 11. Parquet Viewer (`ParquetViewerView.swift`)
-- **Status**: ✅ Complete (with limitations)
-- **Features**: Parquet file validation, file structure verification, basic metadata display, sample data preview
-- **UI**: Tabbed interface (Data/Schema/Metadata), file selection with drag-and-drop support, table view for data preview
-- **Validation**: Checks PAR1 magic bytes, validates file structure, reads footer length, provides file size and format info
-- **Limitations**: Full data extraction requires external libraries (DuckDB/Arrow). Current implementation validates format and shows file structure only
-- **Recent Updates**: Added as requested in GitHub issue #4, provides basic Parquet file inspection without external dependencies
+- **Status**: ✅ Complete - Full DuckDB integration
+- **Features**: Complete Parquet file reading using DuckDB Swift library, schema extraction, data preview, metadata display
+- **UI**: Tabbed interface (Data/Schema/Metadata), native SwiftUI table with fixed column widths, schema table with column_name/data_type/nullable columns
+- **Data Display**: Scrollable table with consistent column alignment, supports CSV and JSON export
+- **Schema Display**: Table view with column information, supports CSV and JSON export
+- **Metadata**: Two sections - File metadata (via `parquet_file_metadata()`) and Key-value metadata (via `parquet_kv_metadata()`)
+- **Dependencies**: DuckDB Swift package integrated via SPM
 
 ## Architecture
 
@@ -138,7 +134,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.6 (Build 7)
+- **Version**: 1.8 (Build 7)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 
 ### Dependencies
@@ -148,27 +144,28 @@ DevHelper/
 - **CoreImage**: QR code generation with CIFilter.qrCodeGenerator()
 - **Vision**: QR code scanning with VNDetectBarcodesRequest
 - **UniformTypeIdentifiers**: Modern file type handling for save dialogs
-- **No external packages**: Pure Apple frameworks only
+- **DuckDB**: Swift package for Parquet file reading (via SPM)
 
-## Recent Updates (Version 1.7+)
+## Recent Updates (Version 1.8+)
 
-### Latest Features (Version 1.7+)
-- **Parquet Viewer Tool**: Basic Parquet file validation and inspection functionality
-  - **File Validation**: Checks PAR1 magic bytes at header and footer for valid Parquet format
-  - **Structure Analysis**: Reads footer length and validates file structure integrity
-  - **Preview Interface**: Three-tab view for Data, Schema, and Metadata inspection
-  - **Sample Data Display**: Shows sample data grid for file preview (not actual data)
-  - **File Metadata**: Displays file size, format version, and structure information
-  - **Limitations Notice**: Clearly indicates that full parsing requires external libraries
-  - **Recommendations**: Provides guidance on tools for complete Parquet analysis (DuckDB, Arrow, Python)
+### Latest Features (Version 1.8+)
+- **Parquet Viewer Tool**: Complete Parquet file reading with DuckDB integration
+  - **Full Data Reading**: Uses DuckDB Swift library to read actual Parquet data
+  - **Schema Table View**: Displays columns with name, data type, and nullable status
+  - **Data Preview**: Native SwiftUI table with proper column alignment (150px fixed width)
+  - **Export Options**: Both CSV and JSON export for data and schema
+  - **Metadata Display**: File metadata via `parquet_file_metadata()` and key-value metadata via `parquet_kv_metadata()`
+  - **Time Unit Converter**: Added Time category with conversions from nanoseconds to years
 
-### Previous Features (Version 1.6)
+### Previous Features (Version 1.7)
 - **QR Code Tool**: Comprehensive QR code generation and scanning functionality
   - **Generation**: Multiple sizes (Small 128x128, Medium 256x256, Large 512x512, Extra Large 1024x1024, Custom size)
   - **Error Correction**: Configurable levels (L/M/Q/H) for different use cases
   - **File Operations**: Copy to clipboard, save to PNG with proper entitlements (read-write access)
   - **Scanning**: File selection, clipboard paste, image preview with scan results
   - **UI Enhancement**: Two-column layout with visual flow indicators, buttons positioned below QR code
+
+### Previous Features (Version 1.6)
 - **UUID v7 Support**: Added timestamp-ordered UUID generation to UUID Generator
   - **UUID v7 Generation**: Creates timestamp-ordered UUIDs with embedded millisecond timestamps
   - **Timestamp Extraction**: Automatically extracts and displays embedded timestamps from UUID v7
@@ -290,9 +287,9 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
 - **Target settings**: Bundle ID `com.devhelper.DevHelper`, minimum macOS 14.0
 
 ### Key Development Notes
-- **No external dependencies**: Project uses only native SwiftUI, Foundation, and AppKit
-- **No package managers**: No CocoaPods, SPM packages, or Carthage dependencies
-- **App Sandbox enabled**: Network client access granted for IP Query tool
+- **External dependencies**: DuckDB Swift package via SPM for Parquet file reading
+- **Package manager**: Swift Package Manager (SPM) for DuckDB integration
+- **App Sandbox enabled**: Network client access granted for IP Query tool, file read-write for save operations
 - **Target**: macOS 14.0+, requires Xcode 15.4+
 
 ### Project Management
@@ -314,6 +311,8 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
 
 ---
 
-**Last Updated**: Version 1.7+ with Parquet Viewer tool implementation.
-**Latest Addition**: Parquet file validation and inspection tool with format verification, structure analysis, and metadata display.
-**Architecture**: Pure Swift implementation for file validation, provides guidance for full parsing with external libraries.
+**Last Updated**: Version 1.8+ with complete Parquet Viewer and Time Unit Converter.
+**Latest Additions**: 
+- Full Parquet file reading with DuckDB integration, schema/data/metadata display with export options
+- Time category in Unit Converter with comprehensive time unit conversions
+**Architecture**: SwiftUI with DuckDB Swift package for Parquet functionality.
