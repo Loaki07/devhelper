@@ -187,11 +187,12 @@ struct UnitConverterView: View {
 }
 
 enum UnitCategory: String, CaseIterable {
-    case data, length, weight, temperature, area, volume
+    case data, time, length, weight, temperature, area, volume
     
     var title: String {
         switch self {
         case .data: return "Data"
+        case .time: return "Time"
         case .length: return "Length"
         case .weight: return "Weight"
         case .temperature: return "Temperature"
@@ -211,6 +212,19 @@ enum UnitCategory: String, CaseIterable {
                 UnitData(name: "gigabyte", symbol: "GB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0),
                 UnitData(name: "terabyte", symbol: "TB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0),
                 UnitData(name: "petabyte", symbol: "PB", toBaseMultiplier: 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0)
+            ]
+        case .time:
+            return [
+                UnitData(name: "nanosecond", symbol: "ns", toBaseMultiplier: 0.000000001),
+                UnitData(name: "microsecond", symbol: "μs", toBaseMultiplier: 0.000001),
+                UnitData(name: "millisecond", symbol: "ms", toBaseMultiplier: 0.001),
+                UnitData(name: "second", symbol: "s", toBaseMultiplier: 1.0),
+                UnitData(name: "minute", symbol: "min", toBaseMultiplier: 60.0),
+                UnitData(name: "hour", symbol: "hr", toBaseMultiplier: 3600.0),
+                UnitData(name: "day", symbol: "day", toBaseMultiplier: 86400.0),
+                UnitData(name: "week", symbol: "week", toBaseMultiplier: 604800.0),
+                UnitData(name: "month", symbol: "month", toBaseMultiplier: 2592000.0), // 30 days average
+                UnitData(name: "year", symbol: "year", toBaseMultiplier: 31536000.0) // 365 days
             ]
         case .length:
             return [
