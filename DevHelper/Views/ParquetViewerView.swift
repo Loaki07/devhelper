@@ -280,7 +280,7 @@ struct ParquetViewerView: View {
                                 .font(.system(.caption, design: .monospaced))
                                 .fontWeight(.bold)
                                 .padding(8)
-                                .frame(width: 200, alignment: .leading)
+                                .frame(width: 500, alignment: .leading)
                                 .background(Color.gray.opacity(0.1))
                                 .overlay(
                                     Rectangle()
@@ -316,7 +316,7 @@ struct ParquetViewerView: View {
                                 Text(row.columnName)
                                     .font(.system(.caption, design: .monospaced))
                                     .padding(8)
-                                    .frame(width: 200, alignment: .leading)
+                                    .frame(width: 500, alignment: .leading)
                                     .background(index % 2 == 0 ? Color.clear : Color.gray.opacity(0.05))
                                     .overlay(
                                         Rectangle()
