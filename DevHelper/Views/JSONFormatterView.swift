@@ -169,7 +169,7 @@ struct JSONFormatterView: View {
                             .disabled(jsonOutput.isEmpty)
                         }
                         
-                        CodeEditor.json(text: .constant(jsonOutput.isEmpty ? "Formatted JSON will appear here" : jsonOutput))
+                        CodeEditor.json(text: .constant(jsonOutput.isEmpty ? "Formatted JSON will appear here" : jsonOutput), readOnly: true)
                             .padding(5)
                             .frame(maxHeight: .infinity)
                         
