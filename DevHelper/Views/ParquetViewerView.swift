@@ -26,6 +26,7 @@ struct ParquetViewerView: View {
     @State private var selectedTab = "data"
     @State private var fileURL: URL?
     @State private var fileName: String = ""
+    @State private var parquetFilePath: String = ""
     @State private var isLoading = false
     @State private var errorMessage: String?
     
@@ -40,8 +41,8 @@ struct ParquetViewerView: View {
     @State private var fileSize: String = ""
     
     @State private var selectedRows = Set<ParquetRow.ID>()
-    
-    private let maxPreviewRows = 100
+
+    private let maxPreviewRows = 50
     
     var body: some View {
         VStack(spacing: 20) {
@@ -123,7 +124,7 @@ struct ParquetViewerView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if !tableRows.isEmpty {
                 tableContentView
-                
+
                 if rowCount > maxPreviewRows {
                     Text("Showing first \(maxPreviewRows) rows of \(rowCount) total")
                         .font(.caption)
@@ -414,6 +415,7 @@ struct ParquetViewerView: View {
     private func loadParquetFile(_ url: URL) {
         fileURL = url
         fileName = url.lastPathComponent
+        parquetFilePath = url.path
         isLoading = true
         errorMessage = nil
         
@@ -626,15 +628,44 @@ struct ParquetViewerView: View {
         savePanel.allowedContentTypes = [UTType.commaSeparatedText]
         
         if savePanel.runModal() == .OK, let url = savePanel.url {
+            // For export, we need to load all data - do this in a separate query
+            Task {
+                await exportAllDataAsCSV(to: url)
+            }
+        }
+    }
+    
+    private func exportAllDataAsCSV(to url: URL) async {
+        do {
+            let database = try Database(store: .inMemory)
+            let connection = try database.connect()
+            
+            // Get all data for export
+            let dataResult = try connection.query("""
+                SELECT * FROM read_parquet('\(parquetFilePath)')
+            """)
+            
             var csvContent = columnNames.map { "\"\($0)\"" }.joined(separator: ",") + "\n"
             
-            for row in tableRows {
-                csvContent += row.values.map { "\"\($0)\"" }.joined(separator: ",") + "\n"
+            if !dataResult.isEmpty {
+                let numRows = dataResult[0].count
+                
+                for rowIdx in 0..<numRows {
+                    var rowValues: [String] = []
+                    
+                    for column in dataResult {
+                        let value = extractValueFromColumn(column, at: rowIdx)
+                        rowValues.append(value)
+                    }
+                    
+                    csvContent += rowValues.map { "\"\($0)\"" }.joined(separator: ",") + "\n"
+                }
             }
             
-            do {
-                try csvContent.write(to: url, atomically: true, encoding: .utf8)
-            } catch {
+            try csvContent.write(to: url, atomically: true, encoding: .utf8)
+            
+        } catch {
+            await MainActor.run {
                 self.errorMessage = "Failed to export CSV: \(error.localizedDescription)"
             }
         }
@@ -695,22 +726,47 @@ struct ParquetViewerView: View {
         savePanel.allowedContentTypes = [UTType.json]
         
         if savePanel.runModal() == .OK, let url = savePanel.url {
+            // For export, we need to load all data - do this in a separate query
+            Task {
+                await exportAllDataAsJSON(to: url)
+            }
+        }
+    }
+    
+    private func exportAllDataAsJSON(to url: URL) async {
+        do {
+            let database = try Database(store: .inMemory)
+            let connection = try database.connect()
+            
+            // Get all data for export
+            let dataResult = try connection.query("""
+                SELECT * FROM read_parquet('\(parquetFilePath)')
+            """)
+            
             var jsonArray: [[String: String]] = []
             
-            for row in tableRows {
-                var jsonObject: [String: String] = [:]
-                for (index, columnName) in columnNames.enumerated() {
-                    if index < row.values.count {
-                        jsonObject[columnName] = row.values[index]
+            if !dataResult.isEmpty {
+                let numRows = dataResult[0].count
+                
+                for rowIdx in 0..<numRows {
+                    var jsonObject: [String: String] = [:]
+                    
+                    for (index, column) in dataResult.enumerated() {
+                        if index < columnNames.count {
+                            let value = extractValueFromColumn(column, at: rowIdx)
+                            jsonObject[columnNames[index]] = value
+                        }
                     }
+                    
+                    jsonArray.append(jsonObject)
                 }
-                jsonArray.append(jsonObject)
             }
             
-            do {
-                let jsonData = try JSONSerialization.data(withJSONObject: jsonArray, options: [.prettyPrinted, .sortedKeys])
-                try jsonData.write(to: url)
-            } catch {
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonArray, options: [.prettyPrinted, .sortedKeys])
+            try jsonData.write(to: url)
+            
+        } catch {
+            await MainActor.run {
                 self.errorMessage = "Failed to export JSON: \(error.localizedDescription)"
             }
         }
