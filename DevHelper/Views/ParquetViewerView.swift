@@ -42,6 +42,17 @@ struct ParquetViewerView: View {
     
     @State private var selectedRows = Set<ParquetRow.ID>()
 
+    // SQL playground state
+    @State private var sqlInput: String = "SELECT * FROM tbl LIMIT 50"
+    @State private var resolvedSQL: String = ""
+    @State private var sqlIsRunning: Bool = false
+    @State private var sqlErrorMessage: String?
+    @State private var sqlRows: [ParquetRow] = []
+    @State private var sqlColumnNames: [String] = []
+    @State private var sqlColumnTypes: [String] = []
+    @State private var sqlReturnedRowCount: Int = 0
+    @State private var showSQLEditor: Bool = false
+
     private let maxPreviewRows = 50
     
     var body: some View {
@@ -71,7 +82,6 @@ struct ParquetViewerView: View {
                             Label("Data", systemImage: "tablecells")
                         }
                         .tag("data")
-                    
                     schemaView
                         .tabItem {
                             Label("Schema", systemImage: "list.bullet.rectangle")
@@ -112,6 +122,7 @@ struct ParquetViewerView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        
     }
     
     @ViewBuilder
@@ -122,11 +133,13 @@ struct ParquetViewerView: View {
             if isLoading {
                 ProgressView("Loading data...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if sqlIsRunning {
+                ProgressView("Running SQL…")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if !tableRows.isEmpty {
                 tableContentView
-
-                if rowCount > maxPreviewRows {
-                    Text("Showing first \(maxPreviewRows) rows of \(rowCount) total")
+                if rowCount > 0 {
+                    Text("Showing \(tableRows.count) rows")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.top, 5)
@@ -140,59 +153,101 @@ struct ParquetViewerView: View {
     }
     
     private var dataHeaderView: some View {
-        HStack {
-            Text("Data Preview")
-                .font(.headline)
-            
-            Spacer()
-            
-            if rowCount > 0 {
-                Text("\(rowCount) rows × \(columnCount) columns")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Data")
+                    .font(.headline)
+                Spacer()
+                if rowCount > 0 {
+                    Text("\(rowCount) rows × \(columnCount) columns")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Toggle("SQL Editor", isOn: $showSQLEditor)
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
+                    .help("Show SQL editor")
+                Button(action: exportToCSV) {
+                    Label("Export CSV", systemImage: "square.and.arrow.up")
+                }
+                .buttonStyle(.bordered)
+                .disabled(tableRows.isEmpty)
+                Button(action: exportToJSON) {
+                    Label("Export JSON", systemImage: "doc.text")
+                }
+                .buttonStyle(.bordered)
+                .disabled(tableRows.isEmpty)
             }
-            
-            Button(action: exportToCSV) {
-                Label("Export CSV", systemImage: "square.and.arrow.up")
+            .padding(.horizontal)
+
+            if showSQLEditor {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Text("SQL")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text("Use \"tbl\" as the table for the selected Parquet file")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Button(action: runSQLQuery) {
+                        Label(sqlIsRunning ? "Running…" : "Run", systemImage: sqlIsRunning ? "hourglass" : "play.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(fileURL == nil || sqlIsRunning || sqlInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                CodeEditor.sql(text: $sqlInput)
+                    .frame(minHeight: 80, maxHeight: 80)
+                if let sqlErrorMessage = sqlErrorMessage {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle").foregroundColor(.red)
+                        Text(sqlErrorMessage).font(.caption).foregroundColor(.red)
+                    }
+                    .padding(6)
+                    .background(Color.red.opacity(0.1))
+                    .cornerRadius(8)
+                }
             }
-            .buttonStyle(.bordered)
-            .disabled(tableRows.isEmpty)
-            
-            Button(action: exportToJSON) {
-                Label("Export JSON", systemImage: "doc.text")
+            .padding(.horizontal)
             }
-            .buttonStyle(.bordered)
-            .disabled(tableRows.isEmpty)
         }
-        .padding(.horizontal)
     }
     
     private var tableContentView: some View {
-        ScrollView([.horizontal, .vertical]) {
-            VStack(alignment: .leading, spacing: 0) {
-                // Header row
-                tableHeaderRow
-                
-                // Data rows
-                ForEach(Array(tableRows.enumerated()), id: \.element.id) { rowIndex, row in
-                    tableDataRow(row: row, rowIndex: rowIndex)
+        GeometryReader { proxy in
+            let availableWidth = max(proxy.size.width, 0)
+            let minColumnWidth: CGFloat = 150
+            let columnCountSafe = max(columnNames.count, 1)
+            let computedColumnWidth = max(minColumnWidth, floor(availableWidth / CGFloat(columnCountSafe)))
+
+            ScrollView([.horizontal, .vertical]) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Header row
+                    tableHeaderRow(columnWidth: computedColumnWidth)
+                    
+                    // Data rows
+                    ForEach(Array(tableRows.enumerated()), id: \.element.id) { rowIndex, row in
+                        tableDataRow(row: row, rowIndex: rowIndex, columnWidth: computedColumnWidth)
+                    }
                 }
+                // Ensure content height is at least the viewport height so it sticks to the top
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: proxy.size.height, alignment: .topLeading)
             }
         }
         .background(Color.gray.opacity(0.05))
-        .cornerRadius(8)
     }
     
-    private var tableHeaderRow: some View {
+    private func tableHeaderRow(columnWidth: CGFloat) -> some View {
         HStack(spacing: 0) {
             ForEach(Array(columnNames.enumerated()), id: \.offset) { index, columnName in
-                headerCell(columnName: columnName, index: index)
+                headerCell(columnName: columnName, index: index, columnWidth: columnWidth)
             }
         }
     }
     
     @ViewBuilder
-    private func headerCell(columnName: String, index: Int) -> some View {
+    private func headerCell(columnName: String, index: Int, columnWidth: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(columnName)
                 .font(.system(.caption, design: .monospaced))
@@ -208,7 +263,7 @@ struct ParquetViewerView: View {
             }
         }
         .padding(8)
-        .frame(width: 150, alignment: .leading)
+        .frame(width: columnWidth, alignment: .leading)
         .background(Color.gray.opacity(0.1))
         .overlay(
             Rectangle()
@@ -216,21 +271,21 @@ struct ParquetViewerView: View {
         )
     }
     
-    private func tableDataRow(row: ParquetRow, rowIndex: Int) -> some View {
+    private func tableDataRow(row: ParquetRow, rowIndex: Int, columnWidth: CGFloat) -> some View {
         HStack(spacing: 0) {
             ForEach(0..<columnNames.count, id: \.self) { colIndex in
-                dataCell(value: row[colIndex], rowIndex: rowIndex)
+                dataCell(value: row[colIndex], rowIndex: rowIndex, columnWidth: columnWidth)
             }
         }
     }
     
-    private func dataCell(value: String, rowIndex: Int) -> some View {
+    private func dataCell(value: String, rowIndex: Int, columnWidth: CGFloat) -> some View {
         Text(value)
             .font(.system(.caption, design: .monospaced))
             .lineLimit(1)
             .truncationMode(.tail)
             .padding(8)
-            .frame(width: 150, alignment: .leading)
+            .frame(width: columnWidth, alignment: .leading)
             .background(rowIndex % 2 == 0 ? Color.clear : Color.gray.opacity(0.05))
             .overlay(
                 Rectangle()
@@ -351,11 +406,75 @@ struct ParquetViewerView: View {
                     }
                 }
                 .background(Color.gray.opacity(0.05))
-                .cornerRadius(8)
             }
         }
     }
-    
+
+    private var sqlTableContentView: some View {
+        ScrollView([.horizontal, .vertical]) {
+            VStack(alignment: .leading, spacing: 0) {
+                // Header row
+                HStack(spacing: 0) {
+                    ForEach(Array(sqlColumnNames.enumerated()), id: \.offset) { index, columnName in
+                        sqlHeaderCell(columnName: columnName, index: index)
+                    }
+                }
+
+                // Data rows
+                ForEach(Array(sqlRows.enumerated()), id: \.element.id) { rowIndex, row in
+                    HStack(spacing: 0) {
+                        ForEach(0..<sqlColumnNames.count, id: \.self) { colIndex in
+                            sqlDataCell(value: row[colIndex], rowIndex: rowIndex)
+                        }
+                    }
+                }
+            }
+        }
+        .background(Color.gray.opacity(0.05))
+    }
+
+    @ViewBuilder
+    private func sqlHeaderCell(columnName: String, index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(columnName)
+                .font(.system(.caption, design: .monospaced))
+                .fontWeight(.bold)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            if index < sqlColumnTypes.count {
+                Text(sqlColumnTypes[index])
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+        }
+        .padding(8)
+        .frame(width: 150, alignment: .leading)
+        .background(Color.gray.opacity(0.1))
+        .overlay(
+            Rectangle()
+                .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
+        )
+    }
+
+    @ViewBuilder
+    private func sqlDataCell(value: String, rowIndex: Int) -> some View {
+        Text(value)
+            .font(.system(.caption, design: .monospaced))
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .padding(8)
+            .frame(width: 150, alignment: .leading)
+            .background(rowIndex % 2 == 0 ? Color.clear : Color.gray.opacity(0.05))
+            .overlay(
+                Rectangle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
+            )
+            .textSelection(.enabled)
+            .help(value)
+    }
+
     private var metadataView: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -410,6 +529,15 @@ struct ParquetViewerView: View {
         fileSize = ""
         errorMessage = nil
         selectedRows = Set<ParquetRow.ID>()
+        // Reset SQL state
+        sqlInput = "SELECT * FROM tbl LIMIT 50"
+        resolvedSQL = ""
+        sqlIsRunning = false
+        sqlErrorMessage = nil
+        sqlRows = []
+        sqlColumnNames = []
+        sqlColumnTypes = []
+        sqlReturnedRowCount = 0
     }
     
     private func loadParquetFile(_ url: URL) {
@@ -495,34 +623,7 @@ struct ParquetViewerView: View {
                 self.schemaRows = schemaInfoRows
             }
             
-            // Get data preview (limited to maxPreviewRows)
-            let dataResult = try connection.query("""
-                SELECT * FROM read_parquet('\(url.path)') LIMIT \(maxPreviewRows)
-            """)
-            
-            var rows: [ParquetRow] = []
-            
-            // Check if we have results
-            if !dataResult.isEmpty {
-                let numRows = dataResult[0].count
-                
-                // Iterate through rows
-                for rowIdx in 0..<numRows {
-                    var rowValues: [String] = []
-                    
-                    // Iterate through columns in the order they appear
-                    for column in dataResult {
-                        let value = extractValueFromColumn(column, at: rowIdx)
-                        rowValues.append(value)
-                    }
-                    
-                    rows.append(ParquetRow(values: rowValues))
-                }
-            }
-            
-            await MainActor.run {
-                self.tableRows = rows
-            }
+            // Do not auto-populate preview rows; the Data tab will be driven by SQL input
             
             // Get Parquet file metadata
             var metadataLines: [String] = []
@@ -611,6 +712,9 @@ struct ParquetViewerView: View {
             await MainActor.run {
                 self.metadata = metadataLines.joined(separator: "\n")
                 self.isLoading = false
+                // Auto-run default SQL once file is loaded
+                self.sqlInput = "SELECT * FROM tbl LIMIT \(maxPreviewRows)"
+                self.runSQLQuery()
             }
             
         } catch {
@@ -620,6 +724,121 @@ struct ParquetViewerView: View {
             }
         }
     }
+
+    private func runSQLQuery() {
+        guard !parquetFilePath.isEmpty else { return }
+        sqlIsRunning = true
+        sqlErrorMessage = nil
+        sqlRows = []
+        sqlColumnNames = []
+        sqlColumnTypes = []
+        sqlReturnedRowCount = 0
+        // Build actual SQL by replacing tbl with read_parquet('<file>') under the hood
+        resolvedSQL = buildResolvedSQL(from: sqlInput)
+
+        Task {
+            do {
+                let database = try Database(store: .inMemory)
+                let connection = try database.connect()
+
+                // Expose the parquet file as a view named `tbl`
+                let escapedPath = parquetFilePath.replacingOccurrences(of: "'", with: "''")
+                _ = try connection.query("""
+                    CREATE OR REPLACE VIEW tbl AS SELECT * FROM read_parquet('\(escapedPath)')
+                """)
+
+                let trimmed = sqlInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                if isSelectOrWithQuery(trimmed) {
+                    // Get schema for result
+                    let describeResult = try connection.query("""
+                        DESCRIBE \(trimmed)
+                    """)
+
+                    var colNames: [String] = []
+                    var colTypes: [String] = []
+                    if describeResult.count >= 2 {
+                        let nameCol = describeResult[0].cast(to: String.self)
+                        let typeCol = describeResult[1].cast(to: String.self)
+                        for i in 0..<(nameCol.count) {
+                            let idx = DBInt(i)
+                            colNames.append(nameCol[idx] ?? "")
+                            colTypes.append(typeCol[idx] ?? "")
+                        }
+                    }
+
+                    let dataResult = try connection.query(trimmed)
+
+                    var rows: [ParquetRow] = []
+                    if !dataResult.isEmpty {
+                        let numRows = dataResult[0].count
+                        for rowIdx in 0..<numRows {
+                            var rowValues: [String] = []
+                            for column in dataResult {
+                                let value = extractValueFromColumn(column, at: rowIdx)
+                                rowValues.append(value)
+                            }
+                            rows.append(ParquetRow(values: rowValues))
+                        }
+                    }
+
+            await MainActor.run {
+                // Reflect results to the main data table
+                self.columnNames = colNames
+                self.columnTypes = colTypes
+                self.tableRows = rows
+                self.rowCount = rows.count
+                self.columnCount = colNames.count
+                // Keep SQL-specific mirrors in sync (optional)
+                self.sqlColumnNames = colNames
+                self.sqlColumnTypes = colTypes
+                self.sqlRows = rows
+                self.sqlReturnedRowCount = rows.count
+                self.sqlIsRunning = false
+            }
+                } else {
+                    // Non-SELECT statements
+                    _ = try connection.query(trimmed)
+                    await MainActor.run {
+                        self.tableRows = []
+                        self.columnNames = []
+                        self.columnTypes = []
+                        self.rowCount = 0
+                        self.columnCount = 0
+                        self.sqlRows = []
+                        self.sqlColumnNames = []
+                        self.sqlColumnTypes = []
+                        self.sqlReturnedRowCount = 0
+                        self.sqlIsRunning = false
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.sqlErrorMessage = "SQL error: \(error.localizedDescription)"
+                    self.sqlIsRunning = false
+                }
+            }
+        }
+    }
+
+    private func isSelectOrWithQuery(_ sql: String) -> Bool {
+        let lower = sql.lowercased()
+        return lower.hasPrefix("select") || lower.hasPrefix("with ")
+    }
+
+    private func buildResolvedSQL(from input: String) -> String {
+        guard !parquetFilePath.isEmpty else { return input }
+        let escapedPath = parquetFilePath.replacingOccurrences(of: "'", with: "''")
+        let replacement = "read_parquet('\(escapedPath)')"
+        // Replace word-boundary occurrences of tbl (case-insensitive)
+        do {
+            let regex = try NSRegularExpression(pattern: "(?i)\\btbl\\b")
+            let range = NSRange(location: 0, length: (input as NSString).length)
+            return regex.stringByReplacingMatches(in: input, options: [], range: range, withTemplate: replacement)
+        } catch {
+            return input.replacingOccurrences(of: "tbl", with: replacement)
+        }
+    }
+
     
     private func exportToCSV() {
         let savePanel = NSSavePanel()
@@ -637,31 +856,12 @@ struct ParquetViewerView: View {
     
     private func exportAllDataAsCSV(to url: URL) async {
         do {
-            let database = try Database(store: .inMemory)
-            let connection = try database.connect()
-            
-            // Get all data for export
-            let dataResult = try connection.query("""
-                SELECT * FROM read_parquet('\(parquetFilePath)')
-            """)
-            
+            // Export current result shown in the Data tab
             var csvContent = columnNames.map { "\"\($0)\"" }.joined(separator: ",") + "\n"
-            
-            if !dataResult.isEmpty {
-                let numRows = dataResult[0].count
-                
-                for rowIdx in 0..<numRows {
-                    var rowValues: [String] = []
-                    
-                    for column in dataResult {
-                        let value = extractValueFromColumn(column, at: rowIdx)
-                        rowValues.append(value)
-                    }
-                    
-                    csvContent += rowValues.map { "\"\($0)\"" }.joined(separator: ",") + "\n"
-                }
+            for row in tableRows {
+                let line = row.values.map { "\"\($0)\"" }.joined(separator: ",")
+                csvContent += line + "\n"
             }
-            
             try csvContent.write(to: url, atomically: true, encoding: .utf8)
             
         } catch {
@@ -735,33 +935,15 @@ struct ParquetViewerView: View {
     
     private func exportAllDataAsJSON(to url: URL) async {
         do {
-            let database = try Database(store: .inMemory)
-            let connection = try database.connect()
-            
-            // Get all data for export
-            let dataResult = try connection.query("""
-                SELECT * FROM read_parquet('\(parquetFilePath)')
-            """)
-            
+            // Export current result shown in the Data tab
             var jsonArray: [[String: String]] = []
-            
-            if !dataResult.isEmpty {
-                let numRows = dataResult[0].count
-                
-                for rowIdx in 0..<numRows {
-                    var jsonObject: [String: String] = [:]
-                    
-                    for (index, column) in dataResult.enumerated() {
-                        if index < columnNames.count {
-                            let value = extractValueFromColumn(column, at: rowIdx)
-                            jsonObject[columnNames[index]] = value
-                        }
-                    }
-                    
-                    jsonArray.append(jsonObject)
+            for row in tableRows {
+                var jsonObject: [String: String] = [:]
+                for (idx, name) in columnNames.enumerated() {
+                    jsonObject[name] = row[idx]
                 }
+                jsonArray.append(jsonObject)
             }
-            
             let jsonData = try JSONSerialization.data(withJSONObject: jsonArray, options: [.prettyPrinted, .sortedKeys])
             try jsonData.write(to: url)
             
