@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		930D8A442E3289B900D2DC16 /* CodeMirror-SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 930D8A432E3289B900D2DC16 /* CodeMirror-SwiftUI */; settings = {ATTRIBUTES = (Required, ); }; };
 		930D8A452E328B4B00D2DC16 /* CodeMirror-SwiftUI in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 930D8A432E3289B900D2DC16 /* CodeMirror-SwiftUI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		935539782E477F9600A1BC3B /* Arrow in Frameworks */ = {isa = PBXBuildFile; productRef = 935539772E477F9600A1BC3B /* Arrow */; };
 		93C47C912E3312690069B278 /* IPQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B822A4CAC32A426BA9E4E438123457 /* IPQueryView.swift */; };
 		93C47C932E3312A00069B278 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93C47C922E3312A00069B278 /* CodeEditor.swift */; };
 		93F48DE72E442FBE007F279B /* DuckDB in Frameworks */ = {isa = PBXBuildFile; productRef = 93F48DE62E442FBE007F279B /* DuckDB */; };
@@ -72,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				935539782E477F9600A1BC3B /* Arrow in Frameworks */,
 				930D8A442E3289B900D2DC16 /* CodeMirror-SwiftUI in Frameworks */,
 				93F48DE72E442FBE007F279B /* DuckDB in Frameworks */,
 			);
@@ -202,6 +204,7 @@
 			packageReferences = (
 				930D8A422E3289B900D2DC16 /* XCRemoteSwiftPackageReference "CodeMirror-SwiftUI" */,
 				93F48DE52E442FBE007F279B /* XCRemoteSwiftPackageReference "duckdb-swift" */,
+				935539762E477F9600A1BC3B /* XCRemoteSwiftPackageReference "arrow-swift" */,
 			);
 			productRefGroup = D5F4E7F12C5A1B2E00123456 /* Products */;
 			projectDirPath = "";
@@ -473,6 +476,14 @@
 				kind = branch;
 			};
 		};
+		935539762E477F9600A1BC3B /* XCRemoteSwiftPackageReference "arrow-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apache/arrow-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 21.0.0;
+			};
+		};
 		93F48DE52E442FBE007F279B /* XCRemoteSwiftPackageReference "duckdb-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/duckdb/duckdb-swift";
@@ -488,6 +499,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 930D8A422E3289B900D2DC16 /* XCRemoteSwiftPackageReference "CodeMirror-SwiftUI" */;
 			productName = "CodeMirror-SwiftUI";
+		};
+		935539772E477F9600A1BC3B /* Arrow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 935539762E477F9600A1BC3B /* XCRemoteSwiftPackageReference "arrow-swift" */;
+			productName = Arrow;
 		};
 		93F48DE62E442FBE007F279B /* DuckDB */ = {
 			isa = XCSwiftPackageProductDependency;

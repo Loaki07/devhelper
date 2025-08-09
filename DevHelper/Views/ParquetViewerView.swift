@@ -2,6 +2,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 import AppKit
 import DuckDB
+import Arrow
+import FlatBuffers
 
 // Data row structure for Table view
 struct ParquetRow: Identifiable {
@@ -22,11 +24,17 @@ struct SchemaInfo: Identifiable {
     let nullable: String
 }
 
+enum FileType {
+    case parquet
+    case arrow
+}
+
 struct ParquetViewerView: View {
     @State private var selectedTab = "data"
     @State private var fileURL: URL?
     @State private var fileName: String = ""
     @State private var parquetFilePath: String = ""
+    @State private var fileType: FileType = .parquet
     @State private var isLoading = false
     @State private var errorMessage: String?
     
@@ -63,7 +71,7 @@ struct ParquetViewerView: View {
             
             HStack(spacing: 20) {
                 Button(action: selectFile) {
-                    Label("Select Parquet File", systemImage: "doc.badge.plus")
+                    Label("Select File", systemImage: "doc.badge.plus")
                 }
                 .buttonStyle(.borderedProminent)
                 
@@ -100,7 +108,7 @@ struct ParquetViewerView: View {
                     Image(systemName: "doc.text.magnifyingglass")
                         .font(.system(size: 60))
                         .foregroundColor(.secondary)
-                    Text("Select a Parquet file to view its contents")
+                    Text("Select a Parquet or Arrow file to view its contents")
                         .font(.title3)
                         .foregroundColor(.secondary)
                 }
@@ -163,10 +171,12 @@ struct ParquetViewerView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                Toggle("SQL Editor", isOn: $showSQLEditor)
-                    .toggleStyle(.switch)
-                    .controlSize(.small)
-                    .help("Show SQL editor")
+                if fileType == .parquet {
+                    Toggle("SQL Editor", isOn: $showSQLEditor)
+                        .toggleStyle(.switch)
+                        .controlSize(.small)
+                        .help("Show SQL editor")
+                }
                 Button(action: exportToCSV) {
                     Label("Export CSV", systemImage: "square.and.arrow.up")
                 }
@@ -505,14 +515,19 @@ struct ParquetViewerView: View {
     
     private func selectFile() {
         let panel = NSOpenPanel()
-        panel.title = "Select Parquet File"
+        panel.title = "Select Parquet or Arrow File"
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-        panel.allowedContentTypes = [UTType(filenameExtension: "parquet") ?? .data]
+        panel.allowedContentTypes = [
+            UTType(filenameExtension: "parquet") ?? .data,
+            UTType(filenameExtension: "arrow") ?? .data,
+            UTType(filenameExtension: "feather") ?? .data,
+            UTType(filenameExtension: "ipc") ?? .data
+        ]
         
         if panel.runModal() == .OK, let url = panel.url {
-            loadParquetFile(url)
+            loadFile(url)
         }
     }
     
@@ -540,12 +555,23 @@ struct ParquetViewerView: View {
         sqlReturnedRowCount = 0
     }
     
-    private func loadParquetFile(_ url: URL) {
+    private func loadFile(_ url: URL) {
         fileURL = url
         fileName = url.lastPathComponent
         parquetFilePath = url.path
         isLoading = true
         errorMessage = nil
+        
+        // Detect file type based on extension
+        let ext = url.pathExtension.lowercased()
+        if ext == "parquet" {
+            fileType = .parquet
+        } else if ext == "arrow" || ext == "feather" || ext == "ipc" {
+            fileType = .arrow
+        } else {
+            // Default to parquet if unknown
+            fileType = .parquet
+        }
         
         // Get file size
         do {
@@ -558,7 +584,11 @@ struct ParquetViewerView: View {
         }
         
         Task {
-            await parseParquetFileWithDuckDB(url)
+            if fileType == .arrow {
+                await parseArrowFile(url)
+            } else {
+                await parseParquetFileWithDuckDB(url)
+            }
         }
     }
     
@@ -722,6 +752,229 @@ struct ParquetViewerView: View {
                 self.errorMessage = "Failed to load Parquet file: \(error.localizedDescription)"
                 self.isLoading = false
             }
+        }
+    }
+    
+    private func parseArrowFile(_ url: URL) async {
+        // Read the Arrow file using ArrowReader
+        let arrowReader = ArrowReader()
+        let result = arrowReader.fromFile(url)
+        
+        switch result {
+        case .success(let arrowResult):
+                // Calculate total row count
+                var totalRows = 0
+                for batch in arrowResult.batches {
+                    totalRows += Int(batch.length)
+                }
+                
+                // Get column count from schema
+                let columnCount = arrowResult.schema?.fields.count ?? 0
+                
+                await MainActor.run {
+                    self.rowCount = totalRows
+                    self.columnCount = columnCount
+                }
+                
+                // Extract schema information
+                var colNames: [String] = []
+                var colTypes: [String] = []
+                var schemaInfoRows: [SchemaInfo] = []
+                
+                for field in arrowResult.schema?.fields ?? [] {
+                    let name = field.name
+                    let typeStr = getArrowTypeDescription(field.type)
+                    let nullable = field.isNullable ? "Yes" : "No"
+                    
+                    colNames.append(name)
+                    colTypes.append(typeStr)
+                    
+                    schemaInfoRows.append(SchemaInfo(
+                        columnName: name,
+                        dataType: typeStr,
+                        nullable: nullable
+                    ))
+                }
+                
+                await MainActor.run {
+                    self.columnNames = colNames
+                    self.columnTypes = colTypes
+                    self.schemaRows = schemaInfoRows
+                }
+                
+                // Load data preview (first maxPreviewRows rows from all batches)
+                var rows: [ParquetRow] = []
+                var rowsLoaded = 0
+                
+                for batch in arrowResult.batches {
+                    if rowsLoaded >= maxPreviewRows {
+                        break
+                    }
+                    
+                    let rowsToLoad = min(Int(batch.length), maxPreviewRows - rowsLoaded)
+                    
+                    // Get the number of columns from the schema
+                    let numColumns = arrowResult.schema?.fields.count ?? 0
+                    
+                    for rowIndex in 0..<rowsToLoad {
+                        var rowValues: [String] = []
+                        
+                        // Extract value for each column
+                        for colIndex in 0..<numColumns {
+                            let value = extractValueFromBatch(batch, columnIndex: colIndex, rowIndex: rowIndex)
+                            rowValues.append(value)
+                        }
+                        
+                        rows.append(ParquetRow(values: rowValues))
+                        rowsLoaded += 1
+                    }
+                }
+                
+                await MainActor.run {
+                    self.tableRows = rows
+                }
+                
+                // Build metadata information
+                var metadataLines: [String] = []
+                metadataLines.append("═══════════════════════════════════════════")
+                metadataLines.append("FILE METADATA")
+                metadataLines.append("═══════════════════════════════════════════")
+                metadataLines.append("")
+                metadataLines.append("File Name: \(fileName)")
+                metadataLines.append("File Size: \(fileSize)")
+                metadataLines.append("Total Rows: \(totalRows)")
+                metadataLines.append("Total Columns: \(columnCount)")
+                metadataLines.append("Total Batches: \(arrowResult.batches.count)")
+                metadataLines.append("Format: Apache Arrow IPC")
+                
+                // Arrow Swift doesn't expose schema metadata
+                metadataLines.append("")
+                metadataLines.append("No schema metadata available")
+                
+                await MainActor.run {
+                    self.metadata = metadataLines.joined(separator: "\n")
+                    self.isLoading = false
+                    // For Arrow files, we don't have SQL support, so don't auto-run SQL
+                    self.showSQLEditor = false
+                }
+                
+        case .failure(let error):
+            await MainActor.run {
+                self.errorMessage = "Failed to load Arrow file: \(error.localizedDescription)"
+                self.isLoading = false
+            }
+        }
+    }
+    
+    private func getArrowTypeDescription(_ type: ArrowType) -> String {
+        switch type.id {
+        case .boolean: return "Boolean"
+        case .int8: return "Int8"
+        case .int16: return "Int16"
+        case .int32: return "Int32"
+        case .int64: return "Int64"
+        case .uint8: return "UInt8"
+        case .uint16: return "UInt16"
+        case .uint32: return "UInt32"
+        case .uint64: return "UInt64"
+        case .float: return "Float32"
+        case .double: return "Float64"
+        case .string: return "String"
+        case .binary: return "Binary"
+        case .date32: return "Date32"
+        case .date64: return "Date64"
+        case .time32: return "Time32"
+        case .time64: return "Time64"
+        case .timestamp: return "Timestamp"
+        case .decimal128: return "Decimal128"
+        case .decimal256: return "Decimal256"
+        case .list: return "List"
+        case .strct: return "Struct"
+        default: return "Unknown"
+        }
+    }
+    
+    private func extractValueFromBatch(_ batch: RecordBatch, columnIndex: Int, rowIndex: Int) -> String {
+        // Get the field type for this column
+        let schema = batch.schema
+        guard let field = schema.fields[safe: columnIndex] else {
+            return "ERROR"
+        }
+        
+        let rowIdx = UInt(rowIndex)
+        
+        // Based on the field type, extract the appropriate data
+        switch field.type.id {
+        case .boolean:
+            let array: ArrowArray<Bool> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .int8:
+            let array: ArrowArray<Int8> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .int16:
+            let array: ArrowArray<Int16> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .int32:
+            let array: ArrowArray<Int32> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .int64:
+            let array: ArrowArray<Int64> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .uint8:
+            let array: ArrowArray<UInt8> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .uint16:
+            let array: ArrowArray<UInt16> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .uint32:
+            let array: ArrowArray<UInt32> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .uint64:
+            let array: ArrowArray<UInt64> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .float:
+            let array: ArrowArray<Float> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .double:
+            let array: ArrowArray<Double> = batch.data(for: columnIndex)
+            return array[rowIdx] != nil ? String(array[rowIdx]!) : "NULL"
+            
+        case .string:
+            let array: ArrowArray<String> = batch.data(for: columnIndex)
+            return array[rowIdx] ?? "NULL"
+            
+        case .date32:
+            let array: ArrowArray<Date32> = batch.data(for: columnIndex)
+            if let days = array[rowIdx] {
+                let date = Date(timeIntervalSince1970: TimeInterval(days) * 86400)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                return formatter.string(from: date)
+            }
+            return "NULL"
+            
+        case .date64:
+            let array: ArrowArray<Date64> = batch.data(for: columnIndex)
+            if let milliseconds = array[rowIdx] {
+                let date = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                return formatter.string(from: date)
+            }
+            return "NULL"
+            
+        default:
+            return "Unsupported"
         }
     }
 
@@ -1021,6 +1274,13 @@ struct ParquetViewerView: View {
     private func copyToClipboard(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
+    }
+}
+
+// Safe array access extension
+extension Array {
+    subscript(safe index: Int) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }
 

@@ -1,6 +1,15 @@
 {
-  "originHash" : "79667c73569da3679ef7e7987fc41cbce2d177f8479a314c1bb3a6b51c7c6810",
+  "originHash" : "aeaa4154d91c6307a706568fe0ac74840d47f3f679c22633af841951f22f489a",
   "pins" : [
+    {
+      "identity" : "arrow-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apache/arrow-swift.git",
+      "state" : {
+        "revision" : "fb3f3d91be5acd511b7289c7820becc1a68e455d",
+        "version" : "21.0.0"
+      }
+    },
     {
       "identity" : "codemirror-swiftui",
       "kind" : "remoteSourceControl",
@@ -17,6 +26,24 @@
       "state" : {
         "branch" : "v1.4.0-dev1354",
         "revision" : "92f578c5e7237bbc3bcf8b468f02b30452bdd157"
+      }
+    },
+    {
+      "identity" : "flatbuffers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/flatbuffers.git",
+      "state" : {
+        "revision" : "1c514626e83c20fffa8557e75641848e1e15cd5e",
+        "version" : "25.2.10"
+      }
+    },
+    {
+      "identity" : "swift-atomics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-atomics.git",
+      "state" : {
+        "revision" : "b601256eab081c0f92f059e12818ac1d4f178ff7",
+        "version" : "1.3.0"
       }
     }
   ],
