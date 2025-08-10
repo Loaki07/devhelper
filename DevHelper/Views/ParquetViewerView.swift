@@ -30,7 +30,7 @@ enum FileType {
 }
 
 struct ParquetViewerView: View {
-    @State private var selectedTab = "data"
+    @State private var selectedTab = "schema"
     @State private var fileURL: URL?
     @State private var fileName: String = ""
     @State private var parquetFilePath: String = ""
@@ -85,17 +85,16 @@ struct ParquetViewerView: View {
 
             if fileURL != nil {
                 TabView(selection: $selectedTab) {
-                    dataView
-                        .tabItem {
-                            Label("Data", systemImage: "tablecells")
-                        }
-                        .tag("data")
                     schemaView
                         .tabItem {
                             Label("Schema", systemImage: "list.bullet.rectangle")
                         }
                         .tag("schema")
-                    
+                    dataView
+                        .tabItem {
+                            Label("Data", systemImage: "tablecells")
+                        }
+                        .tag("data")
                     metadataView
                         .tabItem {
                             Label("Metadata", systemImage: "info.circle")
@@ -224,25 +223,22 @@ struct ParquetViewerView: View {
     }
     
     private var tableContentView: some View {
-        GeometryReader { proxy in
-            let availableWidth = max(proxy.size.width, 0)
-            let minColumnWidth: CGFloat = 150
-            let columnCountSafe = max(columnNames.count, 1)
-            let computedColumnWidth = max(minColumnWidth, floor(availableWidth / CGFloat(columnCountSafe)))
-
-            ScrollView([.horizontal, .vertical]) {
+        // Virtualized vertical rendering with LazyVStack and horizontal scrolling.
+        let columnWidth: CGFloat = 150
+        return ScrollView(.horizontal) {
+            let contentWidth = CGFloat(max(columnNames.count, 1)) * columnWidth
+            ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     // Header row
-                    tableHeaderRow(columnWidth: computedColumnWidth)
-                    
-                    // Data rows
-                    ForEach(Array(tableRows.enumerated()), id: \.element.id) { rowIndex, row in
-                        tableDataRow(row: row, rowIndex: rowIndex, columnWidth: computedColumnWidth)
+                    tableHeaderRow(columnWidth: columnWidth)
+                    // Data rows (virtualized)
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(tableRows.indices), id: \.self) { rowIndex in
+                            tableDataRow(row: tableRows[rowIndex], rowIndex: rowIndex, columnWidth: columnWidth)
+                        }
                     }
                 }
-                // Ensure content height is at least the viewport height so it sticks to the top
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(minHeight: proxy.size.height, alignment: .topLeading)
+                .frame(minWidth: contentWidth, alignment: .leading)
             }
         }
         .background(Color.gray.opacity(0.05))
@@ -553,6 +549,7 @@ struct ParquetViewerView: View {
         sqlColumnNames = []
         sqlColumnTypes = []
         sqlReturnedRowCount = 0
+        selectedTab = "schema"
     }
     
     private func loadFile(_ url: URL) {
@@ -561,6 +558,7 @@ struct ParquetViewerView: View {
         parquetFilePath = url.path
         isLoading = true
         errorMessage = nil
+        selectedTab = "schema"
         
         // Detect file type based on extension
         let ext = url.pathExtension.lowercased()
@@ -742,7 +740,9 @@ struct ParquetViewerView: View {
             await MainActor.run {
                 self.metadata = metadataLines.joined(separator: "\n")
                 self.isLoading = false
-                // Auto-run default SQL once file is loaded
+                // Default to Schema tab on load
+                self.selectedTab = "schema"
+                // Auto-run default SQL once file is loaded so Data is ready when user switches
                 self.sqlInput = "SELECT * FROM tbl LIMIT \(maxPreviewRows)"
                 self.runSQLQuery()
             }
