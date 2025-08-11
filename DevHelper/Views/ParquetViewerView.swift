@@ -39,6 +39,13 @@ struct SchemaInfo: Identifiable {
     let nullable: String
 }
 
+// Metadata key/value row structure
+struct MetadataRow: Identifiable {
+    let id = UUID()
+    let key: String
+    let value: String
+}
+
 enum FileType {
     case parquet
     case arrow
@@ -58,6 +65,7 @@ struct ParquetViewerView: View {
     @State private var columnTypes: [String] = []
     @State private var schemaRows: [SchemaInfo] = []
     @State private var metadata: String = ""
+    @State private var metadataRows: [MetadataRow] = []
     
     @State private var rowCount: Int = 0
     @State private var columnCount: Int = 0
@@ -160,12 +168,6 @@ struct ParquetViewerView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if !tableRows.isEmpty {
                 tableContentView
-                if rowCount > 0 {
-                    Text("Showing \(tableRows.count) rows")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.top, 5)
-                }
             } else {
                 Text("No data available")
                     .foregroundColor(.secondary)
@@ -238,25 +240,25 @@ struct ParquetViewerView: View {
     }
     
     private var tableContentView: some View {
-        // Virtualized vertical rendering with LazyVStack and horizontal scrolling.
-        let columnWidth: CGFloat = 150
-        return ScrollView(.horizontal) {
-            let contentWidth = CGFloat(max(columnNames.count, 1)) * columnWidth
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Header row
-                    tableHeaderRow(columnWidth: columnWidth)
-                    // Data rows (virtualized)
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(Array(tableRows.indices), id: \.self) { rowIndex in
-                            tableDataRow(row: tableRows[rowIndex], rowIndex: rowIndex, columnWidth: columnWidth)
-                        }
-                    }
-                }
-                .frame(minWidth: contentWidth, alignment: .leading)
-            }
+        ParquetTableViewRepresentable(
+            rows: tableRows,
+            columns: columnNames,
+            columnTypes: columnTypes,
+            columnWidth: 150
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private struct RowCellView: View {
+        let text: String
+        var body: some View {
+            Text(text)
+                .font(.system(.caption, design: .monospaced))
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .textSelection(.enabled)
+                .help(text)
         }
-        .background(Color.gray.opacity(0.05))
     }
     
     private func tableHeaderRow(columnWidth: CGFloat) -> some View {
@@ -349,84 +351,8 @@ struct ParquetViewerView: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Header row
-                        HStack(spacing: 0) {
-                            Text("Column Name")
-                                .font(.system(.caption, design: .monospaced))
-                                .fontWeight(.bold)
-                                .padding(8)
-                                .frame(width: 500, alignment: .leading)
-                                .background(Color.gray.opacity(0.1))
-                                .overlay(
-                                    Rectangle()
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                )
-                            
-                            Text("Data Type")
-                                .font(.system(.caption, design: .monospaced))
-                                .fontWeight(.bold)
-                                .padding(8)
-                                .frame(width: 150, alignment: .leading)
-                                .background(Color.gray.opacity(0.1))
-                                .overlay(
-                                    Rectangle()
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                )
-                            
-                            Text("Nullable")
-                                .font(.system(.caption, design: .monospaced))
-                                .fontWeight(.bold)
-                                .padding(8)
-                                .frame(width: 100, alignment: .leading)
-                                .background(Color.gray.opacity(0.1))
-                                .overlay(
-                                    Rectangle()
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                )
-                        }
-                        
-                        // Data rows
-                        ForEach(Array(schemaRows.enumerated()), id: \.element.id) { index, row in
-                            HStack(spacing: 0) {
-                                Text(row.columnName)
-                                    .font(.system(.caption, design: .monospaced))
-                                    .padding(8)
-                                    .frame(width: 500, alignment: .leading)
-                                    .background(index % 2 == 0 ? Color.clear : Color.gray.opacity(0.05))
-                                    .overlay(
-                                        Rectangle()
-                                            .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                    )
-                                    .textSelection(.enabled)
-                                
-                                Text(row.dataType)
-                                    .font(.system(.caption, design: .monospaced))
-                                    .padding(8)
-                                    .frame(width: 150, alignment: .leading)
-                                    .background(index % 2 == 0 ? Color.clear : Color.gray.opacity(0.05))
-                                    .overlay(
-                                        Rectangle()
-                                            .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                    )
-                                    .textSelection(.enabled)
-                                
-                                Text(row.nullable)
-                                    .font(.system(.caption, design: .monospaced))
-                                    .padding(8)
-                                    .frame(width: 100, alignment: .leading)
-                                    .background(index % 2 == 0 ? Color.clear : Color.gray.opacity(0.05))
-                                    .overlay(
-                                        Rectangle()
-                                            .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                                    )
-                                    .textSelection(.enabled)
-                            }
-                        }
-                    }
-                }
-                .background(Color.gray.opacity(0.05))
+                SchemaTableViewRepresentable(rows: schemaRows)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
@@ -512,15 +438,20 @@ struct ParquetViewerView: View {
             }
             .padding(.horizontal)
             
-            ScrollView {
-                Text(metadata.isEmpty ? "No metadata available" : metadata)
-                    .font(.system(.body, design: .monospaced))
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+            if metadataRows.isEmpty {
+                ScrollView {
+                    Text(metadata.isEmpty ? "No metadata available" : metadata)
+                        .font(.system(.body, design: .monospaced))
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
+                .background(Color.gray.opacity(0.05))
+                .cornerRadius(8)
+            } else {
+                MetadataTableViewRepresentable(rows: metadataRows)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .background(Color.gray.opacity(0.05))
-            .cornerRadius(8)
         }
     }
     
@@ -550,6 +481,7 @@ struct ParquetViewerView: View {
         columnTypes = []
         schemaRows = []
         metadata = ""
+        metadataRows = []
         rowCount = 0
         columnCount = 0
         fileSize = ""
@@ -669,11 +601,8 @@ struct ParquetViewerView: View {
             // Do not auto-populate preview rows; the Data tab will be driven by SQL input
             
             // Get Parquet file metadata
-            var metadataLines: [String] = []
-            metadataLines.append("═══════════════════════════════════════════")
-            metadataLines.append("FILE METADATA")
-            metadataLines.append("═══════════════════════════════════════════")
-            metadataLines.append("")
+            var metadataRows: [MetadataRow] = []
+            metadataRows.append(MetadataRow(key: "File Name", value: fileName))
             
             // Query parquet_metadata function
             let fileMetadataResult = try connection.query("""
@@ -683,39 +612,33 @@ struct ParquetViewerView: View {
             if !fileMetadataResult.isEmpty && fileMetadataResult[0].count > 0 {
                 // Extract metadata fields
                 if fileMetadataResult.count >= 6 {
-                    let fileNameCol = fileMetadataResult[0].cast(to: String.self)  
                     let createdByCol = fileMetadataResult[1].cast(to: String.self)
                     let numRowsCol = fileMetadataResult[2].cast(to: Int64.self) 
                     let numRowGroupsCol = fileMetadataResult[3].cast(to: Int64.self)
                     let formatVersionCol = fileMetadataResult[4].cast(to: Int64.self)
                     let encryptionAlgorithmCol = fileMetadataResult[5].cast(to: String.self)
                     
-                    metadataLines.append("File Name: \(fileNameCol[0] ?? "Unknown")")
                     if let createdBy = createdByCol[0] {
-                        metadataLines.append("Created By: \(createdBy)")
+                        metadataRows.append(MetadataRow(key: "Created By", value: createdBy))
                     }
-                    metadataLines.append("File Size: \(fileSize)")
+                    if !fileSize.isEmpty {
+                        metadataRows.append(MetadataRow(key: "File Size", value: fileSize))
+                    }
+                    metadataRows.append(MetadataRow(key: "Total Columns", value: String(columnCount)))
                     if let numRows = numRowsCol[0] {
-                        metadataLines.append("Total Rows: \(numRows)")
+                        metadataRows.append(MetadataRow(key: "Total Rows", value: String(numRows)))
                     }
                     if let numRowGroups = numRowGroupsCol[0] {
-                        metadataLines.append("Total Row Groups: \(numRowGroups)")
+                        metadataRows.append(MetadataRow(key: "Total Row Groups", value: String(numRowGroups)))
                     }
-                    metadataLines.append("Total Columns: \(columnCount)")
                     if let formatVersion = formatVersionCol[0] {
-                        metadataLines.append("Format Version: \(formatVersion)")
+                        metadataRows.append(MetadataRow(key: "Format Version", value: String(formatVersion)))
                     }
                     if let encryptionAlgorithm = encryptionAlgorithmCol[0] {
-                        metadataLines.append("Encryption Algorithm: \(encryptionAlgorithm)")
+                        metadataRows.append(MetadataRow(key: "Encryption Algorithm", value: encryptionAlgorithm))
                     } 
                 }
             }
-            
-            metadataLines.append("")
-            metadataLines.append("═══════════════════════════════════════════")
-            metadataLines.append("KEY-VALUE METADATA")
-            metadataLines.append("═══════════════════════════════════════════")
-            metadataLines.append("")
             
             // Query parquet_kv_metadata function
             let kvMetadataResult = try connection.query("""
@@ -727,33 +650,21 @@ struct ParquetViewerView: View {
                 let keyCol = kvMetadataResult[1].cast(to: String.self)
                 let valueCol = kvMetadataResult[2].cast(to: String.self)
                 
-                var kvPairs: [(String, String)] = []
-                
                 // Iterate through all rows in the result set
                 for i in 0..<keyCol.count {
                     let idx = DBInt(i)
                     if let key = keyCol[idx], let value = valueCol[idx] {
-                        kvPairs.append((key, value))
+                        metadataRows.append(MetadataRow(key: key, value: value))
                     }
-                }
-                
-                if !kvPairs.isEmpty {
-                    // Find the maximum key length for formatting
-                    let maxKeyLength = kvPairs.map { $0.0.count }.max() ?? 0
-                    
-                    for (key, value) in kvPairs {
-                        let paddedKey = key.padding(toLength: max(maxKeyLength, 20), withPad: " ", startingAt: 0)
-                        metadataLines.append("\(paddedKey): \(value)")
-                    }
-                } else {
-                    metadataLines.append("No key-value metadata found")
                 }
             } else {
-                metadataLines.append("No key-value metadata found")
+                metadataRows.append(MetadataRow(key: "Key-Value Metadata", value: "None found"))
             }
             
             await MainActor.run {
-                self.metadata = metadataLines.joined(separator: "\n")
+                self.metadataRows = metadataRows
+                // Generate the text version for the copy button
+                self.metadata = self.generateMetadataText(from: metadataRows)
                 self.isLoading = false
                 // Default to Schema tab on load
                 self.selectedTab = "schema"
@@ -850,24 +761,21 @@ struct ParquetViewerView: View {
                 }
                 
                 // Build metadata information
-                var metadataLines: [String] = []
-                metadataLines.append("═══════════════════════════════════════════")
-                metadataLines.append("FILE METADATA")
-                metadataLines.append("═══════════════════════════════════════════")
-                metadataLines.append("")
-                metadataLines.append("File Name: \(fileName)")
-                metadataLines.append("File Size: \(fileSize)")
-                metadataLines.append("Total Rows: \(totalRows)")
-                metadataLines.append("Total Columns: \(columnCount)")
-                metadataLines.append("Total Batches: \(arrowResult.batches.count)")
-                metadataLines.append("Format: Apache Arrow IPC")
+                var metadataRows: [MetadataRow] = []
+                metadataRows.append(MetadataRow(key: "File Name", value: fileName))
+                metadataRows.append(MetadataRow(key: "File Size", value: fileSize))
+                metadataRows.append(MetadataRow(key: "Total Columns", value: String(columnCount)))
+                metadataRows.append(MetadataRow(key: "Total Batches", value: String(arrowResult.batches.count)))
+                metadataRows.append(MetadataRow(key: "Total Rows", value: String(totalRows)))
+                metadataRows.append(MetadataRow(key: "Format", value: "Apache Arrow IPC"))
                 
                 // Arrow Swift doesn't expose schema metadata
-                metadataLines.append("")
-                metadataLines.append("No schema metadata available")
+                metadataRows.append(MetadataRow(key: "Schema Metadata", value: "Not available"))
                 
                 await MainActor.run {
-                    self.metadata = metadataLines.joined(separator: "\n")
+                    self.metadataRows = metadataRows
+                    // Generate the text version for the copy button
+                    self.metadata = self.generateMetadataText(from: metadataRows)
                     self.isLoading = false
                     // For Arrow files, we don't have SQL support, so don't auto-run SQL
                     self.showSQLEditor = false
@@ -1290,8 +1198,295 @@ struct ParquetViewerView: View {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
     }
+
+    private func generateMetadataText(from rows: [MetadataRow]) -> String {
+        var text = ""
+        for row in rows {
+            text += "\(row.key): \(row.value)\n"
+        }
+        return text
+    }
 }
 
+// MARK: - NSTableView-backed SwiftUI wrapper for performant reuse
+fileprivate struct ParquetTableViewRepresentable: NSViewRepresentable {
+    let rows: [ParquetRow]
+    let columns: [String]
+    let columnTypes: [String]
+    let columnWidth: CGFloat
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = true
+        let tableView = NSTableView()
+        tableView.usesAlternatingRowBackgroundColors = true
+        tableView.allowsMultipleSelection = false
+        tableView.headerView = NSTableHeaderView()
+        tableView.delegate = context.coordinator
+        tableView.dataSource = context.coordinator
+        tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
+
+        // Create columns
+        for (idx, name) in columns.enumerated() {
+            let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("col_\(idx)"))
+            let typeSuffix = (idx < columnTypes.count && !columnTypes[idx].isEmpty) ? " (\(columnTypes[idx]))" : ""
+            column.title = name + typeSuffix
+            column.width = columnWidth
+            column.minWidth = 60
+            tableView.addTableColumn(column)
+        }
+
+        scrollView.documentView = tableView
+        context.coordinator.tableView = tableView
+        return scrollView
+    }
+
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        guard let tableView = nsView.documentView as? NSTableView else { return }
+
+        // Update columns if schema changed
+        if tableView.numberOfColumns != columns.count {
+            while tableView.tableColumns.count > 0 { tableView.removeTableColumn(tableView.tableColumns[0]) }
+            for (idx, name) in columns.enumerated() {
+                let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("col_\(idx)"))
+                let typeSuffix = (idx < columnTypes.count && !columnTypes[idx].isEmpty) ? " (\(columnTypes[idx]))" : ""
+                column.title = name + typeSuffix
+                column.width = columnWidth
+                column.minWidth = 60
+                tableView.addTableColumn(column)
+            }
+        }
+
+        context.coordinator.rows = rows
+        context.coordinator.columns = columns
+        context.coordinator.columnTypes = columnTypes
+        tableView.reloadData()
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(rows: rows, columns: columns, columnTypes: columnTypes)
+    }
+
+    final class Coordinator: NSObject, NSTableViewDataSource, NSTableViewDelegate {
+        var rows: [ParquetRow]
+        var columns: [String]
+        var columnTypes: [String]
+        weak var tableView: NSTableView?
+
+        init(rows: [ParquetRow], columns: [String], columnTypes: [String]) {
+            self.rows = rows
+            self.columns = columns
+            self.columnTypes = columnTypes
+        }
+
+        func numberOfRows(in tableView: NSTableView) -> Int {
+            rows.count
+        }
+
+        func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+            guard let tableColumn = tableColumn else { return nil }
+            guard let columnIndex = tableView.tableColumns.firstIndex(of: tableColumn) else { return nil }
+            let identifier = NSUserInterfaceItemIdentifier("cell_\(columnIndex)")
+
+            if let cell = tableView.makeView(withIdentifier: identifier, owner: nil) as? NSTableCellView {
+                let value = (row < rows.count) ? rows[row][columnIndex] : ""
+                cell.textField?.stringValue = value
+                return cell
+            } else {
+                let cell = NSTableCellView()
+                cell.identifier = identifier
+                let value = (row < rows.count) ? rows[row][columnIndex] : ""
+                let textField = NSTextField(labelWithString: value)
+                textField.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
+                textField.lineBreakMode = NSLineBreakMode.byTruncatingTail
+                textField.usesSingleLineMode = true
+                textField.translatesAutoresizingMaskIntoConstraints = false
+                cell.addSubview(textField)
+                cell.textField = textField
+                NSLayoutConstraint.activate([
+                    textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 6),
+                    textField.trailingAnchor.constraint(lessThanOrEqualTo: cell.trailingAnchor, constant: -6),
+                    textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 4),
+                    textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -4)
+                ])
+                return cell
+            }
+        }
+    }
+}
+
+fileprivate struct SchemaTableViewRepresentable: NSViewRepresentable {
+    let rows: [SchemaInfo]
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = true
+        let tableView = NSTableView()
+        tableView.usesAlternatingRowBackgroundColors = true
+        tableView.allowsMultipleSelection = false
+        tableView.headerView = NSTableHeaderView()
+        tableView.delegate = context.coordinator
+        tableView.dataSource = context.coordinator
+        tableView.rowHeight = 22
+        tableView.intercellSpacing = NSSize(width: 0, height: 0)
+
+        let nameCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("name"))
+        nameCol.title = "Column Name"
+        nameCol.width = 500
+        tableView.addTableColumn(nameCol)
+
+        let typeCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("type"))
+        typeCol.title = "Data Type"
+        typeCol.width = 150
+        tableView.addTableColumn(typeCol)
+
+        let nullableCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("nullable"))
+        nullableCol.title = "Nullable"
+        nullableCol.width = 100
+        tableView.addTableColumn(nullableCol)
+
+        scrollView.documentView = tableView
+        context.coordinator.tableView = tableView
+        return scrollView
+    }
+
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        context.coordinator.rows = rows
+        (nsView.documentView as? NSTableView)?.reloadData()
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(rows: rows)
+    }
+
+    final class Coordinator: NSObject, NSTableViewDataSource, NSTableViewDelegate {
+        var rows: [SchemaInfo]
+        weak var tableView: NSTableView?
+
+        init(rows: [SchemaInfo]) { self.rows = rows }
+
+        func numberOfRows(in tableView: NSTableView) -> Int { rows.count }
+
+        func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+            guard let tableColumn = tableColumn else { return nil }
+            let identifier = NSUserInterfaceItemIdentifier("schema_\(tableColumn.identifier.rawValue)")
+
+            let text: String
+            switch tableColumn.identifier.rawValue {
+            case "name": text = rows[row].columnName
+            case "type": text = rows[row].dataType
+            case "nullable": text = rows[row].nullable
+            default: text = ""
+            }
+
+            if let cell = tableView.makeView(withIdentifier: identifier, owner: nil) as? NSTableCellView {
+                cell.textField?.stringValue = text
+                return cell
+            } else {
+                let cell = NSTableCellView()
+                cell.identifier = identifier
+                let textField = NSTextField(labelWithString: text)
+                textField.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
+                textField.lineBreakMode = .byTruncatingTail
+                textField.usesSingleLineMode = true
+                textField.translatesAutoresizingMaskIntoConstraints = false
+                cell.addSubview(textField)
+                cell.textField = textField
+                NSLayoutConstraint.activate([
+                    textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 6),
+                    textField.trailingAnchor.constraint(lessThanOrEqualTo: cell.trailingAnchor, constant: -6),
+                    textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 4),
+                    textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -4)
+                ])
+                return cell
+            }
+        }
+    }
+}
+
+fileprivate struct MetadataTableViewRepresentable: NSViewRepresentable {
+    let rows: [MetadataRow]
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = true
+        let tableView = NSTableView()
+        tableView.usesAlternatingRowBackgroundColors = true
+        tableView.allowsMultipleSelection = false
+        tableView.headerView = NSTableHeaderView()
+        tableView.delegate = context.coordinator
+        tableView.dataSource = context.coordinator
+        tableView.rowHeight = 22
+        tableView.intercellSpacing = NSSize(width: 0, height: 0)
+
+        let keyCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("key"))
+        keyCol.title = "Key"
+        keyCol.width = 300
+        tableView.addTableColumn(keyCol)
+
+        let valueCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("value"))
+        valueCol.title = "Value"
+        valueCol.width = 600
+        tableView.addTableColumn(valueCol)
+
+        scrollView.documentView = tableView
+        context.coordinator.tableView = tableView
+        return scrollView
+    }
+
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        context.coordinator.rows = rows
+        (nsView.documentView as? NSTableView)?.reloadData()
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(rows: rows) }
+
+    final class Coordinator: NSObject, NSTableViewDataSource, NSTableViewDelegate {
+        var rows: [MetadataRow]
+        weak var tableView: NSTableView?
+
+        init(rows: [MetadataRow]) { self.rows = rows }
+
+        func numberOfRows(in tableView: NSTableView) -> Int { rows.count }
+
+        func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+            guard let tableColumn = tableColumn else { return nil }
+            let identifier = NSUserInterfaceItemIdentifier("meta_\(tableColumn.identifier.rawValue)")
+
+            let text: String
+            switch tableColumn.identifier.rawValue {
+            case "key": text = rows[row].key
+            case "value": text = rows[row].value
+            default: text = ""
+            }
+
+            if let cell = tableView.makeView(withIdentifier: identifier, owner: nil) as? NSTableCellView {
+                cell.textField?.stringValue = text
+                return cell
+            } else {
+                let cell = NSTableCellView()
+                cell.identifier = identifier
+                let textField = NSTextField(labelWithString: text)
+                textField.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
+                textField.lineBreakMode = .byTruncatingTail
+                textField.usesSingleLineMode = true
+                textField.translatesAutoresizingMaskIntoConstraints = false
+                cell.addSubview(textField)
+                cell.textField = textField
+                NSLayoutConstraint.activate([
+                    textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 6),
+                    textField.trailingAnchor.constraint(lessThanOrEqualTo: cell.trailingAnchor, constant: -6),
+                    textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 4),
+                    textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -4)
+                ])
+                return cell
+            }
+        }
+    }
+}
 // Safe array access extension
 extension Array {
     subscript(safe index: Int) -> Element? {
