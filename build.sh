@@ -21,7 +21,7 @@ fi
 
 # Build the project
 echo "🔨 Building $PROJECT_NAME..."
-xcodebuild build -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -configuration "$CONFIGURATION"
+xcodebuild build -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -configuration "$CONFIGURATION" CODE_SIGNING_ALLOWED=NO
 
 if [ $? -eq 0 ]; then
     echo "✅ Build successful!"
