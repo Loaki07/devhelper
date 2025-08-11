@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design. Version 1.8.2 released.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design. Version 1.8.3 released.
 
 ## Tools Implemented
 
@@ -142,7 +142,7 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.8.2 (Build 1)
+- **Version**: 1.8.3 (Build 1)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
 - **Swift Version**: 5.0
 
@@ -359,7 +359,7 @@ swiftlint lint --path DevHelper/
 
 ---
 
-**Last Updated**: Version 1.8.2 with complete Parquet Viewer and Time Unit Converter.
+**Last Updated**: Version 1.8.3 improve UITableView.
 **Latest Additions**: 
 - Full Parquet file reading with DuckDB integration, schema/data/metadata display with export options
 - Time category in Unit Converter with comprehensive time unit conversions

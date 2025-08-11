@@ -38,7 +38,7 @@ A native macOS application for developers, containing 11 essential tools commonl
 
 ## Version
 
-Current version: 1.8.2
+Current version: 1.8.3
 
 ## Screenshots
 
