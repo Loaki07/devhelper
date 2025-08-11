@@ -38,7 +38,7 @@ A native macOS application for developers, containing 11 essential tools commonl
 
 ### Prerequisites
 
-Before using `run.sh`, make sure you have:
+Before using `build.sh`, make sure you have:
 
 1. **Xcode installed** - The full Xcode app (not just Command Line Tools)
 2. **Xcode Command Line Tools** - Run `xcode-select --install` if needed
