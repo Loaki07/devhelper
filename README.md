@@ -16,7 +16,7 @@ A native macOS application for developers, containing 11 essential tools commonl
 - **HTTP Request** - Full-featured HTTP client with method selection, headers, auth, response handling, and JSON tree view
 - **IP Query** - Discover your IP address and query geolocation data for any IP
 - **QR Code** - Generate QR codes with multiple sizes and error correction levels, scan QR codes from images
-- **Parquet Viewer** - Read and explore Parquet files with schema inspection and data export
+- **Parquet Viewer** - Read and explore Parquet / arrow files with schema inspection and data export
 
 ## Key Features
 
@@ -38,7 +38,7 @@ A native macOS application for developers, containing 11 essential tools commonl
 
 ## Version
 
-Current version: 1.8
+Current version: 1.8.2
 
 ## Screenshots
 
@@ -76,3 +76,7 @@ Http Request History
 ![DevHelper QR Code](./screenshots/qrcode.png)
 
 #### Parquet Viewer
+![DevHelper Paruqet metadata](./screenshots/parquet_schema.png)
+
+Parquet data view
+![DevHelper Paruqet data view](./screenshots/parquet_data.png)

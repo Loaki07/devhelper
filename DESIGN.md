@@ -8,13 +8,15 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 ### Project Structure
 ```
 DevHelper/
-├── DevHelper.xcodeproj/          # Xcode project files
+├── DevHelper.xcodeproj/            # Xcode project configuration
+│   └── project.xcworkspace/
+│       └── xcshareddata/swiftpm/   # SPM package dependencies
 ├── DevHelper/
-│   ├── DevHelperApp.swift        # Main app entry point
-│   ├── ContentView.swift         # Main navigation interface
+│   ├── DevHelperApp.swift          # Main app entry point
+│   ├── ContentView.swift           # Navigation split view
 │   ├── Models/
-│   │   └── ToolType.swift        # Tool definitions and metadata
-│   ├── Views/                    # Individual tool implementations
+│   │   └── ToolType.swift          # Tool definitions
+│   ├── Views/                      # All 11 tool implementations
 │   │   ├── TimestampConverterView.swift
 │   │   ├── UnitConverterView.swift
 │   │   ├── JSONFormatterView.swift
@@ -26,9 +28,15 @@ DevHelper/
 │   │   ├── HTTPRequestView.swift
 │   │   ├── QRCodeView.swift
 │   │   └── ParquetViewerView.swift
-│   ├── Assets.xcassets/          # App icons and assets
-│   └── Preview Content/          # SwiftUI preview assets
-└── README.md                     # Project documentation
+│   ├── Components/                 # Shared UI components
+│   │   ├── CodeEditor.swift        # CodeMirror integration
+│   │   └── TextEditor.swift        # Custom text editor
+│   ├── Assets.xcassets/            # App icons and assets
+│   ├── Preview Content/            # SwiftUI preview assets
+│   └── DevHelper.entitlements      # App sandbox permissions
+├── DESIGN.md                       # This design document
+├── CLAUDE.md                       # Claude Code guidance
+└── README.md                       # User-facing documentation
 ```
 
 ### Technical Stack
@@ -321,6 +329,7 @@ Each tool follows a consistent pattern:
 
 **Features**:
 - Complete Parquet file reading using DuckDB Swift library
+- Support arrow file reading using arrow Swift library
 - Schema extraction with column details (name, type, nullable)
 - Data preview with native SwiftUI table
 - File metadata display via `parquet_file_metadata()`
@@ -337,6 +346,7 @@ Each tool follows a consistent pattern:
 
 **Implementation Details**:
 - DuckDB Swift package integration via SPM
+- Arrow Swfit package integration via SPM
 - SQL queries for data extraction
 - `DESCRIBE SELECT` for schema information
 - `parquet_file_metadata()` and `parquet_kv_metadata()` functions
@@ -402,20 +412,30 @@ enum ToolType: String, CaseIterable, Identifiable {
 ### Target Settings
 - **Minimum macOS**: 14.0
 - **Bundle Identifier**: com.devhelper.DevHelper
-- **Version**: 1.8 (Build 7)
+- **Version**: 1.8.2 (Build 1)
+- **Swift Version**: 5.0
 - **App Sandbox**: Enabled
+- **Hardened Runtime**: Enabled
 - **Network Access**: Enabled (for HTTP and IP Query tools)
 - **File Access**: User-selected read-write
 
 ### Dependencies
+
+#### Framework Dependencies
 - **SwiftUI**: UI framework
 - **Combine**: Reactive programming
-- **Foundation**: Core utilities
+- **Foundation**: Core utilities and networking
 - **AppKit**: macOS integration (clipboard access, file dialogs)
-- **CoreImage**: QR code generation
-- **Vision**: QR code scanning
+- **CoreImage**: QR code generation with CIFilter
+- **Vision**: QR code scanning with VNDetectBarcodesRequest
 - **UniformTypeIdentifiers**: Modern file type handling
-- **DuckDB**: Swift package for Parquet file reading (via SPM)
+
+#### Swift Package Manager Dependencies
+- **DuckDB**: Swift package for Parquet file reading (branch: v1.4.0-dev1354)
+- **Arrow**: Apache Arrow Swift implementation (v21.0.0)
+- **CodeMirror-SwiftUI**: Code editor integration (github.com/hengfeiyang/CodeMirror-SwiftUI)
+- **FlatBuffers**: Google FlatBuffers (v25.2.10) - Arrow dependency
+- **Swift-Atomics**: Apple Swift Atomics (v1.3.0) - Arrow dependency
 
 ## Testing Strategy
 

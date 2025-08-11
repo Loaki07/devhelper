@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design. Version 1.7+ released.
+DevHelper is a native macOS application built with SwiftUI that provides essential developer utilities in a single, unified interface. The app contains 11 fully-functional tools commonly used by developers, with search functionality and modern UI design. Version 1.8.2 released.
 
 ## Tools Implemented
 
@@ -80,25 +80,33 @@ DevHelper is a native macOS application built with SwiftUI that provides essenti
 ### Project Structure
 ```
 DevHelper/
-├── DevHelper.xcodeproj/
+├── DevHelper.xcodeproj/            # Xcode project configuration
+│   └── project.xcworkspace/
+│       └── xcshareddata/swiftpm/   # SPM package dependencies
 ├── DevHelper/
 │   ├── DevHelperApp.swift          # Main app entry point
 │   ├── ContentView.swift           # Navigation split view
 │   ├── Models/
 │   │   └── ToolType.swift          # Tool definitions
-│   └── Views/                      # All 9 tool implementations
-│       ├── TimestampConverterView.swift
-│       ├── UnitConverterView.swift
-│       ├── JSONFormatterView.swift
-│       ├── Base64View.swift
-│       ├── UUIDGeneratorView.swift
-│       ├── URLToolsView.swift
-│       ├── RegexTestView.swift
-│       ├── IPQueryView.swift
-│       ├── HTTPRequestView.swift
-│       ├── QRCodeView.swift
-│       └── ParquetViewerView.swift
-└── DESIGN.md                       # Comprehensive design document
+│   ├── Views/                      # All 11 tool implementations
+│   │   ├── TimestampConverterView.swift
+│   │   ├── UnitConverterView.swift
+│   │   ├── JSONFormatterView.swift
+│   │   ├── Base64View.swift
+│   │   ├── UUIDGeneratorView.swift
+│   │   ├── URLToolsView.swift
+│   │   ├── RegexTestView.swift
+│   │   ├── IPQueryView.swift
+│   │   ├── HTTPRequestView.swift
+│   │   ├── QRCodeView.swift
+│   │   └── ParquetViewerView.swift
+│   ├── Components/                 # Shared UI components
+│   │   ├── CodeEditor.swift        # CodeMirror integration
+│   │   └── TextEditor.swift        # Custom text editor
+│   └── DevHelper.entitlements      # App sandbox permissions
+├── DESIGN.md                       # Comprehensive design document
+├── CLAUDE.md                       # This file - Claude Code guidance
+└── README.md                       # User-facing documentation
 ```
 
 ### Technical Stack
@@ -134,17 +142,24 @@ DevHelper/
 ### Target Settings
 - **Bundle ID**: com.devhelper.DevHelper
 - **Minimum macOS**: 14.0
-- **Version**: 1.8 (Build 7)
+- **Version**: 1.8.2 (Build 1)
 - **Entitlements**: App Sandbox enabled, Hardened Runtime enabled
+- **Swift Version**: 5.0
 
 ### Dependencies
+
+#### Framework Dependencies
 - **SwiftUI**: UI framework
 - **Foundation**: Core utilities and networking
 - **AppKit**: Clipboard access (NSPasteboard), file dialogs
 - **CoreImage**: QR code generation with CIFilter.qrCodeGenerator()
 - **Vision**: QR code scanning with VNDetectBarcodesRequest
 - **UniformTypeIdentifiers**: Modern file type handling for save dialogs
-- **DuckDB**: Swift package for Parquet file reading (via SPM)
+
+#### Swift Package Manager Dependencies
+- **DuckDB**: Swift package for Parquet file reading (branch: v1.4.0-dev1354)
+- **Arrow**: Apache Arrow Swift implementation (v21.0.0)
+- **CodeMirror-SwiftUI**: Code editor integration (github.com/hengfeiyang/CodeMirror-SwiftUI)
 
 ## Recent Updates (Version 1.8+)
 
@@ -235,17 +250,21 @@ Each tool follows a consistent pattern:
 - Uses `@State` for local view state (input text, results, UI state)
 - No complex state management - each tool is self-contained
 - Real-time updates via `onChange` modifiers
+- `@StateObject` for persistent data across view updates
 
 ### File Operations & Entitlements
 - **Save operations** require `com.apple.security.files.user-selected.read-write` entitlement
 - **Network requests** require `com.apple.security.network.client` entitlement  
 - **Clipboard access** uses `NSPasteboard` (macOS) not `UIPasteboard` (iOS)
+- **File dialogs**: Use `NSSavePanel` and `NSOpenPanel` for file operations
 
-### Common Development Issues
-- **Xcode project updates**: When adding new Swift files, must manually update `.pbxproj` file
-- **macOS vs iOS APIs**: Avoid iOS-specific modifiers like `.keyboardType(.decimalPad)`
+### Common Development Issues & Solutions
+- **Xcode project updates**: When adding new Swift files, must manually update `.pbxproj` file or use Xcode GUI
+- **macOS vs iOS APIs**: Avoid iOS-specific modifiers like `.keyboardType(.decimalPad)` - use macOS equivalents
 - **File type handling**: Use `UniformTypeIdentifiers` for modern file operations
 - **Image operations**: Use `CoreImage` for generation, `Vision` for recognition
+- **SPM dependencies**: May need to resolve packages after pulling changes (`xcodebuild -resolvePackageDependencies`)
+- **Code signing**: Ensure Development Team is set in project settings for automatic signing
 
 ## Future Enhancements
 
@@ -269,16 +288,43 @@ Each tool follows a consistent pattern:
 # Open project in Xcode (recommended)
 open DevHelper.xcodeproj
 
-# Build for macOS from command line
-xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug
+# Build for Debug configuration
+xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Debug build
+
+# Build for Release configuration  
+xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Release build
 
 # Clean build artifacts
 xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
+
+# Archive for distribution
+xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -configuration Release archive
 
 # Build and launch app (using Claude Code MCP tools)
 # 1. Build: mcp__XcodeBuildMCP__build_mac_proj
 # 2. Get app path: mcp__XcodeBuildMCP__get_mac_app_path_proj  
 # 3. Launch: mcp__XcodeBuildMCP__launch_mac_app
+```
+
+### Swift Package Management
+```bash
+# Resolve package dependencies
+xcodebuild -resolvePackageDependencies -project DevHelper.xcodeproj
+
+# Update package dependencies
+xcodebuild -project DevHelper.xcodeproj -scheme DevHelper -resolvePackageDependencies
+```
+
+### Testing & Validation
+```bash
+# Run tests (if available)
+xcodebuild test -project DevHelper.xcodeproj -scheme DevHelper -destination 'platform=macOS'
+
+# Analyze code for potential issues
+xcodebuild analyze -project DevHelper.xcodeproj -scheme DevHelper
+
+# Check for Swift lint issues (requires swiftlint)
+swiftlint lint --path DevHelper/
 ```
 
 ### Xcode Project Management
@@ -287,10 +333,12 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
 - **Target settings**: Bundle ID `com.devhelper.DevHelper`, minimum macOS 14.0
 
 ### Key Development Notes
-- **External dependencies**: DuckDB Swift package via SPM for Parquet file reading
-- **Package manager**: Swift Package Manager (SPM) for DuckDB integration
-- **App Sandbox enabled**: Network client access granted for IP Query tool, file read-write for save operations
+- **External dependencies**: DuckDB, Arrow, CodeMirror-SwiftUI via Swift Package Manager
+- **Package manager**: Swift Package Manager (SPM) for all external dependencies
+- **App Sandbox enabled**: Network client access granted for IP Query and HTTP Request tools, file read-write for save operations
 - **Target**: macOS 14.0+, requires Xcode 15.4+
+- **Code signing**: Automatic with Development Team VS7S7V6J2F
+- **Hardened Runtime**: Enabled with timestamp and runtime options
 
 ### Project Management
 - **Design Document**: `DESIGN.md` contains comprehensive architecture details
@@ -311,8 +359,9 @@ xcodebuild -project DevHelper.xcodeproj -scheme DevHelper clean
 
 ---
 
-**Last Updated**: Version 1.8+ with complete Parquet Viewer and Time Unit Converter.
+**Last Updated**: Version 1.8.2 with complete Parquet Viewer and Time Unit Converter.
 **Latest Additions**: 
 - Full Parquet file reading with DuckDB integration, schema/data/metadata display with export options
 - Time category in Unit Converter with comprehensive time unit conversions
-**Architecture**: SwiftUI with DuckDB Swift package for Parquet functionality.
+- CodeMirror integration for enhanced code editing capabilities
+**Architecture**: SwiftUI with DuckDB, Arrow, and CodeMirror-SwiftUI packages.
