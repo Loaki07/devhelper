@@ -36,47 +36,6 @@ A native macOS application for developers, containing 11 essential tools commonl
 2. Open `DevHelper.xcodeproj` in Xcode
 3. Build and run the project
 
-### Prerequisites
-
-Before using `build.sh`, make sure you have:
-
-1. **Xcode installed** - The full Xcode app (not just Command Line Tools)
-2. **Xcode Command Line Tools** - Run `xcode-select --install` if needed
-3. **Proper Xcode path** - The script needs to find `xcodebuild` in your Xcode installation
-
-If you get an error about `xcodebuild` not being found, run:
-```bash
-sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
-```
-
-## Shell Scripts
-
-To build and run the app without keeping Xcode open, you have several options:
-
-### Quick Start (Build + Run)
-```bash
-./build_and_run.sh
-```
-This builds the project and launches the app in one command.
-
-### Build Only
-```bash
-./build.sh
-```
-This builds the project without running it. Use this when you want to build once and run many times.
-
-### Run Only (After Building)
-```bash
-./run.sh
-```
-This runs the app if it's already built. Much faster than rebuilding each time.
-
-### Clean Build
-```bash
-./clean.sh
-```
-This removes build artifacts when you want a fresh build.
-
 ## Version
 
 Current version: 1.8.3
