@@ -83,6 +83,7 @@ struct ParquetViewerView: View {
     @State private var sqlColumnTypes: [String] = []
     @State private var sqlReturnedRowCount: Int = 0
     @State private var showSQLEditor: Bool = false
+    @State private var isDragOver: Bool = false
 
     private let maxPreviewRows = 50
     
@@ -126,15 +127,48 @@ struct ParquetViewerView: View {
                 }
                 .frame(maxHeight: .infinity)
             } else {
-                VStack(spacing: 10) {
-                    Image(systemName: "doc.text.magnifyingglass")
+                // Drop zone for drag and drop
+                VStack(spacing: 20) {
+                    Image(systemName: isDragOver ? "arrow.down.circle.fill" : "doc.text.magnifyingglass")
                         .font(.system(size: 60))
-                        .foregroundColor(.secondary)
-                    Text("Select a Parquet or Arrow file to view its contents")
+                        .foregroundColor(isDragOver ? .accentColor : .secondary)
+                    
+                    Text(isDragOver ? "Drop the file here" : "Select a Parquet or Arrow file to view its contents")
                         .font(.title3)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(isDragOver ? .accentColor : .secondary)
+                    
+                    Text(isDragOver ? "Release to load the file" : "or drag and drop a file here")
+                        .font(.caption)
+                        .foregroundColor(isDragOver ? .accentColor : .secondary.opacity(0.6))
+                    
+                    Text("Click to browse files")
+                        .font(.caption2)
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .padding(.top, 5)
                 }
-                .frame(maxHeight: .infinity)
+                .frame(width: 400, height: 300)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            isDragOver ? Color.accentColor : Color.secondary.opacity(0.3),
+                            style: StrokeStyle(lineWidth: isDragOver ? 3 : 2, dash: [8])
+                        )
+                        .background(
+                            isDragOver ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05)
+                        )
+                        .cornerRadius(12)
+                )
+                .scaleEffect(isDragOver ? 1.02 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: isDragOver)
+                .onDrop(of: [.fileURL], isTargeted: $isDragOver) { providers in
+                    handleDrop(providers: providers)
+                    return true
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectFile()
+                }
             }
             
             if let errorMessage = errorMessage {
@@ -470,6 +504,38 @@ struct ParquetViewerView: View {
         
         if panel.runModal() == .OK, let url = panel.url {
             loadFile(url)
+        }
+    }
+    
+    private func handleDrop(providers: [NSItemProvider]) {
+        guard let provider = providers.first else { return }
+        
+        provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (data, error) in
+            if let error = error {
+                print("Error loading dropped item: \(error)")
+                return
+            }
+            
+            guard let data = data as? Data,
+                  let url = URL(dataRepresentation: data, relativeTo: nil) else {
+                return
+            }
+            
+            // Check if the file has a supported extension
+            let ext = url.pathExtension.lowercased()
+            let supportedExtensions = ["parquet", "arrow", "feather", "ipc"]
+            
+            guard supportedExtensions.contains(ext) else {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Unsupported file type. Please use .parquet, .arrow, .feather, or .ipc files."
+                }
+                return
+            }
+            
+            // Load the file on the main thread
+            DispatchQueue.main.async {
+                self.loadFile(url)
+            }
         }
     }
     
