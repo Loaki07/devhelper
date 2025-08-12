@@ -178,6 +178,7 @@ struct ParquetViewerView: View {
                     Text(errorMessage)
                         .font(.caption)
                         .foregroundColor(.red)
+                        .textSelection(.enabled)
                 }
                 .padding()
                 .background(Color.red.opacity(0.1))
@@ -262,6 +263,7 @@ struct ParquetViewerView: View {
                     HStack {
                         Image(systemName: "exclamationmark.triangle").foregroundColor(.red)
                         Text(sqlErrorMessage).font(.caption).foregroundColor(.red)
+                            .textSelection(.enabled)
                     }
                     .padding(6)
                     .background(Color.red.opacity(0.1))
@@ -1292,6 +1294,8 @@ fileprivate struct ParquetTableViewRepresentable: NSViewRepresentable {
         tableView.delegate = context.coordinator
         tableView.dataSource = context.coordinator
         tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
+        tableView.selectionHighlightStyle = .none
+        tableView.focusRingType = .none
 
         // Create columns
         for (idx, name) in columns.enumerated() {
@@ -1300,6 +1304,7 @@ fileprivate struct ParquetTableViewRepresentable: NSViewRepresentable {
             column.title = name + typeSuffix
             column.width = columnWidth
             column.minWidth = 60
+            column.headerCell.alignment = .left
             tableView.addTableColumn(column)
         }
 
@@ -1320,6 +1325,7 @@ fileprivate struct ParquetTableViewRepresentable: NSViewRepresentable {
                 column.title = name + typeSuffix
                 column.width = columnWidth
                 column.minWidth = 60
+                column.headerCell.alignment = .left
                 tableView.addTableColumn(column)
             }
         }
@@ -1363,11 +1369,19 @@ fileprivate struct ParquetTableViewRepresentable: NSViewRepresentable {
                 let cell = NSTableCellView()
                 cell.identifier = identifier
                 let value = (row < rows.count) ? rows[row][columnIndex] : ""
-                let textField = NSTextField(labelWithString: value)
+                let textField = NSTextField()
+                textField.stringValue = value
                 textField.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
                 textField.lineBreakMode = NSLineBreakMode.byTruncatingTail
                 textField.usesSingleLineMode = true
                 textField.translatesAutoresizingMaskIntoConstraints = false
+                textField.isEditable = false
+                textField.isSelectable = true
+                textField.isBordered = false
+                textField.backgroundColor = NSColor.clear
+                textField.allowsEditingTextAttributes = false
+                textField.cell?.wraps = false
+                textField.cell?.isScrollable = true
                 cell.addSubview(textField)
                 cell.textField = textField
                 NSLayoutConstraint.activate([
@@ -1397,20 +1411,25 @@ fileprivate struct SchemaTableViewRepresentable: NSViewRepresentable {
         tableView.dataSource = context.coordinator
         tableView.rowHeight = 22
         tableView.intercellSpacing = NSSize(width: 0, height: 0)
+        tableView.selectionHighlightStyle = .none
+        tableView.focusRingType = .none
 
         let nameCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("name"))
         nameCol.title = "Column Name"
         nameCol.width = 500
+        nameCol.headerCell.alignment = .left
         tableView.addTableColumn(nameCol)
 
         let typeCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("type"))
         typeCol.title = "Data Type"
         typeCol.width = 150
+        typeCol.headerCell.alignment = .left
         tableView.addTableColumn(typeCol)
 
         let nullableCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("nullable"))
         nullableCol.title = "Nullable"
         nullableCol.width = 100
+        nullableCol.headerCell.alignment = .left
         tableView.addTableColumn(nullableCol)
 
         scrollView.documentView = tableView
@@ -1453,11 +1472,20 @@ fileprivate struct SchemaTableViewRepresentable: NSViewRepresentable {
             } else {
                 let cell = NSTableCellView()
                 cell.identifier = identifier
-                let textField = NSTextField(labelWithString: text)
+                let textField = NSTextField()
+                textField.stringValue = text
                 textField.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
                 textField.lineBreakMode = .byTruncatingTail
                 textField.usesSingleLineMode = true
                 textField.translatesAutoresizingMaskIntoConstraints = false
+                textField.isEditable = false
+                textField.isSelectable = true
+                textField.isBordered = false
+                textField.backgroundColor = NSColor.clear
+                textField.allowsEditingTextAttributes = false
+                textField.cell?.wraps = false
+                textField.cell?.isScrollable = true
+                textField.cell?.truncatesLastVisibleLine = true
                 cell.addSubview(textField)
                 cell.textField = textField
                 NSLayoutConstraint.activate([
@@ -1487,15 +1515,19 @@ fileprivate struct MetadataTableViewRepresentable: NSViewRepresentable {
         tableView.dataSource = context.coordinator
         tableView.rowHeight = 22
         tableView.intercellSpacing = NSSize(width: 0, height: 0)
+        tableView.selectionHighlightStyle = .none
+        tableView.focusRingType = .none
 
         let keyCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("key"))
         keyCol.title = "Key"
         keyCol.width = 300
+        keyCol.headerCell.alignment = .left
         tableView.addTableColumn(keyCol)
 
         let valueCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("value"))
         valueCol.title = "Value"
         valueCol.width = 600
+        valueCol.headerCell.alignment = .left
         tableView.addTableColumn(valueCol)
 
         scrollView.documentView = tableView
@@ -1535,11 +1567,20 @@ fileprivate struct MetadataTableViewRepresentable: NSViewRepresentable {
             } else {
                 let cell = NSTableCellView()
                 cell.identifier = identifier
-                let textField = NSTextField(labelWithString: text)
+                let textField = NSTextField()
+                textField.stringValue = text
                 textField.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
                 textField.lineBreakMode = .byTruncatingTail
                 textField.usesSingleLineMode = true
                 textField.translatesAutoresizingMaskIntoConstraints = false
+                textField.isEditable = false
+                textField.isSelectable = true
+                textField.isBordered = false
+                textField.backgroundColor = NSColor.clear
+                textField.allowsEditingTextAttributes = false
+                textField.cell?.wraps = false
+                textField.cell?.isScrollable = true
+                textField.cell?.truncatesLastVisibleLine = true
                 cell.addSubview(textField)
                 cell.textField = textField
                 NSLayoutConstraint.activate([
